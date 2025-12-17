@@ -7,6 +7,8 @@
   "license": "ISC",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon src/app.ts",
+    "build": "npm ci && tsc && tsc-alias",
     "test": "echo \"Error: no test specified\" && exit 1",
     "check-git-hooks": "cd .. && node .secret-scan/secret-scan.js -- --check-git-hooks",
     "format": "npm run check-git-hooks && prettier --write .",
@@ -18,7 +20,8 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "mongoose": "^9.0.1"
+    "mongoose": "^9.0.1",
+    "nodemon": "^3.1.11"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.7.1",
@@ -28,6 +31,7 @@
     "husky": "^9.1.7",
     "prettier": "^3.7.4",
     "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.8.16",
     "typescript": "^5.9.3"
   }
 }
