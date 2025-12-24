@@ -1,9 +1,25 @@
+import cors from "cors";
 import express from "express";
 import mongoose from "mongoose";
 
-import { MONGO_URI, PORT } from "./config";
+import { FRONTEND_ORIGIN, MONGO_URI, PORT } from "./config";
+import errorHandler from "./middleware/errorHandler";
+import log from "./middleware/logger";
 
 const app = express();
+
+app.use(
+  cors({
+    origin: FRONTEND_ORIGIN,
+    methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
+  }),
+);
+
+app.use(express.json());
+
+app.use(log);
+
+app.use(errorHandler);
 
 mongoose
   .connect(MONGO_URI)
