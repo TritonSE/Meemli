@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { FRONTEND_ORIGIN, MONGO_URI, PORT } from "./config";
 import errorHandler from "./middleware/errorHandler";
 import log from "./middleware/logger";
+import sessionRoutes from "./routes/session";
 
 const app = express();
 
@@ -20,6 +21,8 @@ app.use(express.json());
 app.use(log);
 
 app.use(errorHandler);
+
+app.use("/api/session", sessionRoutes);
 
 mongoose
   .connect(MONGO_URI)
