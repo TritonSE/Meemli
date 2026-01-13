@@ -22,9 +22,15 @@ export const createSession: RequestHandler = async (req, res, next) => {
   }
 };
 
+type UpdateSessionBody = Partial<{
+  section: string;
+  sessionDate: Date;
+  attendees: string[];
+}>;
+
 export const editSessionById: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
-  const updateData = req.body;
+  const updateData: UpdateSessionBody = req.body as UpdateSessionBody;
 
   try {
     const updatedSession = await SessionModel.findByIdAndUpdate(id, updateData, { new: true });
