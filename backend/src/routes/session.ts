@@ -1,7 +1,3 @@
-/**
- * Task route requests.
- */
-
 import express from "express";
 
 import * as SessionController from "../controllers/session";
