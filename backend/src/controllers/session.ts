@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+
 import { SessionModel } from "../models/session";
 
 import type { RequestHandler } from "express";
@@ -16,7 +17,7 @@ export const createSession: RequestHandler = async (req, res, next) => {
     const session = await SessionModel.create({
       section: new Types.ObjectId(section),
       sessionDate: new Date(sessionDate),
-      attendees: attendees.map(id => new Types.ObjectId(id)),
+      attendees: attendees.map((id) => new Types.ObjectId(id)),
     });
 
     return res.status(201).json(session);
