@@ -29,4 +29,4 @@ const sessionSchema = new Schema<ISession>({
 });
 
 //exporting model
-export const Session = model<ISession>("Session", sessionSchema);
+export const SessionModel = model<ISession>("Session", sessionSchema);

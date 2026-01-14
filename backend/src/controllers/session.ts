@@ -1,5 +1,5 @@
-import SessionModel from "../models/session";
 import { Types } from "mongoose";
+import { SessionModel } from "../models/session";
 
 import type { RequestHandler } from "express";
 
