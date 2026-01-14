@@ -1,10 +1,11 @@
 import SessionModel from "../models/session";
+import { Types } from "mongoose";
 
 import type { RequestHandler } from "express";
 
 type CreateSessionBody = {
   section: string;
-  sessionDate: Date;
+  sessionDate: string;
   attendees: string[];
 };
 
@@ -12,9 +13,11 @@ export const createSession: RequestHandler = async (req, res, next) => {
   const { section, sessionDate, attendees } = req.body as CreateSessionBody;
 
   try {
-    const session = new SessionModel({ section, sessionDate, attendees });
-
-    await session.save();
+    const session = await SessionModel.create({
+      section: new Types.ObjectId(section),
+      sessionDate: new Date(sessionDate),
+      attendees: attendees.map(id => new Types.ObjectId(id)),
+    });
 
     return res.status(201).json(session);
   } catch (error) {
@@ -24,7 +27,7 @@ export const createSession: RequestHandler = async (req, res, next) => {
 
 type UpdateSessionBody = Partial<{
   section: string;
-  sessionDate: Date;
+  sessionDate: string;
   attendees: string[];
 }>;
 
