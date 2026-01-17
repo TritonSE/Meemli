@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import { body, type ValidationChain } from "express-validator";
 
 // TODO: Add the validation check for these once the models are created
 // import { Section } from "../models/Section";
@@ -15,7 +15,7 @@ import { body } from "express-validator";
 //   };
 // };
 
-const makeIDValidator = () =>
+const makeIDValidator = (): ValidationChain =>
   body("_id")
     .exists()
     .withMessage("_id is required")
@@ -23,7 +23,7 @@ const makeIDValidator = () =>
     .isMongoId()
     .withMessage("_id must be a MongoDB object ID");
 
-const makeSectionValidator = () =>
+const makeSectionValidator = (): ValidationChain =>
   body("section")
     .exists()
     .withMessage("section is required")
@@ -32,14 +32,14 @@ const makeSectionValidator = () =>
     .bail();
 // .custom(validateReferenceExists(Section, "Section"));
 
-const makeSessionDateValidator = () =>
+const makeSessionDateValidator = (): ValidationChain =>
   body("sessionDate")
     .exists()
     .withMessage("Date is required")
     .isISO8601()
     .withMessage("sessionDate must be a valid date-time string");
 
-const makeAttendeeArrayValidator = () =>
+const makeAttendeeArrayValidator = (): ValidationChain =>
   body("attendees")
     .exists()
     .withMessage("attendees field is required")
@@ -48,7 +48,7 @@ const makeAttendeeArrayValidator = () =>
     .withMessage("attendees must be an array")
     .bail();
 
-const makeAttendeeItemsValidator = () =>
+const makeAttendeeItemsValidator = (): ValidationChain =>
   body("attendees.*").isMongoId().withMessage("Invalid User ID format").bail();
 // .custom(validateReferenceExists(User, "Attendee"));
 
