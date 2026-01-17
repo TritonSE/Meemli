@@ -1,15 +1,19 @@
+<<<<<<< HEAD
 import { model, Schema } from "mongoose";
 
 import type { Document, Types } from "mongoose";
+=======
+import { Schema, Types, model, Document } from "mongoose";
+>>>>>>> 3bc260cd091d7fa0bfe97ea4ca34cac833ae9159
 
 //Session objects represent attendances on a specific day for a specific group
 
 //creating ObjectID reference
-type ISession = {
+interface ISession extends Document {
   section: Types.ObjectId;
   sessionDate: Date;
   attendees: Types.ObjectId[];
-} & Document;
+}
 
 const sessionSchema = new Schema<ISession>({
   section: {
