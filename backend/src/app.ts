@@ -22,7 +22,7 @@ app.use(log);
 
 app.use(errorHandler);
 
-app.use("/api/session", sessionRoutes);
+app.use("/api/sessions", sessionRoutes);
 
 mongoose
   .connect(MONGO_URI)

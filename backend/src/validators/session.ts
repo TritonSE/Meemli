@@ -1,7 +1,8 @@
 import { body } from "express-validator";
 
-import { Section } from "../models/Section";
-import { User } from "../models/User";
+// TODO: Add the validation check for these once the models are created
+// import { Section } from "../models/Section";
+// import { User } from "../models/User";
 
 // A reusable helper for database existence checks
 const validateReferenceExists = (model: any, fieldName: string) => {
@@ -29,7 +30,7 @@ const makeSectionValidator = () =>
     .isMongoId()
     .withMessage("section must be a valid MongoDB object ID")
     .bail()
-    .custom(validateReferenceExists(Section, "Section"));
+    // .custom(validateReferenceExists(Section, "Section"));
 
 const makeSessionDateValidator = () =>
   body("sessionDate")
@@ -52,7 +53,7 @@ const makeAttendeeItemsValidator = () =>
     .isMongoId()
     .withMessage("Invalid User ID format")
     .bail()
-    .custom(validateReferenceExists(User, "Attendee"));
+    // .custom(validateReferenceExists(User, "Attendee"));
 
 export const createSession = [
   makeSectionValidator(),
@@ -61,7 +62,7 @@ export const createSession = [
   makeAttendeeItemsValidator(),
 ];
 
-export const editSession = [
+export const editSessionById = [
   makeIDValidator(),
   makeSectionValidator(),
   makeAttendeeArrayValidator(),
