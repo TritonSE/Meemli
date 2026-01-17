@@ -5,15 +5,15 @@ import { body } from "express-validator";
 // import { User } from "../models/User";
 
 // A reusable helper for database existence checks
-const validateReferenceExists = (model: any, fieldName: string) => {
-  return async (id: string) => {
-    const exists = await model.findById(id);
-    if (!exists) {
-      throw new Error(`${fieldName} with ID ${id} not found`);
-    }
-    return true;
-  };
-};
+// const validateReferenceExists = (model: any, fieldName: string) => {
+//   return async (id: string) => {
+//     const exists = await model.findById(id);
+//     if (!exists) {
+//       throw new Error(`${fieldName} with ID ${id} not found`);
+//     }
+//     return true;
+//   };
+// };
 
 const makeIDValidator = () =>
   body("_id")
@@ -29,8 +29,8 @@ const makeSectionValidator = () =>
     .withMessage("section is required")
     .isMongoId()
     .withMessage("section must be a valid MongoDB object ID")
-    .bail()
-    // .custom(validateReferenceExists(Section, "Section"));
+    .bail();
+// .custom(validateReferenceExists(Section, "Section"));
 
 const makeSessionDateValidator = () =>
   body("sessionDate")
@@ -49,11 +49,8 @@ const makeAttendeeArrayValidator = () =>
     .bail();
 
 const makeAttendeeItemsValidator = () =>
-  body("attendees.*")
-    .isMongoId()
-    .withMessage("Invalid User ID format")
-    .bail()
-    // .custom(validateReferenceExists(User, "Attendee"));
+  body("attendees.*").isMongoId().withMessage("Invalid User ID format").bail();
+// .custom(validateReferenceExists(User, "Attendee"));
 
 export const createSession = [
   makeSectionValidator(),
