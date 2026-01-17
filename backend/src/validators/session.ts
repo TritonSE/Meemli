@@ -1,4 +1,5 @@
 import { body } from "express-validator";
+
 import { Section } from "../models/Section";
 import { User } from "../models/User";
 
