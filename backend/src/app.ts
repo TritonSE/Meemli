@@ -20,9 +20,9 @@ app.use(express.json());
 
 app.use(log);
 
-app.use(errorHandler);
-
 app.use("/students", studentsRoutes);
+
+app.use(errorHandler);
 
 mongoose
   .connect(MONGO_URI)

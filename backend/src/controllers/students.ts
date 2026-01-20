@@ -1,3 +1,4 @@
+import { validationResult } from "express-validator";
 import { Types } from "mongoose";
 
 import StudentModel from "../models/student";
@@ -24,7 +25,12 @@ type CreateStudentBody = {
   comments: string;
 };
 
-export const createStudent: RequestHandler = async (req, res, next) => {
+export const createStudent: RequestHandler = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new Error(errors.array()[0].msg as string);
+  }
+
   const {
     parentContact: { firstName, lastName, phoneNumber, email },
     displayName,
@@ -39,29 +45,7 @@ export const createStudent: RequestHandler = async (req, res, next) => {
     comments,
   } = req.body as CreateStudentBody;
 
-  if (
-    !firstName ||
-    !lastName ||
-    !phoneNumber ||
-    !email ||
-    !displayName ||
-    !meemliEmail ||
-    !grade ||
-    !schoolName ||
-    !city ||
-    !state ||
-    !preassessmentScore ||
-    !postassessmentScore ||
-    !enrolledSections ||
-    !comments
-  ) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-
   const enrolledSectionsIds = enrolledSections.map((section) => new Types.ObjectId(section));
-  if (!enrolledSectionsIds.every((section) => Types.ObjectId.isValid(section))) {
-    return res.status(400).json({ message: "Invalid enrolled sections" });
-  }
 
   try {
     const student = await StudentModel.create({
@@ -86,22 +70,22 @@ export const createStudent: RequestHandler = async (req, res, next) => {
     const populatedStudent = await student.populate("enrolledSections");
     res.status(201).json(populatedStudent);
   } catch (error) {
-    next(error);
+    throw new Error(error as string);
   }
 };
 
 // Get All Students
-export const getAllStudents: RequestHandler = async (req, res, next) => {
+export const getAllStudents: RequestHandler = async (req, res) => {
   try {
     const students = await StudentModel.find();
     res.status(200).json(students);
   } catch (error) {
-    next(error);
+    throw new Error(error as string);
   }
 };
 
 // Get by ID
-export const getStudentById: RequestHandler = async (req, res, next) => {
+export const getStudentById: RequestHandler = async (req, res) => {
   const { id } = req.params;
   if (!Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "Invalid student ID" });
@@ -114,14 +98,19 @@ export const getStudentById: RequestHandler = async (req, res, next) => {
     }
     res.status(200).json(student);
   } catch (error) {
-    next(error);
+    throw new Error(error as string);
   }
 };
 
 // Edit by ID
 type EditStudentBody = Partial<CreateStudentBody>;
 
-export const editStudentById: RequestHandler = async (req, res, next) => {
+export const editStudentById: RequestHandler = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new Error(errors.array()[0].msg as string);
+  }
+
   const { id } = req.params;
   if (!Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "Invalid student ID" });
@@ -138,12 +127,12 @@ export const editStudentById: RequestHandler = async (req, res, next) => {
     }
     res.status(200).json(student);
   } catch (error) {
-    next(error);
+    throw new Error((error as Error).message);
   }
 };
 
 // Delete by ID
-export const deleteStudentById: RequestHandler = async (req, res, next) => {
+export const deleteStudentById: RequestHandler = async (req, res) => {
   const { id } = req.params;
   if (!Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "Invalid student ID" });
@@ -156,6 +145,6 @@ export const deleteStudentById: RequestHandler = async (req, res, next) => {
     }
     res.status(200).json({ message: "Student deleted successfully" });
   } catch (error) {
-    next(error);
+    throw new Error(error as string);
   }
 };

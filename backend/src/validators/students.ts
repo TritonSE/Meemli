@@ -3,15 +3,6 @@ import { Types } from "mongoose";
 
 import type { ValidationChain } from "express-validator";
 
-const makeIDValidator = (): ValidationChain => {
-  return body("_id")
-    .exists()
-    .withMessage("_id is required")
-    .bail()
-    .isMongoId()
-    .withMessage("_id must be a valid MongoDB ObjectId");
-};
-
 const makeParentContactValidator = (): ValidationChain => {
   return body("parentContact")
     .exists()
@@ -106,10 +97,7 @@ const makePreassessmentScoreValidator = (): ValidationChain => {
     .withMessage("preassessmentScore is required")
     .bail()
     .isInt()
-    .withMessage("preassessmentScore must be an integer")
-    .bail()
-    .isIn([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-    .withMessage("preassessmentScore must be between 0 and 10");
+    .withMessage("preassessmentScore must be an integer");
 };
 
 const makePostassessmentScoreValidator = (): ValidationChain => {
@@ -118,10 +106,7 @@ const makePostassessmentScoreValidator = (): ValidationChain => {
     .withMessage("postassessmentScore is required")
     .bail()
     .isInt()
-    .withMessage("postassessmentScore must be an integer")
-    .bail()
-    .isIn([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-    .withMessage("postassessmentScore must be between 0 and 10");
+    .withMessage("postassessmentScore must be an integer");
 };
 
 const makeEnrolledSectionsValidator = (): ValidationChain => {
@@ -146,8 +131,8 @@ const makeCommentsValidator = (): ValidationChain => {
     .isString()
     .withMessage("comments must be a string")
     .bail()
-    .isLength({ min: 3 })
-    .withMessage("comments must be at least 3 characters long");
+    .isLength({ min: 0 })
+    .withMessage("comments must be at least empty string");
 };
 
 export const validateCreateStudent = [
@@ -165,16 +150,15 @@ export const validateCreateStudent = [
 ];
 
 export const validateEditStudent = [
-  makeIDValidator(),
-  makeParentContactValidator(),
-  makeDisplayNameValidator(),
-  makeMeemliEmailValidator(),
-  makeGradeValidator(),
-  makeSchoolNameValidator(),
-  makeCityValidator(),
-  makeStateValidator(),
-  makePreassessmentScoreValidator(),
-  makePostassessmentScoreValidator(),
-  makeEnrolledSectionsValidator(),
-  makeCommentsValidator(),
+  makeParentContactValidator().optional(),
+  makeDisplayNameValidator().optional(),
+  makeMeemliEmailValidator().optional(),
+  makeGradeValidator().optional(),
+  makeSchoolNameValidator().optional(),
+  makeCityValidator().optional(),
+  makeStateValidator().optional(),
+  makePreassessmentScoreValidator().optional(),
+  makePostassessmentScoreValidator().optional(),
+  makeEnrolledSectionsValidator().optional(),
+  makeCommentsValidator().optional(),
 ];
