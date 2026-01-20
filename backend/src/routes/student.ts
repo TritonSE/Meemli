@@ -5,10 +5,6 @@ import * as StudentValidator from "../validators/student";
 
 const router = express.Router();
 
-// Get Student by ID
-router.get("/:id", StudentController.getStudentById);
-
-// Create Student
 /* For Testing Purposes:
 {
     "parentContact" : {
@@ -29,6 +25,11 @@ router.get("/:id", StudentController.getStudentById);
     "comments": ""
 }
 */
+
+// Get Student by ID
+router.get("/:id", StudentController.getStudentById);
+
+// Create Student
 router.post("/", StudentValidator.validateCreateStudent, StudentController.createStudent);
 
 // Edit Student by ID
