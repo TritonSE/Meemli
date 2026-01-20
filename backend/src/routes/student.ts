@@ -22,7 +22,7 @@ const router = express.Router();
     "preassessmentScore": 87,
     "postassessmentScore": 94,
     "enrolledSections": [],
-    "comments": ""
+    "comments": "Some comments heres"
 }
 */
 
