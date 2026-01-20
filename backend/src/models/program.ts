@@ -9,6 +9,7 @@ const programSchema = new Schema({
   startDate: { type: String, required: true },
   endDate: { type: String, required: true },
   description: { type: String },
+  archived: { type: Boolean, default: false },
 });
 
 type Program = InferSchemaType<typeof programSchema>;
