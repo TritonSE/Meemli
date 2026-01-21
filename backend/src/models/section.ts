@@ -1,16 +1,18 @@
 import mongoose from "mongoose";
 
+import type { Document, Types } from "mongoose";
+
 // Type definition for Section documents
-type SectionDoc = {
+export type SectionDoc = Document & {
   code: string;
-  program: mongoose.Schema.Types.ObjectId; // Reference to the Program
-  teachers: mongoose.Schema.Types.ObjectId[]; // Array of user IDs for teachers
-  enrolledStudents: mongoose.Schema.Types.ObjectId[]; // Array of student IDs
+  program: Types.ObjectId;
+  teachers: Types.ObjectId[];
+  enrolledStudents: Types.ObjectId[];
   startTime: string;
   endTime: string;
-  days: string[]; // Array of days the section meets
-  sessions: mongoose.Schema.Types.ObjectId[]; // Array of session IDs
-} & mongoose.Document;
+  days: string[];
+  sessions: Types.ObjectId[];
+};
 
 // Definition of the Section schema
 const sectionSchema = new mongoose.Schema(
