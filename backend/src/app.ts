@@ -8,6 +8,7 @@ import programsRoutes from "../src/routes/programs";
 import { FRONTEND_ORIGIN, MONGO_URI, PORT } from "./config";
 import errorHandler from "./middleware/errorHandler";
 import log from "./middleware/logger";
+import programRouter from "./routes/program";
 
 const app = express();
 
@@ -24,6 +25,8 @@ app.use("/program", programRoutes);
 app.use(express.json());
 
 app.use(log);
+
+app.use("/programs", programRouter);
 
 app.use(errorHandler);
 
