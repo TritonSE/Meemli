@@ -1,31 +1,25 @@
-import { Types } from "mongoose";
+import { validationResult } from "express-validator";
 
 import { SessionModel } from "../models/session";
 
 import type { RequestHandler } from "express";
+import type { Types } from "mongoose";
 
 type CreateSessionBody = {
   section: string;
   sessionDate: string;
-  attendees: string[];
+  attendees: Types.ObjectId[];
 };
 
 export const createSession: RequestHandler = async (req, res, next) => {
-  const { section, sessionDate, attendees } = req.body as CreateSessionBody;
-
   try {
-    // Extra checks since we create new objects later (Mongoose would create if doesn't exist)
-    if (!section) {
-      return res.status(400).json({ error: "section is required" });
-    }
-    if (!sessionDate) {
-      return res.status(400).json({ error: "sessionDate is required" });
-    }
+    validationResult(req).throw();
+    const { section, sessionDate, attendees } = req.body as CreateSessionBody;
 
     const session = await SessionModel.create({
-      section: new Types.ObjectId(section),
-      sessionDate: new Date(sessionDate),
-      attendees: attendees.map((id) => new Types.ObjectId(id)),
+      section,
+      sessionDate,
+      attendees,
     });
 
     return res.status(201).json(session);
@@ -41,10 +35,10 @@ type UpdateSessionBody = Partial<{
 }>;
 
 export const editSessionById: RequestHandler = async (req, res, next) => {
-  const { id } = req.params;
-  const updateData: UpdateSessionBody = req.body as UpdateSessionBody;
-
   try {
+    validationResult(req).throw();
+    const { id } = req.params;
+    const updateData: UpdateSessionBody = req.body as UpdateSessionBody;
     const updatedSession = await SessionModel.findByIdAndUpdate(id, updateData, { new: true });
 
     // updatedSession will be null if no session with the given ID was found
@@ -59,9 +53,9 @@ export const editSessionById: RequestHandler = async (req, res, next) => {
 };
 
 export const getSession: RequestHandler = async (req, res, next) => {
-  const { id } = req.params;
-
   try {
+    validationResult(req).throw();
+    const { id } = req.params;
     const session = await SessionModel.findById(id);
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
