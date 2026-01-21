@@ -56,7 +56,6 @@ export const getProgram: RequestHandler = async (req, res, next) => {
 // Define a custom type for the request body so we can have static typing
 // for the fields
 type CreateProgramBody = {
-  _id: string;
   code?: string;
   name?: string;
   startDate?: string;
@@ -68,15 +67,13 @@ type CreateProgramBody = {
 export const createProgram: RequestHandler = async (req, res, next) => {
   // extract any errors that were found by the validator
   const errors = validationResult(req);
-  const { _id, code, name, startDate, endDate, description, archived } =
-    req.body as CreateProgramBody;
+  const { code, name, startDate, endDate, description, archived } = req.body as CreateProgramBody;
 
   try {
     // if there are errors, then this function throws an exception
     validationErrorParser(errors);
 
     const program = await ProgramModel.create({
-      _id,
       code,
       name,
       startDate,
@@ -111,7 +108,7 @@ export const editByID: RequestHandler = async (req, res, next) => {
 
     const updatedProgram = await ProgramModel.findByIdAndUpdate(
       id,
-      { _id, code, name, startDate, endDate, description, archived },
+      { code, name, startDate, endDate, description, archived },
       { new: true },
     );
 
