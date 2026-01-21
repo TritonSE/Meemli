@@ -28,7 +28,7 @@ type CreateStudentBody = {
 export const createStudent: RequestHandler = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return next(errors.array()[0]);
+    return next(new Error(errors.array()[0].msg as string));
   }
 
   const {
@@ -108,7 +108,7 @@ type EditStudentBody = Partial<CreateStudentBody>;
 export const editStudentById: RequestHandler = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return next(errors.array()[0]);
+    return next(new Error(errors.array()[0].msg as string));
   }
 
   const { id } = req.params;
