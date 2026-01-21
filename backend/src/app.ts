@@ -19,8 +19,8 @@ app.use(
 
 app.use(express.json());
 
-app.use("/programs", programsRoutes);
-app.use("/program", programRoutes);
+app.use("/api/programs", programsRoutes);
+app.use("/api/program", programRoutes);
 
 app.use(log);
 
