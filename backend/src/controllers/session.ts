@@ -13,7 +13,8 @@ type CreateSessionBody = {
 
 export const createSession: RequestHandler = async (req, res, next) => {
   try {
-    validationResult(req).throw();
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) throw new Error(errors.array()[0].msg as string);
     const { section, sessionDate, attendees } = req.body as CreateSessionBody;
 
     const session = await SessionModel.create({
@@ -36,7 +37,8 @@ type UpdateSessionBody = Partial<{
 
 export const editSessionById: RequestHandler = async (req, res, next) => {
   try {
-    validationResult(req).throw();
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) throw new Error(errors.array()[0].msg as string);
     const { id } = req.params;
     const updateData: UpdateSessionBody = req.body as UpdateSessionBody;
     const updatedSession = await SessionModel.findByIdAndUpdate(id, updateData, { new: true });
@@ -54,7 +56,8 @@ export const editSessionById: RequestHandler = async (req, res, next) => {
 
 export const getSession: RequestHandler = async (req, res, next) => {
   try {
-    validationResult(req).throw();
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) throw new Error(errors.array()[0].msg as string);
     const { id } = req.params;
     const session = await SessionModel.findById(id);
     if (!session) {

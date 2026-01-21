@@ -49,7 +49,7 @@ const makeAttendeeArrayValidator = (): ValidationChain =>
     .bail();
 
 const makeAttendeeItemsValidator = (): ValidationChain =>
-  body("attendees.*").isMongoId().withMessage("Invalid User ID format").bail();
+  body("attendees.*").isMongoId().withMessage("Invalid User ID format in Attendees array").bail();
 // .custom(validateReferenceExists(User, "Attendee"));
 
 export const createSession = [
