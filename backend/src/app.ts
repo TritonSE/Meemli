@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { FRONTEND_ORIGIN, MONGO_URI, PORT } from "./config";
 import errorHandler from "./middleware/errorHandler";
 import log from "./middleware/logger";
+import sectionsRouter from "./routes/sections";
 
 const app = express();
 
@@ -16,6 +17,8 @@ app.use(
 );
 
 app.use(express.json());
+
+app.use("/sections", sectionsRouter);
 
 app.use(log);
 

@@ -1,9 +1,9 @@
 import express from "express";
 
-import { Section } from "../models/section";
-import { createSectionValidator, updateSectionValidator } from "../validators/section";
+import { Section } from "../models/sections";
+import { createSectionValidator, updateSectionValidator } from "../validators/sections";
 
-import type { SectionDoc } from "../models/section";
+import type { SectionDoc } from "../models/sections";
 import type { RequestHandler, Response } from "express";
 
 const router = express.Router();
