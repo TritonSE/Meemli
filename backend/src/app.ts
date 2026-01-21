@@ -18,9 +18,9 @@ app.use(
 
 app.use(express.json());
 
-app.use("/sections", sectionsRouter);
-
 app.use(log);
+
+app.use("/sections", sectionsRouter);
 
 app.use(errorHandler);
 

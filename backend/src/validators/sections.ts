@@ -1,5 +1,7 @@
 import { body } from "express-validator";
 
+import type { ValidationChain } from "express-validator";
+
 const validateCode = body("code").notEmpty().withMessage("Code is required");
 
 const validateProgram = body("program")
@@ -8,28 +10,22 @@ const validateProgram = body("program")
   .isMongoId()
   .withMessage("Program must be a valid MongoDB ObjectID");
 
-const validateTeachers = body("teachers")
-  .isArray()
-  .withMessage("Teachers must be an array of ObjectIDs")
-  .custom((value: string[]) => {
-    const regex = /^[0-9a-f]{24}$/i;
-    if (value.some((id) => !regex.exec(id))) {
-      throw new Error("Each teacher must be a valid MongoDB ObjectID");
-    }
-    return true;
-  });
+export const validateTeachers: ValidationChain[] = [
+  body("teachers").isArray().withMessage("Teachers must be an array"),
 
-const validateEnrolledStudents = body("enrolledStudents")
-  .optional()
-  .isArray()
-  .withMessage("Enrolled students must be an array of ObjectIDs")
-  .custom((value: string[]) => {
-    const regex = /^[0-9a-f]{24}$/i;
-    if (value.some((id) => !regex.exec(id))) {
-      throw new Error("Each teacher must be a valid MongoDB ObjectID");
-    }
-    return true;
-  });
+  body("teachers.*").isMongoId().withMessage("Each teacher must be a valid MongoDB ObjectID"),
+];
+
+export const validateEnrolledStudents: ValidationChain[] = [
+  body("enrolledStudents")
+    .optional()
+    .isArray()
+    .withMessage("Enrolled students must be an array of ObjectIDs"),
+
+  body("enrolledStudents.*")
+    .isMongoId()
+    .withMessage("Each enrolled student must be a valid MongoDB ObjectID"),
+];
 
 const validateDays = body("days")
   .isArray()
@@ -44,9 +40,11 @@ const validateDays = body("days")
       "Saturday",
       "Sunday",
     ];
+
     if (value.some((day) => !validDays.includes(day))) {
       throw new Error(`Days must be one of the following: ${validDays.join(", ")}`);
     }
+
     return true;
   });
 
@@ -75,37 +73,30 @@ const validateEndTime = body("endTime")
     return true;
   });
 
-const validateSessions = body("sessions")
-  .optional()
-  .isArray()
-  .withMessage("Sessions must be an array of ObjectIDs")
-  .custom((value: string[]) => {
-    const objectIdRegex = /^[0-9a-f]{24}$/i;
+export const validateSessions: ValidationChain[] = [
+  body("sessions").optional().isArray().withMessage("Sessions must be an array of ObjectIDs"),
 
-    if (value && value.some((id) => !objectIdRegex.exec(id))) {
-      throw new Error("Each session must be a valid MongoDB ObjectID");
-    }
-    return true;
-  });
+  body("sessions.*").isMongoId().withMessage("Each session must be a valid MongoDB ObjectID"),
+];
 
 export const createSectionValidator = [
   validateCode,
   validateDays,
   validateEndTime,
-  validateEnrolledStudents,
+  ...validateEnrolledStudents,
   validateProgram,
-  validateSessions,
+  ...validateSessions,
   validateStartTime,
-  validateTeachers,
+  ...validateTeachers,
 ];
 
-export const updateSectionValidator = {
-  validateCode: validateCode.optional(),
-  validateDays: validateDays.optional(),
-  validateEndTime: validateEndTime.optional(),
-  validateEnrolledStudents: validateEnrolledStudents.optional(),
-  validateProgram: validateProgram.optional(),
-  validateStartTime: validateStartTime.optional(),
-  validateSessions: validateSessions.optional(),
-  validateTeachers: validateTeachers.optional(),
-};
+export const updateSectionValidator = [
+  validateCode.optional(),
+  validateDays.optional(),
+  validateEndTime.optional(),
+  ...validateEnrolledStudents.map((v) => v.optional()),
+  validateProgram.optional(),
+  ...validateSessions.map((v) => v.optional()),
+  validateStartTime.optional(),
+  ...validateTeachers.map((v) => v.optional()),
+];
