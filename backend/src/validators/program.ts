@@ -69,7 +69,6 @@ const makeDateOrderValidator = () =>
 // --- Route validator sets ---
 
 export const createProgram = [
-  makeIDValidator(),
   makeCodeValidator(),
   makeNameValidator(),
   makeStartDateValidator(),

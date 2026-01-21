@@ -2,13 +2,11 @@ import cors from "cors";
 import express from "express";
 import mongoose from "mongoose";
 
-import programRoutes from "../src/routes/program";
-import programsRoutes from "../src/routes/programs";
-
 import { FRONTEND_ORIGIN, MONGO_URI, PORT } from "./config";
 import errorHandler from "./middleware/errorHandler";
 import log from "./middleware/logger";
-import programRouter from "./routes/program";
+import programRoutes from "./routes/program";
+import programsRoutes from "./routes/programs";
 
 const app = express();
 
@@ -19,14 +17,12 @@ app.use(
   }),
 );
 
+app.use(express.json());
+
 app.use("/programs", programsRoutes);
 app.use("/program", programRoutes);
 
-app.use(express.json());
-
 app.use(log);
-
-app.use("/programs", programRouter);
 
 app.use(errorHandler);
 
