@@ -25,10 +25,10 @@ type CreateStudentBody = {
   comments: string;
 };
 
-export const createStudent: RequestHandler = async (req, res) => {
+export const createStudent: RequestHandler = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new Error(errors.array()[0].msg as string);
+    return next(errors.array()[0]);
   }
 
   const {
@@ -70,22 +70,22 @@ export const createStudent: RequestHandler = async (req, res) => {
     const populatedStudent = await student.populate("enrolledSections");
     res.status(201).json(populatedStudent);
   } catch (error) {
-    throw new Error(error as string);
+    return next(error);
   }
 };
 
 // Get All Students
-export const getAllStudents: RequestHandler = async (req, res) => {
+export const getAllStudents: RequestHandler = async (req, res, next) => {
   try {
     const students = await StudentModel.find();
     res.status(200).json(students);
   } catch (error) {
-    throw new Error(error as string);
+    return next(error);
   }
 };
 
 // Get by ID
-export const getStudentById: RequestHandler = async (req, res) => {
+export const getStudentById: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
   if (!Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "Invalid student ID" });
@@ -98,17 +98,17 @@ export const getStudentById: RequestHandler = async (req, res) => {
     }
     res.status(200).json(student);
   } catch (error) {
-    throw new Error(error as string);
+    return next(error);
   }
 };
 
 // Edit by ID
 type EditStudentBody = Partial<CreateStudentBody>;
 
-export const editStudentById: RequestHandler = async (req, res) => {
+export const editStudentById: RequestHandler = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new Error(errors.array()[0].msg as string);
+    return next(errors.array()[0]);
   }
 
   const { id } = req.params;
@@ -127,12 +127,12 @@ export const editStudentById: RequestHandler = async (req, res) => {
     }
     res.status(200).json(student);
   } catch (error) {
-    throw new Error((error as Error).message);
+    return next(error);
   }
 };
 
 // Delete by ID
-export const deleteStudentById: RequestHandler = async (req, res) => {
+export const deleteStudentById: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
   if (!Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "Invalid student ID" });
@@ -145,6 +145,6 @@ export const deleteStudentById: RequestHandler = async (req, res) => {
     }
     res.status(200).json({ message: "Student deleted successfully" });
   } catch (error) {
-    throw new Error(error as string);
+    return next(error);
   }
 };
