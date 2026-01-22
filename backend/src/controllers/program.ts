@@ -1,7 +1,3 @@
-/**
- * Functions that process task route requests.
- */
-
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 
@@ -102,6 +98,7 @@ type UpdateProgramBody = {
 
 export const editByID: RequestHandler = async (req, res, next) => {
   try {
+    const errors = validationResult(req);
     const id = req.params.id;
     const { _id, code, name, startDate, endDate, description, archived } =
       req.body as UpdateProgramBody;
