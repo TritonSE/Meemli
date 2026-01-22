@@ -10,19 +10,7 @@ const router = express.Router();
 // ---------------------- ROUTES ----------------------
 router.post("/", createSectionValidator, validateRequest, createSection);
 
-router.put(
-  "/:id",
-  [
-    updateSectionValidator.validateCode,
-    updateSectionValidator.validateDays,
-    updateSectionValidator.validateStartTime,
-    updateSectionValidator.validateEndTime,
-    updateSectionValidator.validateProgram,
-    updateSectionValidator.validateTeachers,
-  ],
-  validateRequest,
-  updateSection,
-);
+router.put("/:id", updateSectionValidator, validateRequest, updateSection);
 
 router.delete("/:id", deleteSection);
 router.get("/:id", getSection);
