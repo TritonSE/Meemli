@@ -29,6 +29,18 @@ export const getProgram: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const getAllPrograms: RequestHandler = async (req, res, next) => {
+  try {
+    const programs = await ProgramModel.find();
+    if (!programs) {
+      throw createHttpError(404, "No programs found.");
+    }
+    res.status(200).json(programs);
+  } catch (error) {
+    next(error);
+  }
+};
+
 /**
  * This is an example of an Express API request handler. We'll tell Express to
  * run this function when our backend receives a request to retrieve a
@@ -97,8 +109,10 @@ type UpdateProgramBody = {
 };
 
 export const editByID: RequestHandler = async (req, res, next) => {
+  const errors = validationResult(req);
   try {
-    const errors = validationResult(req);
+    validationErrorParser(errors);
+
     const id = req.params.id;
     const { _id, code, name, startDate, endDate, description, archived } =
       req.body as UpdateProgramBody;

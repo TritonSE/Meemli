@@ -22,4 +22,5 @@ router.put("/:id", ProgramValidator.updateProgram, ProgramController.editByID);
 
 // "get by ID" -- Thomas
 router.get("/:id", ProgramController.getProgram);
+router.get("/", ProgramController.getAllPrograms);
 export default router;
