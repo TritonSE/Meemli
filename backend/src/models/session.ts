@@ -8,7 +8,6 @@ import type { Document, Types } from "mongoose";
 type ISession = {
   section: Types.ObjectId;
   sessionDate: Date;
-  attendees: Types.ObjectId[];
 } & Document;
 
 const sessionSchema = new Schema<ISession>({
@@ -22,12 +21,6 @@ const sessionSchema = new Schema<ISession>({
     required: true,
     default: Date.now,
   },
-  attendees: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User", //reference Users in attendee array
-    },
-  ],
 });
 
 //exporting model

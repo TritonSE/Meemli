@@ -39,29 +39,12 @@ const makeSessionDateValidator = (): ValidationChain =>
     .isISO8601()
     .withMessage("sessionDate must be a valid date-time string");
 
-const makeAttendeeArrayValidator = (): ValidationChain =>
-  body("attendees")
-    .exists()
-    .withMessage("attendees field is required")
-    .bail()
-    .isArray({ min: 1 })
-    .withMessage("attendees must be an array")
-    .bail();
-
-const makeAttendeeItemsValidator = (): ValidationChain =>
-  body("attendees.*").isMongoId().withMessage("Invalid User ID format in Attendees array").bail();
-// .custom(validateReferenceExists(User, "Attendee"));
-
 export const createSession = [
   makeSectionValidator(),
   makeSessionDateValidator(),
-  makeAttendeeArrayValidator(),
-  makeAttendeeItemsValidator(),
 ];
 
 export const editSessionById = [
   makeIDValidator(),
   makeSectionValidator(),
-  makeAttendeeArrayValidator(),
-  makeAttendeeItemsValidator(),
 ];

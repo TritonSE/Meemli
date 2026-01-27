@@ -8,19 +8,17 @@ import type { Types } from "mongoose";
 type CreateSessionBody = {
   section: string;
   sessionDate: string;
-  attendees: Types.ObjectId[];
 };
 
 export const createSession: RequestHandler = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) throw new Error(errors.array()[0].msg as string);
-    const { section, sessionDate, attendees } = req.body as CreateSessionBody;
+    const { section, sessionDate} = req.body as CreateSessionBody;
 
     const session = await SessionModel.create({
       section,
       sessionDate,
-      attendees,
     });
 
     return res.status(201).json(session);
@@ -32,7 +30,6 @@ export const createSession: RequestHandler = async (req, res, next) => {
 type UpdateSessionBody = Partial<{
   section: string;
   sessionDate: string;
-  attendees: string[];
 }>;
 
 export const editSessionById: RequestHandler = async (req, res, next) => {
