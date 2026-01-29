@@ -1,3 +1,4 @@
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import mongoose from "mongoose";
@@ -5,12 +6,17 @@ import mongoose from "mongoose";
 import { FRONTEND_ORIGIN, MONGO_URI, PORT } from "./config";
 import errorHandler from "./middleware/errorHandler";
 import log from "./middleware/logger";
+import testRoutes from "./routes/test";
 
 const app = express();
+
+app.use(express.json());
+app.use(cookieParser());
 
 app.use(
   cors({
     origin: FRONTEND_ORIGIN,
+    credentials: true,
     methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
   }),
 );
@@ -18,6 +24,8 @@ app.use(
 app.use(express.json());
 
 app.use(log);
+
+app.use("/test", testRoutes);
 
 app.use(errorHandler);
 
