@@ -3,7 +3,9 @@ const admin = require("firebase-admin");
 const { PORT, serviceAccountKey, FIREBASE_API_KEY } = require("../../dist/config");
 
 const BASE_URL = `http://localhost:${PORT}`;
-const PATHS_TO_TEST = ["/test"]; // add paths to test here!
+// const PATHS_TO_TEST = ["/test", "/api/program", "/students", "/api/sessions"]; // add paths to test here!
+const PATHS_TO_TEST = [ "/students"]; // add paths to test here!
+
 
 function parseServiceAccount(raw) {
   const trimmed = String(raw).trim();
