@@ -9,7 +9,6 @@ import log from "./middleware/logger";
 import programRoutes from "./routes/program";
 import sessionRoutes from "./routes/session";
 import studentsRoutes from "./routes/students";
-import testRoutes from "./routes/test";
 import { verifyAuthToken } from "./validators/auth";
 
 const app = express();
@@ -32,7 +31,6 @@ app.use(log);
 app.use("/api/program", verifyAuthToken, programRoutes);
 app.use("/students", verifyAuthToken, studentsRoutes);
 app.use("/api/sessions", verifyAuthToken, sessionRoutes);
-app.use("/test", verifyAuthToken, testRoutes);
 
 app.use(errorHandler);
 
