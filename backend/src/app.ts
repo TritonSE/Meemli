@@ -7,6 +7,7 @@ import { FRONTEND_ORIGIN, MONGO_URI, PORT } from "./config";
 import errorHandler from "./middleware/errorHandler";
 import log from "./middleware/logger";
 import programRoutes from "./routes/program";
+import sectionsRouter from "./routes/sections";
 import sessionRoutes from "./routes/session";
 import studentsRoutes from "./routes/students";
 import { verifyAuthToken } from "./validators/auth";
@@ -28,6 +29,7 @@ app.use(express.json());
 
 app.use(log);
 
+app.use("/sections", verifyAuthToken, sectionsRouter);
 app.use("/api/program", verifyAuthToken, programRoutes);
 app.use("/students", verifyAuthToken, studentsRoutes);
 app.use("/api/sessions", verifyAuthToken, sessionRoutes);
