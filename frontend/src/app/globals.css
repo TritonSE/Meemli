@@ -1,6 +1,35 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* layers give style prioirity to rightmost layer*/
+@layer reset, default;
+
+@font-face {
+  font-family: "Montserrat";
+  src:
+    local("Montserrat"),
+    url("/frontend/public/fonts/Montserrat/Montserrat-VariableFont_wght.ttf") format("truetype");
+  font-weight: 400;
 }
+
+/* @layer reset { */
+:root {
+  margin: 0;
+  padding: 0;
+}
+/* } */
+
+/* @layer default { */
+* {
+  font-family: "Montserrat", sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: revert;
+  padding: revert;
+}
+/* } */
