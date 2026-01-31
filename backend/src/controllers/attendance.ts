@@ -58,12 +58,42 @@ export const getAttendanceBySessionId: RequestHandler = async (req, res, next) =
     const errors = validationResult(req);
     if (!errors.isEmpty()) throw new Error(errors.array()[0].msg as string);
     const { sessionId } = req.params;
-    const attendance = await AttendanceModel.find({session: sessionId});
+    const attendance = await AttendanceModel.find({ session: sessionId });
     // Throw an error if no attendance records are found for the session
     if (attendance.length === 0) {
       return res.status(404).json({ error: "Attendance records not found" });
     }
     return res.status(200).json(attendance);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateBulkAttendance: RequestHandler = async (req, res, next) => {
+  try {
+    const updates = req.body; // Expecting an array
+
+    // checking if array
+    if (!Array.isArray(updates)) {
+      return res.status(400).json({ error: "Expected an array of updates" });
+    }
+
+    // Map the updates for bulkWrite
+    const operations = updates.map((update) => ({
+      updateOne: {
+        filter: { _id: update.attendanceId },
+        update: {
+          status: update.status,
+          notes: update.notes,
+        },
+      },
+    }));
+
+    if (operations.length > 0) {
+      await AttendanceModel.bulkWrite(operations);
+    }
+
+    res.status(200).json({ message: "Attendance updated" });
   } catch (error) {
     next(error);
   }

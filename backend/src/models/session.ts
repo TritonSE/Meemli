@@ -1,5 +1,4 @@
 import { model, Schema } from "mongoose";
-
 import type { Document, Types } from "mongoose";
 
 //Session objects represent attendances on a specific day for a specific group

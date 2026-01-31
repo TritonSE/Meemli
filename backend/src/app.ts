@@ -8,6 +8,7 @@ import log from "./middleware/logger";
 import programRoutes from "./routes/program";
 import sessionRoutes from "./routes/session";
 import studentsRoutes from "./routes/students";
+import attendanceRoutes from "./routes/attendance";
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(log);
 app.use("/api/program", programRoutes);
 app.use("/students", studentsRoutes);
 app.use("/api/sessions", sessionRoutes);
+app.use("/api/attendance", attendanceRoutes);
 
 app.use(errorHandler);
 
