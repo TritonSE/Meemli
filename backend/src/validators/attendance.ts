@@ -1,27 +1,21 @@
 import { body } from "express-validator";
+
 import { SessionModel } from "../models/session";
 import StudentModel from "../models/student";
 
 import type { ValidationChain } from "express-validator";
+import type { Model } from "mongoose";
 
 // Reusable helper for checking that the referenced field exists (could be moved to a common utils file)
-const validateReferenceExists = (model: any, fieldName: string) => {
+const validateReferenceExists = (model: Model<any>, fieldName: string) => {
   return async (id: string) => {
-    const exists = await model.findById(id);
+    const exists: unknown = await model.findById(id);
     if (!exists) {
       throw new Error(`${fieldName} with ID ${id} not found`);
     }
     return true;
   };
 };
-
-const makeIDValidator = (): ValidationChain =>
-  body("_id")
-    .exists()
-    .withMessage("_id is required")
-    .bail()
-    .isMongoId()
-    .withMessage("_id must be a MongoDB object ID");
 
 const makeAttendanceValidator = (): ValidationChain =>
   body("session")
@@ -61,7 +55,6 @@ export const createAttendance = [
 ];
 
 export const updateAttendanceById = [
-  makeIDValidator(),
   makeAttendanceValidator(),
   makeStudentValidator(),
   makeStatusValidator(),

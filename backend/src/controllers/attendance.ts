@@ -71,29 +71,32 @@ export const getAttendanceBySessionId: RequestHandler = async (req, res, next) =
 
 export const updateBulkAttendance: RequestHandler = async (req, res, next) => {
   try {
-    const updates = req.body; // Expecting an array
+    const updates = req.body;
 
-    // checking if array
+    // 1. Safety Check: Is it an array?
     if (!Array.isArray(updates)) {
       return res.status(400).json({ error: "Expected an array of updates" });
     }
 
-    // Map the updates for bulkWrite
-    const operations = updates.map((update) => ({
-      updateOne: {
-        filter: { _id: update.attendanceId },
-        update: {
-          status: update.status,
-          notes: update.notes,
+    // filter out any items missing an 'attendanceId' to prevent crashes
+    const operations = updates
+      .filter((u) => u.attendanceId)
+      .map((update) => ({
+        updateOne: {
+          filter: { _id: update.attendanceId },
+          update: {
+            status: update.status,
+            notes: update.notes,
+          },
         },
-      },
-    }));
+      }));
 
+    // 3. Execute the updates
     if (operations.length > 0) {
       await AttendanceModel.bulkWrite(operations);
     }
 
-    res.status(200).json({ message: "Attendance updated" });
+    res.status(200).json({ message: "Attendance updated successfully" });
   } catch (error) {
     next(error);
   }
