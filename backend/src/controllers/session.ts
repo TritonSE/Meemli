@@ -1,9 +1,18 @@
 import { validationResult } from "express-validator";
 
+import { AttendanceModel } from "../models/attendance";
+import { Section } from "../models/sections";
 import { SessionModel } from "../models/session";
 
 import type { RequestHandler } from "express";
 import type { Types } from "mongoose";
+
+const getStudentsInSection = async (sectionId: string): Promise<Types.ObjectId[]> => {
+  const section = await Section.findById(sectionId).select("enrolledStudents");
+
+  // Can't be null because of validation checks prior to calling this function
+  return section!.enrolledStudents;
+};
 
 type CreateSessionBody = {
   section: string;
@@ -14,12 +23,28 @@ export const createSession: RequestHandler = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) throw new Error(errors.array()[0].msg as string);
-    const { section, sessionDate} = req.body as CreateSessionBody;
+    const { section, sessionDate } = req.body as CreateSessionBody;
 
     const session = await SessionModel.create({
       section,
       sessionDate,
     });
+
+    // create Attendance records for all students enrolled in Section
+
+    // Get all student Ids in the section (enrolledStudents list)
+    const students = await getStudentsInSection(section);
+
+    // Create attendance records for all students in session
+    await Promise.all(
+      students.map(async (studentId) =>
+        AttendanceModel.create({
+          session: session._id,
+          student: studentId,
+          status: "PRESENT",
+        }),
+      ),
+    );
 
     return res.status(201).json(session);
   } catch (error) {

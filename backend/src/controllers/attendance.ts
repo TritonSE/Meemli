@@ -58,7 +58,7 @@ export const getAttendanceBySessionId: RequestHandler = async (req, res, next) =
     const errors = validationResult(req);
     if (!errors.isEmpty()) throw new Error(errors.array()[0].msg as string);
     const { sessionId } = req.params;
-    const attendance = await AttendanceModel.find({session: sessionId});
+    const attendance = await AttendanceModel.find({ session: sessionId });
     // Throw an error if no attendance records are found for the session
     if (attendance.length === 0) {
       return res.status(404).json({ error: "Attendance records not found" });

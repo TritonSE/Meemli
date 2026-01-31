@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { FRONTEND_ORIGIN, MONGO_URI, PORT } from "./config";
 import errorHandler from "./middleware/errorHandler";
 import log from "./middleware/logger";
+import attendanceRoutes from "./routes/attendance";
 import programRoutes from "./routes/program";
 import sectionsRouter from "./routes/sections";
 import sessionRoutes from "./routes/session";
@@ -23,10 +24,11 @@ app.use(express.json());
 
 app.use(log);
 
-app.use("/sections", sectionsRouter);
+app.use("/api/sections", sectionsRouter);
 app.use("/api/program", programRoutes);
-app.use("/students", studentsRoutes);
+app.use("/api/students", studentsRoutes);
 app.use("/api/sessions", sessionRoutes);
+app.use("/api/attendance", attendanceRoutes);
 
 app.use(errorHandler);
 

@@ -1,4 +1,6 @@
-import { InferSchemaType, model, Schema } from "mongoose";
+import { model, Schema } from "mongoose";
+
+import type { InferSchemaType } from "mongoose";
 
 // Attendance objects represent one student’s attendance for one session.
 
