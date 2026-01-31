@@ -3,9 +3,61 @@ const admin = require("firebase-admin");
 const { PORT, serviceAccountKey, FIREBASE_API_KEY } = require("../../dist/config");
 
 const BASE_URL = `http://localhost:${PORT}`;
-// const PATHS_TO_TEST = ["/test", "/api/program", "/students", "/api/sessions"]; // add paths to test here!
-const PATHS_TO_TEST = [ "/students"]; // add paths to test here!
 
+/**
+ * Aa per-path test matrix for each endpoint to be tested with multiple HTTP methods.
+ * - methods: which verbs to run for this path
+ * - body: optional JSON payload for POST/PUT/PATCH (or any method)
+ */
+const TEST_MATRIX = [
+  // GET /api/program
+  { path: "/api/program", methods: ["GET"] },
+
+  // GET /api/program/:id
+  // { path: "/api/program/69714740ebe400a70cee78b4", methods: ["GET"] },
+
+  // GET /students
+  // { path: "/students", methods: ["GET"] },
+
+  // POST /students
+  // {
+  //   path: "/students",
+  //   methods: ["POST"],
+  //   body: {
+  //     parentContact: {
+  //       firstName: "Test",
+  //       lastName: "Parent",
+  //       phoneNumber: 5555555555,
+  //       email: "test.parent@example.com",
+  //     },
+  //     displayName: "Middleware Test Student",
+  //     meemliEmail: "middleware.test@student.example.com",
+  //     grade: 11,
+  //     schoolName: "UCSD",
+  //     city: "San Diego",
+  //     state: "California",
+  //     preassessmentScore: 87,
+  //     postassessmentScore: 94,
+  //     enrolledSections: [],
+  //     comments: "Created by middleware auth test script",
+  //   },
+  // },
+
+  // PUT /students/:id
+  // {
+  //   path: "/students/697dd1672128314dc3583699",
+  //   methods: ["PUT"],
+  //   body: {
+  //     comments: "Updated by middleware auth test script",
+  //   },
+  // },
+
+  // DELETE /students/:id
+  // {
+  //   path: "/students/697dd1672128314dc3583699",
+  //   methods: ["DELETE"],
+  // },
+];
 
 function parseServiceAccount(raw) {
   const trimmed = String(raw).trim();
@@ -13,25 +65,47 @@ function parseServiceAccount(raw) {
 }
 
 /**
- * Performs a GET request and tries to JSON-parse the response body
+ * Performs an HTTP request and tries to JSON-parse the response body
  * If parsing fails, returns the raw text body
  */
-async function httpGet(fullUrl, headers = {}) {
-  const res = await fetch(fullUrl, { method: "GET", headers });
+async function httpRequest(method, fullUrl, opts = {}) {
+  const { headers = {}, json, raw, query } = opts;
+
+  const u = new URL(fullUrl);
+
+  // Optional query string helper (nice for endpoints like /resource?id=123)
+  if (query && typeof query === "object") {
+    for (const [k, v] of Object.entries(query)) {
+      if (v === undefined || v === null) continue;
+      u.searchParams.set(k, String(v));
+    }
+  }
+
+  const finalHeaders = { ...headers };
+  let body;
+
+  if (json !== undefined) {
+    finalHeaders["Content-Type"] = finalHeaders["Content-Type"] ?? "application/json";
+    body = JSON.stringify(json);
+  } else if (raw !== undefined) {
+    body = raw;
+  }
+
+  const res = await fetch(u.toString(), { method, headers: finalHeaders, body });
   const text = await res.text();
-  let body = text;
+  let parsed = text;
   try {
-    body = JSON.parse(text);
+    parsed = JSON.parse(text);
   } catch {}
-  return { status: res.status, body };
+  return { status: res.status, body: parsed };
 }
 
 /**
  * Standardized console output formatting for each test case
  */
-function logResult(name, fullUrl, r) {
+function logResult(name, method, fullUrl, r) {
   console.info(`\n=== ${name} ===`);
-  console.info(`GET ${fullUrl}`);
+  console.info(`${method} ${fullUrl}`);
   console.info(`Status: ${r.status}`);
   console.info("Body:", r.body);
 }
@@ -41,9 +115,9 @@ function logResult(name, fullUrl, r) {
  * Returns array like: [{ path: "/test", url: "http://localhost:4000/test" }, ...]
  */
 function getUrls() {
-  return PATHS_TO_TEST.map((p) => ({
-    path: p,
-    url: new URL(p, BASE_URL).toString(),
+  return TEST_MATRIX.map((t) => ({
+    ...t,
+    url: new URL(t.path, BASE_URL).toString(),
   }));
 }
 
@@ -68,7 +142,9 @@ async function ensureUser(uid) {
  * This exchanges the custom token for an ID token using the Identity Toolkit API endpoint
  */
 async function exchangeCustomTokenForIdToken(customToken) {
-  const endpoint = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${encodeURIComponent(FIREBASE_API_KEY)}`;
+  const endpoint = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${encodeURIComponent(
+    FIREBASE_API_KEY,
+  )}`;
 
   const res = await fetch(endpoint, {
     method: "POST",
@@ -82,30 +158,43 @@ async function exchangeCustomTokenForIdToken(customToken) {
 }
 
 /**
- * Runs the full suite of auth tests for a single URL
+ * Runs the full suite of auth tests for a single (method, url)
  *   - No auth header (should fail)
  *   - Malformed header (should fail)
  *   - Invalid token (should fail)
  *   - Valid token (should pass)
  */
-async function runTestsForUrl({ path, url }, idToken) {
+async function runTestsForMethod({ path, url, body }, method, idToken) {
   console.info("\n==============================");
   console.info("Testing path:", path);
   console.info("Using URL:", url);
+  console.info("HTTP method:", method);
+
+  // Helper to keep the 4 test cases consistent across all verbs
+  const makeReq = (headers) =>
+    httpRequest(method, url, {
+      headers,
+      json:
+        body !== undefined
+          ? body
+          : method === "POST" || method === "PUT" || method === "PATCH"
+            ? { _test: true } // default placeholder so you can see behavior
+            : undefined,
+    });
 
   // negative tests
-  const noAuth = await httpGet(url);
-  logResult("No Authorization header", url, noAuth);
+  const noAuth = await makeReq({});
+  logResult("No Authorization header", method, url, noAuth);
 
-  const malformed = await httpGet(url, { Authorization: "Bear tokenwithoutspace" });
-  logResult("Malformed Authorization header", url, malformed);
+  const malformed = await makeReq({ Authorization: "Bear tokenwithoutspace" });
+  logResult("Malformed Authorization header", method, url, malformed);
 
-  const invalid = await httpGet(url, { Authorization: "Bearer not.a.real.token" });
-  logResult("Invalid token", url, invalid);
+  const invalid = await makeReq({ Authorization: "Bearer not.a.real.token" });
+  logResult("Invalid token", method, url, invalid);
 
   // positive test
-  const valid = await httpGet(url, { Authorization: `Bearer ${idToken}` });
-  logResult("Valid Firebase ID token (should PASS)", url, valid);
+  const valid = await makeReq({ Authorization: `Bearer ${idToken}` });
+  logResult("Valid Firebase ID token (should PASS)", method, url, valid);
 }
 
 (async () => {
@@ -133,16 +222,24 @@ async function runTestsForUrl({ path, url }, idToken) {
   console.log("Service account project_id:", serviceAccount.project_id);
   */
 
-  // Run tests sequentially for each URL
+  // Build a flat list of tasks (each task runs one method against one URL).
+  // IMPORTANT: This avoids `await` inside a loop (eslint: no-await-in-loop),
+  // while still running tests in a predictable, sequential order.
   const urls = getUrls();
-  await urls.reduce((p, u) => p.then(() => runTestsForUrl(u, idToken)), Promise.resolve());
+
+  const tasks = urls.flatMap((u) =>
+    (u.methods ?? []).map((method) => () => runTestsForMethod(u, method, idToken)),
+  );
+
+  // Run sequentially via promise chaining (no await-in-loop).
+  await tasks.reduce((p, task) => p.then(task), Promise.resolve());
 })().catch((e) => {
   // Any unhandled error ends the script with a non-zero exit code (useful for CI).
   console.error("Fatal error:", e?.message ?? e);
   process.exit(1);
 });
 
-/* Alternatively, you can also use curl to test, e.g.: 
+/* Alternatively, you can also use curl to test, e.g.:
 curl -i -H "Authorization: Bearer <TOKEN_HERE>" \
-  http://localhost:4000/test
+  http://localhost:4000/api/program
 */
