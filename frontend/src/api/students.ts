@@ -1,6 +1,6 @@
-import { get, handleAPIError, post, put } from "src/api/requests";
+import { get, handleAPIError, post, put } from "./requests";
 
-import type { APIResult } from "src/api/requests";
+import type { APIResult } from "@/src/api/requests";
 
 export type ParentContact = {
   firstName: string;
@@ -58,7 +58,7 @@ export type StudentJSON = {
   comments: string;
 };
 
-const STUDENTS_ROUTE = "/api/students";
+const STUDENTS_ROUTE = "../api/students";
 const studentByIdRoute = (id: string) => `${STUDENTS_ROUTE}/${id}`;
 
 function parseStudent(student: StudentJSON): Student {
@@ -94,7 +94,7 @@ export type UpdateStudentRequest = Student;
 
 export async function createStudent(student: CreateStudentRequest): Promise<APIResult<Student>> {
   try {
-    const response = (await post(STUDENTS_ROUTE, student)) as Student;
+    const response = await post(STUDENTS_ROUTE, student);
     const json = (await response.json()) as StudentJSON;
     return { success: true, data: parseStudent(json) };
   } catch (error) {
