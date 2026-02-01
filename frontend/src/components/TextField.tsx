@@ -3,21 +3,24 @@
  */
 
 import React from "react";
-import styles from "src/components/TextField.module.css";
+
+import styles from "./TextField.module.css";
 
 export type TextFieldProps = {
   label: string;
   error?: boolean;
+  required?: boolean;
 } & Omit<React.ComponentProps<"input">, "type">;
 
 export const TextField = function TextField({
   ref,
   label,
   error = false,
+  required = false,
   className,
   ...props
 }: TextFieldProps & { ref?: React.RefObject<HTMLInputElement | null> }) {
-  let wrapperClass = styles.wrapper;
+  let wrapperClass = styles.field;
   if (className) {
     wrapperClass += ` ${className}`;
   }
@@ -28,9 +31,12 @@ export const TextField = function TextField({
   return (
     <div className={wrapperClass}>
       <label className={styles.label}>
-        <p>{label}</p>
-        <input ref={ref} type="text" className={inputClass} {...props} />
+        <div className={styles.inline}>
+          {label}
+          {required && <span className={styles.required}>*</span>}
+        </div>
       </label>
+      <input ref={ref} type="text" className={inputClass} {...props} />
     </div>
   );
 };
