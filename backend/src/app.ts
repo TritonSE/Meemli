@@ -23,7 +23,7 @@ app.use(express.json());
 
 app.use(log);
 
-app.use("/sections", sectionsRouter);
+app.use("/api/sections", sectionsRouter);
 app.use("/api/program", programRoutes);
 app.use("/api/students", studentsRoutes);
 app.use("/api/sessions", sessionRoutes);

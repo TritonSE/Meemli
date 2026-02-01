@@ -9,27 +9,6 @@ import type { Student } from "../api/students";
 
 
 /**
- * Type definition for the errors object used in StudentForm validation.
- */
-export type StudentFormErrors = {
-  studentFirstName?: boolean;
-  studentLastName?: boolean;
-  meemliEmail?: boolean;
-  grade?: boolean;
-  schoolName?: boolean;
-  city?: boolean;
-  state?: boolean;
-  parentFirstName?: boolean;
-  parentLastName?: boolean;
-  parentPhoneNumber?: boolean;
-  parentEmail?: boolean;
-  preassessmentScore?: boolean;
-  postassessmentScore?: boolean;
-  enrolledSections?: boolean;
-  comments?: boolean;
-};
-
-/**
  * Type definition for the values object
  */
 export type ValuesType = {

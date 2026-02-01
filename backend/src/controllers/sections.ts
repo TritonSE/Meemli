@@ -81,3 +81,16 @@ export const getSection: RequestHandler<{ id: string }, SectionDoc> = async (req
     handleError(res, error instanceof Error ? error.message : "Unknown error");
   }
 };
+
+// ------------------ GET ALL ---------------------
+export const getAllSections: RequestHandler = async (req, res) => {
+  try {
+    const sections = await Section.find();
+    if (!sections) {
+      return handleError(res, "Sections not found", 404);
+    }
+    res.json(sections);
+  } catch (error: unknown) {
+    handleError(res, error instanceof Error ? error.message : "Unknown error")
+  }
+}

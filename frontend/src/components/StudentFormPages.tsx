@@ -10,8 +10,28 @@ import styles from "./StudentForm.module.css"
 import { TextField } from "./TextField";
 
 import type { MultiSelectOption } from "./MultiSelectDropdown";
-import type { StudentFormErrors , ValuesType } from "./StudentForm";
+import type { ValuesType } from "./StudentForm";
 
+/**
+ * Type definition for the errors object used in StudentForm validation.
+ */
+type StudentFormErrors = {
+  studentFirstName?: boolean;
+  studentLastName?: boolean;
+  meemliEmail?: boolean;
+  grade?: boolean;
+  schoolName?: boolean;
+  city?: boolean;
+  state?: boolean;
+  parentFirstName?: boolean;
+  parentLastName?: boolean;
+  parentPhoneNumber?: boolean;
+  parentEmail?: boolean;
+  preassessmentScore?: boolean;
+  postassessmentScore?: boolean;
+  enrolledSections?: boolean;
+  comments?: boolean;
+};
 
 type StudentFormPagesProps = {
   values: ValuesType;
