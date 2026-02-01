@@ -1,97 +1,161 @@
-import { Dialog } from "@tritonse/tse-constellation";
 import { useState } from "react";
-import { createTask, updateTask } from "src/api/tasks";
-import { Button, TextField } from "src/components";
-import styles from "src/components/TaskForm.module.css";
 
-import type { Student } from "src/api/students";
+import { createStudent, updateStudent } from "../api/students";
 
-export type TaskFormProps = {
-  mode: "create" | "edit";
-  task?: Task;
-  onSubmit?: (task: Task) => void;
-};
+import styles from "./StudentForm.module.css";
+import { StudentFormPages } from "./StudentFormPages";
+
+import type { Student } from "../api/students";
+
 
 /**
- * A simple way to handle error states in the form. We'll keep a
- * `TaskFormErrors` object in the form's state, initially empty. Before we
- * submit a request, we'll check each field for problems. For each invalid
- * field, we set the corresponding field in the errors object to true, and the
- * corresponding input component will show its error state if the field is true.
- * Look at where the `errors` object appears below for demonstration.
- *
- * In the MVP, the only possible error in this form is that the title is blank,
- * so this is slightly overengineered. However, a more complex form would need
- * a similar system.
+ * Type definition for the errors object used in StudentForm validation.
  */
-type TaskFormErrors = {
-  title?: boolean;
+export type StudentFormErrors = {
+  studentFirstName?: boolean;
+  studentLastName?: boolean;
+  meemliEmail?: boolean;
+  grade?: boolean;
+  schoolName?: boolean;
+  city?: boolean;
+  state?: boolean;
+  parentFirstName?: boolean;
+  parentLastName?: boolean;
+  parentPhoneNumber?: boolean;
+  parentEmail?: boolean;
+  preassessmentScore?: boolean;
+  postassessmentScore?: boolean;
+  enrolledSections?: boolean;
+  comments?: boolean;
 };
 
 /**
- * The form that creates or edits a Task object. In the MVP, this is only
- * capable of creating Tasks.
- *
+ * Type definition for the values object
+ */
+export type ValuesType = {
+  studentFirstName: string;
+  studentLastName: string;
+  meemliEmail: string;
+  grade: number;
+  schoolName: string;
+  city: string;
+  state: string;
+  parentFirstName: string;
+  parentLastName: string;
+  parentPhoneNumber: string;
+  parentEmail: string;
+  preassessmentScore: number;
+  postassessmentScore: number;
+  enrolledSections: string[];
+  comments: string;
+}
+
+/**
+ * Props for the `StudentForm` component.
+ * @property mode Controls whether the form is in "create" or "edit" mode
+ * @property student Optional initial data to populate the form with (such as
+ * when we're editing an existing student)
+ * @property onSubmit runs when the user clicks the submit button
+ * @property onCancel runs when the user clicks the cancel button
+ */
+export type StudentFormProps = {
+  mode: "create" | "edit";
+  student?: Student;
+  onSubmit?: (student: Student) => void;
+  onCancel?: () => void;
+};
+
+/**
+ * The form that creates or edits a StudentForm object. 
  * @param props.mode Controls how the form renders and submits
- * @param props.task Optional initial data to populate the form with (such as
- * when we're editing an existing task)
+ * @param props.student Optional initial data to populate the form with (such as
+ * when we're editing an existing student)
  * @param props.onSubmit Optional callback to run after the user submits the
  * form and the request succeeds
  */
-export function TaskForm({ mode, task, onSubmit }: TaskFormProps) {
-  const [title, setTitle] = useState<string>(task?.title || "");
-  const [description, setDescription] = useState<string>(task?.description || "");
-  const [assignee, setAssignee] = useState<string>(task?.assignee || "");
-  const [isLoading, setLoading] = useState<boolean>(false);
-  const [errors, setErrors] = useState<TaskFormErrors>({});
+export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormProps) {
+  // One variable to hold all data for the form
+  const [values, setValues] = useState({
+    // split displayName into first and last name for easier editing
+    studentFirstName: student ? student.displayName.split(" ")[0] : "",
+    studentLastName: student ? student.displayName.split(" ")[1] || "" : "",
+    meemliEmail: student ? student.meemliEmail : "",
+    grade: student ? student.grade : 0,
+    schoolName: student ? student.schoolName : "",
+    city: student ? student.city : "",
+    state: student ? student.state : "",
+    parentFirstName: student ? student.parentContact.firstName : "",
+    parentLastName: student ? student.parentContact.lastName : "",
+    parentPhoneNumber: student ? student.parentContact.phoneNumber : "",
+    parentEmail: student ? student.parentContact.email : "",
+    preassessmentScore: student ? student.preassessmentScore : 0,
+    postassessmentScore: student ? student.postassessmentScore : 0,
+    comments: student ? student.comments : "",
+    enrolledSections: student ? student.enrolledSections : []
+  });
+  const [isLoading, setLoading] = useState(false);
 
   // This state variable controls the error message that gets displayed to the user in the
   // Constellation `Dialog` component. If it's `null`, there's no error, so we don't display the Dialog.
   // If it's non-null, there is an error, so we should display that error to the user.
   const [errorModalMessage, setErrorModalMessage] = useState<string | null>(null);
 
-  const handleSubmit = () => {
-    // first, do any validation that we can on the frontend
-    setErrors({});
-    if (title.length === 0) {
-      setErrors({ title: true });
-      return;
-    }
+  /**
+   * Handles the submission of the form. Uses different routes depending
+   * on mode. Only gets called when all validation in StudentFormPages passes.
+   * @param candidate validated payload to send 
+   */
+  const handleSubmit = (candidate: ValuesType) => {
     setLoading(true);
-
-    const assigneeId = assignee === "" ? undefined : assignee;
-
+    const fullname = `${candidate.studentFirstName  } ${  candidate.studentLastName}`;
     let request;
+    // Concatenate first and last name for displayName
     if (mode === "create") {
-      request = createTask({ title, description, assignee });
+      request = createStudent({
+        displayName: fullname,
+        meemliEmail: candidate.meemliEmail,
+        grade: candidate.grade,
+        schoolName: candidate.schoolName,
+        city: candidate.city,
+        state: candidate.state,
+        parentContact: {
+          firstName: candidate.parentFirstName,
+          lastName: candidate.parentLastName,
+          phoneNumber: candidate.parentPhoneNumber,
+          email: candidate.parentEmail
+        },
+        preassessmentScore: candidate.preassessmentScore,
+        postassessmentScore: candidate.postassessmentScore,
+        comments: candidate.comments,
+        enrolledSections: candidate.enrolledSections
+      });
     } else {
-      request = updateTask({
-        _id: task!._id,
-        title,
-        description,
-        assignee: assigneeId,
-        isChecked: task!.isChecked,
-        dateCreated: task!.dateCreated,
+      request = updateStudent({
+        _id: student!._id,
+        displayName: fullname,
+        meemliEmail: candidate.meemliEmail,
+        grade: candidate.grade,
+        schoolName: candidate.schoolName,
+        city: candidate.city,
+        state: candidate.state,
+        parentContact: {
+          firstName: candidate.parentFirstName,
+          lastName: candidate.parentLastName,
+          phoneNumber: candidate.parentPhoneNumber,
+          email: candidate.parentEmail
+        },
+        preassessmentScore: candidate.preassessmentScore,
+        postassessmentScore: candidate.postassessmentScore,
+        comments: candidate.comments,
+        enrolledSections: candidate.enrolledSections
       });
     }
     request
       .then((result) => {
         if (result.success) {
-          // clear the form
-          setTitle("");
-          setDescription("");
-          setAssignee("");
           // only call onSubmit if it's NOT undefined
           if (onSubmit) onSubmit(result.data);
         } else {
-          // You should always clearly inform the user when something goes wrong.
-          // In this case, we're using the Constellation `Dialog` component to show a popup.
-          // For errors, you generally want to show some kind of error state or notification
-          // within your UI. If the problem is with the user's input, then use
-          // the error states of your smaller components (like the `TextField`s).
-          // If the problem is something we don't really control, such as network
-          // issues or an unexpected exception on the server side, then use a
-          // banner, modal, popup, or similar.
           setErrorModalMessage(result.error);
         }
         setLoading(false);
@@ -99,62 +163,38 @@ export function TaskForm({ mode, task, onSubmit }: TaskFormProps) {
       .catch(setErrorModalMessage);
   };
 
-  const formTitle = mode === "create" ? "New task" : "Edit task";
+  /**  Define the steps of the multi-step form 
+   * Each step contains a title and the fields to be filled in that step
+   * Changes to this need to be reflected in StudentFormPages
+   * Specific structure based on MVP designs
+  */
+  const steps: Array<{ title: string; fields: (keyof typeof values)[];  description: string }> = [
+    { 
+      title: "Parent Information", 
+      fields: ["parentFirstName", "parentLastName", "parentPhoneNumber", "parentEmail"],
+      description: "Fill out parent information."
+    },
+    { 
+      title: "Student Information", 
+      fields: ["studentFirstName", "studentLastName", "meemliEmail", "grade", "schoolName", "city", "state"],
+      description: "Fill out student information."
+    },
+    { 
+      title: "Assessment Scores", 
+      fields: ["preassessmentScore", "postassessmentScore"], 
+      description: "Enter assessment scores." },
+    { 
+      title: "Assigned Programs", 
+      fields: ["enrolledSections", "comments"], 
+      description: "Assign student to Meemli programs." },
+    ];
+
 
   return (
-    <form className={styles.form}>
-      {/* we could just use a `<div>` element because we don't need the special
-      functionality that browsers give to `<form>` elements, but using `<form>`
-      is better for accessibility because it's more accurate for this purpose--
-      we are making a form, so we should use `<form>` */}
-      <span className={styles.formTitle}>{formTitle}</span>
-      <div className={styles.formRow}>
-        {/* `data-testid` is used by React Testing Library--see the tests in
-        `TaskForm.test.tsx` */}
-        <TextField
-          className={styles.textField}
-          data-testid="task-title-input"
-          label="Title"
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          error={errors.title}
-        />
-        <TextField
-          className={`${styles.textField} ${styles.stretch}`}
-          data-testid="task-description-input"
-          label="Description (optional)"
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-        />
-        <TextField
-          className={`${styles.textField} ${styles.stretch}`}
-          data-testid="task-assignee-id"
-          label="Assignee ID (optional)"
-          value={assignee}
-          onChange={(event) => setAssignee(event.target.value)}
-        />
-        {/* set `type="primary"` on the button so the browser doesn't try to
-        handle it specially (because it's inside a `<form>`) */}
-        <Button
-          kind="primary"
-          data-testid="task-save-button"
-          label="Save"
-          disabled={isLoading}
-          onClick={handleSubmit}
-        />
-      </div>
-      {/* Use the Constellation Dialog component to display an error message if there's an error 
-      See the docs (https://tritonse.github.io/TSE-Constellation/?path=/docs/organisms-dialog--documentation)
-      for a demo and more info on the prop types  */}
-      <Dialog
-        styleVersion="styled"
-        variant="error"
-        title="An error occurred"
-        // Override the text color so it doesn't show white text on a white background
-        content={<p className={styles.errorModalText}>{errorModalMessage}</p>}
-        isOpen={errorModalMessage !== null}
-        onClose={() => setErrorModalMessage(null)}
-      />
-    </form>
+    <div className="wrapper">
+      <form className={styles.form}>
+        <StudentFormPages mode={mode} values={values} setValues={setValues} steps={steps} handleSubmit={handleSubmit}/>
+      </form>
+    </div>
   );
 }

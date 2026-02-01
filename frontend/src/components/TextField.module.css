@@ -1,0 +1,22 @@
+.required {
+  margin-left: 1vw;
+  color: red
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  flex-direction: row;
+}
+
+.inline {
+  flex-direction: row;
+}
+
+.input {
+  border-color: black;
+  border-width: 3p;
+}
