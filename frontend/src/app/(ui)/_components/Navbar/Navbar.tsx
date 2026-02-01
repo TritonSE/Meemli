@@ -8,7 +8,13 @@ export function Navbar() {
     <nav className={style.sideNav}>
       <div className={style.navLinks}>
         <Link href="/">
-          <Image src="/icons/logo.png" alt="Meemli logo" width={20} height={20} />
+          <Image
+            src="/icons/logo.png"
+            className={style.logo}
+            alt="Meemli logo"
+            width={20}
+            height={20}
+          />
         </Link>
 
         <div className="horizontalLine" />
