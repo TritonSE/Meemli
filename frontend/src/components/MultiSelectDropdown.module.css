@@ -1,131 +1,61 @@
-.ms-root {
-  display: grid;
-  gap: 6px;
+.root {
+  position: relative; /* anchor the overlay panel */
   width: 100%;
-}
-
-.ms-labelRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.ms-label {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.ms-required {
-  color: #c00;
-}
-
-.ms-clearBtn {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 12px;
-  text-decoration: underline;
-  padding: 0;
-}
-
-.ms-control {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  width: 100%;
-  min-height: 40px;
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  background: white;
-  cursor: pointer;
-}
-
-.ms-control:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.ms-control.is-open {
-  border-color: #888;
-}
-
-.ms-valueArea {
   flex: 1;
-  text-align: left;
-  overflow: hidden;
 }
 
-.ms-placeholder {
-  color: #777;
-}
+/* The bar */
+.trigger {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
 
-.ms-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.ms-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid #ddd;
-  border-radius: 999px;
-  padding: 3px 8px;
-  font-size: 12px;
-  background: #f7f7f7;
-  max-width: 100%;
-}
-
-.ms-chipX {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 14px;
-  line-height: 1;
-}
-
-.ms-caret {
-  opacity: 0.75;
-}
-
-.ms-menu {
-  border: 1px solid #ccc;
-  border-radius: 10px;
   background: white;
-  overflow: auto;
-  padding: 6px;
-  display: grid;
-  gap: 2px;
-}
+  color: black;
 
-.ms-empty {
-  padding: 10px;
-  color: #777;
-}
+  border: 1px solid #cdcfd0;
+  border-radius: 8px;
 
-.ms-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px;
-  border-radius: 8px;
+  justify-content: space-between;
+
   cursor: pointer;
-  user-select: none;
 }
 
-.ms-item:hover {
-  background: #f3f3f3;
+.triggerText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
 }
 
-.ms-item.is-disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
+.caret {
+  margin-left: 12px;
+  flex: 0 0 auto;
 }
 
-.ms-itemText {
-  font-size: 14px;
+/* The “expanded” part that overlays content BELOW */
+.panel {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 8px); /* starts exactly under trigger */
+  width: 100%;
+
+  background: white;
+  color: black;
+
+  opacity: 1;
+  z-index: 9999;
+
+  border: 1px solid #cdcfd0;
+  border-radius: 8px;
+  padding: 10px;
+
+  /* scroll when too tall */
+  max-height: 220px;
+  overflow-y: auto;
+
+  /* optional: gives the overlay “above” feel */
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }

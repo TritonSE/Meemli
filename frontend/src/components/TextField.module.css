@@ -1,15 +1,18 @@
 .required {
   margin-left: 1vw;
-  color: red
+  color: red;
 }
 
 .field {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  height: 68;
 }
 
 .label {
   flex-direction: row;
+  font-size: 14px;
 }
 
 .inline {
@@ -17,8 +20,15 @@
 }
 
 .input {
-  border-color: black;
-  border-width: 3p;
+  border: 1px solid #cdcfd0;
+  width: 100%;
+  height: 44px;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.input:focus {
+  border: 1px solid #3f8d7c;
 }
 
 .error {

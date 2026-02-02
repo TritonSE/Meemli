@@ -7,7 +7,6 @@ import { StudentFormPages } from "./StudentFormPages";
 
 import type { Student } from "../api/students";
 
-
 /**
  * Type definition for the values object
  */
@@ -27,7 +26,7 @@ export type ValuesType = {
   postassessmentScore: number;
   enrolledSections: string[];
   comments: string;
-}
+};
 
 /**
  * Props for the `StudentForm` component.
@@ -45,7 +44,7 @@ export type StudentFormProps = {
 };
 
 /**
- * The form that creates or edits a StudentForm object. 
+ * The form that creates or edits a StudentForm object.
  * @param props.mode Controls how the form renders and submits
  * @param props.student Optional initial data to populate the form with (such as
  * when we're editing an existing student)
@@ -70,7 +69,7 @@ export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormPr
     preassessmentScore: student ? student.preassessmentScore : 0,
     postassessmentScore: student ? student.postassessmentScore : 0,
     comments: student ? student.comments : "",
-    enrolledSections: student ? student.enrolledSections : []
+    enrolledSections: student ? student.enrolledSections : [],
   });
   const [isLoading, setLoading] = useState(false);
 
@@ -82,11 +81,11 @@ export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormPr
   /**
    * Handles the submission of the form. Uses different routes depending
    * on mode. Only gets called when all validation in StudentFormPages passes.
-   * @param candidate validated payload to send 
+   * @param candidate validated payload to send
    */
   const handleSubmit = (candidate: ValuesType) => {
     setLoading(true);
-    const fullname = `${candidate.studentFirstName  } ${  candidate.studentLastName}`;
+    const fullname = `${candidate.studentFirstName} ${candidate.studentLastName}`;
     let request;
     // Concatenate first and last name for displayName
     if (mode === "create") {
@@ -101,12 +100,12 @@ export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormPr
           firstName: candidate.parentFirstName,
           lastName: candidate.parentLastName,
           phoneNumber: candidate.parentPhoneNumber,
-          email: candidate.parentEmail
+          email: candidate.parentEmail,
         },
         preassessmentScore: candidate.preassessmentScore,
         postassessmentScore: candidate.postassessmentScore,
         comments: candidate.comments,
-        enrolledSections: candidate.enrolledSections
+        enrolledSections: candidate.enrolledSections,
       });
     } else {
       request = updateStudent({
@@ -121,12 +120,12 @@ export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormPr
           firstName: candidate.parentFirstName,
           lastName: candidate.parentLastName,
           phoneNumber: candidate.parentPhoneNumber,
-          email: candidate.parentEmail
+          email: candidate.parentEmail,
         },
         preassessmentScore: candidate.preassessmentScore,
         postassessmentScore: candidate.postassessmentScore,
         comments: candidate.comments,
-        enrolledSections: candidate.enrolledSections
+        enrolledSections: candidate.enrolledSections,
       });
     }
     request
@@ -142,37 +141,52 @@ export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormPr
       .catch(setErrorModalMessage);
   };
 
-  /**  Define the steps of the multi-step form 
+  /**  Define the steps of the multi-step form
    * Each step contains a title and the fields to be filled in that step
    * Changes to this need to be reflected in StudentFormPages
    * Specific structure based on MVP designs
-  */
-  const steps: Array<{ title: string; fields: (keyof typeof values)[];  description: string }> = [
-    { 
-      title: "Parent Information", 
+   */
+  const steps: Array<{ title: string; fields: (keyof typeof values)[]; description: string }> = [
+    {
+      title: "Parent Information",
       fields: ["parentFirstName", "parentLastName", "parentPhoneNumber", "parentEmail"],
-      description: "Fill out parent information."
+      description: "Fill out parent information.",
     },
-    { 
-      title: "Student Information", 
-      fields: ["studentFirstName", "studentLastName", "meemliEmail", "grade", "schoolName", "city", "state"],
-      description: "Fill out student information."
+    {
+      title: "Student Information",
+      fields: [
+        "studentFirstName",
+        "studentLastName",
+        "meemliEmail",
+        "grade",
+        "schoolName",
+        "city",
+        "state",
+      ],
+      description: "Fill out student information.",
     },
-    { 
-      title: "Assessment Scores", 
-      fields: ["preassessmentScore", "postassessmentScore"], 
-      description: "Enter assessment scores." },
-    { 
-      title: "Assigned Programs", 
-      fields: ["enrolledSections", "comments"], 
-      description: "Assign student to Meemli programs." },
-    ];
-
+    {
+      title: "Assessment Scores",
+      fields: ["preassessmentScore", "postassessmentScore"],
+      description: "Enter assessment scores.",
+    },
+    {
+      title: "Assigned Programs",
+      fields: ["enrolledSections", "comments"],
+      description: "Assign student to Meemli programs.",
+    },
+  ];
 
   return (
     <div className="wrapper">
       <form className={styles.form}>
-        <StudentFormPages mode={mode} values={values} setValues={setValues} steps={steps} handleSubmit={handleSubmit}/>
+        <StudentFormPages
+          mode={mode}
+          values={values}
+          setValues={setValues}
+          steps={steps}
+          handleSubmit={handleSubmit}
+        />
       </form>
     </div>
   );

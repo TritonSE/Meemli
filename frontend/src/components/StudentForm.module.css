@@ -1,3 +1,7 @@
+.wrapper {
+  display: flex;
+  flex-direction: row;
+}
 .form {
   background-color: white;
   display: flex;
@@ -7,24 +11,68 @@
   margin-left: auto;
   margin-right: auto;
   margin-top: 10vw;
-  padding-top: 2vw;
-  width: 640px;
+  width: 80%;
+  max-width: 640px;
+  padding: 48px;
   height: 680px;
   border-radius: 12px;
 }
-
 .reused {
   display: flex;
+  flex-direction: column;
+}
+.headerSegment {
+  display: flex;
+  flex-direction: column;
+  gap: 1vw;
+  padding: 24px 0 12px 0;
+}
+.pageTitle {
+  font-size: 30px;
+  font-weight: 600;
+}
+.description {
+  font-size: 12px;
+  font-weight: 500;
+}
+.formPage {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 .formRow {
   display: flex;
   flex-direction: row;
+  width: 100%;
+  height: 68px;
+  gap: 2vw;
+  margin: 10px 0;
 }
-.wrapper {
+
+.buttonRow {
   display: flex;
   flex-direction: row;
+  margin-top: auto;
+  margin-left: auto;
+  gap: 10px;
 }
+
+.subheading {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.infoBar {
+  height: 24px;
+}
+
+.form,
+.formRow,
 .formPage {
-  padding: 48px;
-  height: 100%;
+  overflow: visible;
+}
+
+.error {
+  color: red;
 }

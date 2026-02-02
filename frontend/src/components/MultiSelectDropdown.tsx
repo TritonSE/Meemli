@@ -8,6 +8,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { getAllSections } from "../api/sections";
 
+import styles from "./MultiSelectDropdown.module.css";
+
 import type { Section } from "../api/sections";
 
 type SectionLike = {
@@ -59,16 +61,15 @@ export function MultiSelectDropdown({
       setError(null);
       try {
         getAllSections()
-        .then(async (res) => {
-          if (!res.success){
-            return;
-          }
-          const data = res.data;
-          setSections(data);
-
-        })
-        .catch((e) => setError((e as Error).message))
-        .finally(() => setLoading(false));
+          .then(async (res) => {
+            if (!res.success) {
+              return;
+            }
+            const data = res.data;
+            setSections(data);
+          })
+          .catch((e) => setError((e as Error).message))
+          .finally(() => setLoading(false));
       } catch (e) {
         if (!cancelled) setError((e as Error).message);
       } finally {
@@ -76,8 +77,7 @@ export function MultiSelectDropdown({
       }
     }
 
-    load()
-    .catch((e) => setError((e as Error).message));
+    load().catch((e) => setError((e as Error).message));
     return () => {
       cancelled = true;
     };
@@ -114,46 +114,49 @@ export function MultiSelectDropdown({
     return value.map((id) => map.get(id) ?? id);
   }, [sections, value, getLabel, getValue]);
 
+  const triggerClass = open ? `${styles.trigger} ${styles.triggerOpen}` : styles.trigger;
+
   return (
-    <div ref={rootRef}>
-      {label && (
-        <div>
-          <div>{label}</div>
-        </div>
-      )}
+    <div ref={rootRef} className={styles.root}>
+      {label && <div className={styles.label}>{label}</div>}
 
       <button
         type="button"
+        className={triggerClass}
         disabled={disabled}
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        {loading
-          ? "Loading sections..."
-          : selectedLabels.length > 0
-          ? selectedLabels.join(", ")
-          : placeholder}
+        <span className={styles.triggerText}>
+          {loading
+            ? "Loading sections..."
+            : selectedLabels.length > 0
+              ? selectedLabels.join(", ")
+              : placeholder}
+        </span>
+        <span className={styles.caret}>{open ? "▲" : "▼"}</span>
       </button>
 
       {open && (
-        <div role="listbox" aria-multiselectable="true">
-          {error && (
-            <div>
-              <div>Error: {error}</div>
+        <div className={styles.panel} role="listbox" aria-multiselectable="true">
+          {error ? (
+            <div className={styles.errorBox}>
+              <div className={styles.errorText}>Error: {error}</div>
               <button
                 type="button"
+                className={styles.retryBtn}
                 onClick={() => {
-                  // quick retry: re-run effect logic inline
                   setLoading(true);
                   setError(null);
                   getAllSections()
                     .then(async (res) => {
-                      if (!res.success) throw new Error(`Failed to load sections`);
+                      if (!res.success) throw new Error("Failed to load sections");
                       const data = res.data;
-                      if (!Array.isArray(data)) throw new Error("Invalid /api/sections response: expected an array");
+                      if (!Array.isArray(data))
+                        throw new Error("Invalid /api/sections response: expected an array");
                       const normalized = data.filter(
-                        (x: Section) => x && typeof x === "object" && typeof x._id === "string"
+                        (x: Section) => x && typeof x === "object" && typeof x._id === "string",
                       );
                       setSections(normalized);
                     })
@@ -164,18 +167,23 @@ export function MultiSelectDropdown({
                 Retry
               </button>
             </div>
-          )}
-
-          {!error && (
+          ) : (
             <>
-              <button type="button" onClick={clearAll} disabled={disabled || value.length === 0}>
-                Clear
-              </button>
+              <div className={styles.toolbar}>
+                <button
+                  type="button"
+                  className={styles.clearBtn}
+                  onClick={clearAll}
+                  disabled={disabled || value.length === 0}
+                >
+                  Clear
+                </button>
+              </div>
 
               {sections.length === 0 && !loading ? (
-                <div>No sections found.</div>
+                <div className={styles.statusText}>No sections found.</div>
               ) : (
-                <ul>
+                <ul className={styles.list}>
                   {sections.map((s) => {
                     const id = getValue(s);
                     const text = getLabel(s);
@@ -183,8 +191,9 @@ export function MultiSelectDropdown({
 
                     return (
                       <li key={id}>
-                        <label>
+                        <label className={styles.itemLabel}>
                           <input
+                            className={styles.checkbox}
                             type="checkbox"
                             checked={checked}
                             onChange={() => toggle(id)}
