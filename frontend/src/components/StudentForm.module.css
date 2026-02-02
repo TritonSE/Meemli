@@ -64,7 +64,9 @@
 }
 
 .infoBar {
-  height: 24px;
+  display: flex;
+  flex-direction: column;
+  height: auto;
 }
 
 .form,
