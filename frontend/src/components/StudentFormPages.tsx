@@ -266,6 +266,24 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
       if (!candidate) return;
       handleSubmit(candidate);
     }
+
+    /**
+     * Create a row of 2 buttons with callback functions and labels
+     * @param handleBack left button function
+     * @param handleForward right button function
+     * @param l1 left button label
+     * @param l2 right button label
+     * @returns 2 buttons in a row
+     */
+    function makeButtons(handleBack: () => void, handleForward: () => void, l1: string, l2: string) {
+      return (
+        <div className={styles.buttonRow}>
+        <Button onClick={handleBack} label={l1} />
+        <Button onClick={handleForward} label={l2} />
+      </div>
+      )
+    }
+
     /** 
      * step<#> returns the reusable DOM for each step for both create and edit modes
      * Depending on how reusable the multi-step form needs to be, these could be moved to their own components
@@ -312,10 +330,7 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
           error={Boolean(errors.parentPhoneNumber)}
         />
       </div>
-      <div className={styles.buttonRow}>
-        <Button onClick={handleCancel} label="Cancel" />
-        <Button onClick={handleNextStep} label="Next" />
-      </div>
+      {makeButtons(handleCancel, handleNextStep, "Cancel", "Next")}
     </>
 
     const step1 = 
@@ -394,10 +409,7 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
           error={Boolean(errors.state)}
         />
       </div>
-      <div className={styles.buttonRow}>
-        <Button onClick={handlePrevStep} label="Back" />
-        <Button onClick={handleNextStep} label="Next" />
-      </div>
+      {makeButtons(handlePrevStep, handleNextStep, "Back", "Next")}
     </>;
 
     const step2 = 
@@ -422,10 +434,7 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
           error={Boolean(errors.postassessmentScore)}
         />
       </div>
-      <div className={styles.buttonRow}>
-        <Button onClick={handlePrevStep} label="Back" />
-        <Button onClick={handleNextStep} label="Next" />
-      </div>
+      {makeButtons(handlePrevStep, handleNextStep, "Back", "Next")}
     </>;
     // defined update function for dropdown in place since it'd be 
     // weird to handle it in handleDraftChange
@@ -448,10 +457,7 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
           error={Boolean(errors.comments)}
         />
       </div>
-      <div className={styles.buttonRow}>
-        <Button onClick={handlePrevStep} label="Back" />
-        <Button onClick={handleSubmission} label="Add" />
-      </div>
+      {makeButtons(handlePrevStep, handleSubmission, "Back", "Add")}
     </>;
     const stepViews = [step0, step1, step2, step3]
     /**
@@ -461,7 +467,7 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
   function renderCreateStep() {
     const curstep = steps[step];
     const reusedElements =  <div className="reused">
-      <ProgressBar currentStep={step} totalSteps={steps.length} />
+      <ProgressBar currentStep={step} totalSteps={steps.length}/>
       <h1>Add Student</h1>
       <p>{curstep.description}</p>
       <h2>{curstep.title}</h2>
@@ -469,7 +475,8 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
     </div>
     // remaining elements depend on which page the form is on
     const stepElement = stepViews[step] ?? <p>Error loading form</p>;
-    return (<div className={styles.entries}>
+    return (
+    <div className={styles.formPage}>
       {reusedElements}
       {stepElement}
     </div>
@@ -479,17 +486,20 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
   function renderEditStep() {
     const curstep = steps[step];
     // TODO: Create and fill NavBar element
-    const reusedElements = (<div className="header">
-      <h1>Edit Student</h1>
+    const reusedElements = (<>
+    <div className={styles.headerSegment}>
+      <h1 className={styles.pageTitle}>Edit Student</h1>
       <p>{curstep.description}</p>
+    </div>
       <h2>{curstep.title}</h2>
       <p>{errorMessage}</p>
-    </div>)
+    </>)
     const stepElement = stepViews[step] ?? <p>Error loading form</p>;
-    return (<>
+    return (
+    <div className={styles.formPage}>
       {reusedElements}
       {stepElement}
-    </>)
+    </div>)
   }
   if (mode === "create") {
     return renderCreateStep();

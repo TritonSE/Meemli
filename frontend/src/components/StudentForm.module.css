@@ -4,11 +4,13 @@
   flex-direction: column;
   color: black;
   padding: 2vw;
-}
-
-.entries {
-  display: flex;
-  flex-direction: column;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10vw;
+  padding-top: 2vw;
+  width: 640px;
+  height: 680px;
+  border-radius: 12px;
 }
 
 .reused {
@@ -17,4 +19,12 @@
 .formRow {
   display: flex;
   flex-direction: row;
+}
+.wrapper {
+  display: flex;
+  flex-direction: row;
+}
+.formPage {
+  padding: 48px;
+  height: 100%;
 }

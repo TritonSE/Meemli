@@ -20,3 +20,8 @@
   border-color: black;
   border-width: 3p;
 }
+
+.error {
+  border-width: 2px;
+  border-color: red;
+}
