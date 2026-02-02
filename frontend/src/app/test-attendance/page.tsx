@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { getSessionById, updateAttendanceBulk, getAllSessions } from "../../api/attendance";
+import React, { useEffect, useState } from "react";
+
+import { getAllSessions, getSessionById, updateAttendanceBulk } from "../../api/attendance";
 import AttendanceList from "../components/attendanceList";
 
 export default function AttendancePOC() {
@@ -82,7 +83,7 @@ export default function AttendancePOC() {
             {sessionList.map((s) => (
               <button
                 key={s._id}
-                onClick={() => handleSelectSession(s._id)}
+                onClick={async () => handleSelectSession(s._id)}
                 className="p-6 text-left border rounded shadow hover:bg-blue-50 transition-colors"
               >
                 <div className="font-bold text-lg">{s.topic || "Untitled Session"}</div>

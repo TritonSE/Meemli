@@ -1,30 +1,40 @@
 import { get, put } from "./requests";
 
-export interface AttendanceUpdate {
+export type AttendanceUpdate = {
   attendanceId: string;
   status: string;
   note: string;
-}
+};
+
+type Session = {
+  _id: string;
+  section: string;
+  sessionDate: Date;
+};
+
+type UpdateAttendanceBulkResponse = {
+  message: string;
+};
 
 // Function to get the session data
-export const getSessionById = async (id: string) => {
+export const getSessionById = async (id: string): Promise<Session> => {
   const response = await get(`/api/sessions/${id}`);
-  return response.json();
+  return response.json() as Promise<Session>;
 };
 
 // Function to save the attendance
-export const updateAttendanceBulk = async (updates: any[]) => {
-  const response = await fetch("http://localhost:4000/api/attendance/bulk-update", {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(updates),
+export const updateAttendanceBulk = async (
+  updates: any[],
+): Promise<UpdateAttendanceBulkResponse> => {
+  const response = await put("/api/attendance/bulk-update", updates, {
+    "Content-Type": "application/json",
   });
 
   if (!response.ok) throw new Error("Failed to save");
-  return response.json();
+  return response.json() as Promise<UpdateAttendanceBulkResponse>;
 };
 
-export const getAllSessions = async () => {
+export const getAllSessions = async (): Promise<Session[]> => {
   const response = await get("/api/sessions");
-  return response.json();
+  return response.json() as Promise<Session[]>;
 };

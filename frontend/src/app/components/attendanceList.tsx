@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
+
 import { updateAttendanceBulk } from "../../api/attendance";
 
-interface AttendanceListProps {
+type AttendanceListProps = {
   initialAttendees: any[];
   onUpdate: (updatedData: any) => void;
-}
+};
 
 export default function AttendanceList({ initialAttendees }: AttendanceListProps) {
   // Local copy of the data
