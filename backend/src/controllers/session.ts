@@ -1,7 +1,9 @@
 import { validationResult } from "express-validator";
-import { SessionModel } from "../models/session";
-import type { RequestHandler } from "express";
+
 import { AttendanceModel } from "../models/attendance";
+import { SessionModel } from "../models/session";
+
+import type { RequestHandler } from "express";
 
 type CreateSessionBody = {
   section: string;

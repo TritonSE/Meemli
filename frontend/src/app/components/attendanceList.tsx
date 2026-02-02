@@ -9,9 +9,22 @@ type AttendanceListProps = {
   onUpdate: (updatedData: any) => void;
 };
 
+type Student = {
+  _id: string;
+  displayName: string;
+};
+
+type Attendee = {
+  _id: string;
+  sessions: string;
+  student: Student;
+  status: string;
+  notes: string;
+};
+
 export default function AttendanceList({ initialAttendees }: AttendanceListProps) {
   // Local copy of the data
-  const [attendees, setAttendees] = useState(initialAttendees);
+  const [attendees, setAttendees] = useState<Attendee[]>(initialAttendees);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   //update local state
   const updateLocalState = (id: string, field: string, value: string) => {
@@ -24,20 +37,22 @@ export default function AttendanceList({ initialAttendees }: AttendanceListProps
 
     setSaveStatus("saving");
 
-    const timer = setTimeout(async () => {
-      try {
-        const updates = attendees.map((a: any) => ({
-          attendanceId: a._id,
-          status: a.status,
-          notes: a.notes,
-        }));
+    const timer = setTimeout(() => {
+      void (async () => {
+        try {
+          const updates = attendees.map((a: Attendee) => ({
+            attendanceId: a._id,
+            status: a.status,
+            notes: a.notes,
+          }));
 
-        await updateAttendanceBulk(updates); //API function
-        setSaveStatus("saved");
-      } catch (err) {
-        console.error(err);
-        setSaveStatus("error");
-      }
+          await updateAttendanceBulk(updates); //API function
+          setSaveStatus("saved");
+        } catch (err) {
+          console.error(err);
+          setSaveStatus("error");
+        }
+      })();
     }, 1000);
 
     return () => clearTimeout(timer);

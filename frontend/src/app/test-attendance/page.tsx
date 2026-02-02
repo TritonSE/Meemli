@@ -2,52 +2,38 @@
 
 import React, { useEffect, useState } from "react";
 
-import { getAllSessions, getSessionById, updateAttendanceBulk } from "../../api/attendance";
+import { getAllSessions, getSessionById } from "../../api/attendance";
 import AttendanceList from "../components/attendanceList";
 
+type Attendee = {
+  _id: string;
+  sessions: string;
+  status: string;
+  notes: string;
+};
+
+type Session = {
+  _id: string;
+  sessionDate: Date;
+  attendees?: Attendee[];
+};
+
 export default function AttendancePOC() {
-  const [sessionList, setSessionList] = useState<any[]>([]);
-  const [selectedSession, setSelectedSession] = useState<any>(null);
-  const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "error">("saved");
+  const [sessionList, setSessionList] = useState<Session[]>([]);
+  const [selectedSession, setSelectedSession] = useState<Session | null>(null);
 
   // load data
   useEffect(() => {
     const loadMenu = async () => {
       try {
-        const list = await getAllSessions();
+        const list: Session[] = await getAllSessions();
         setSessionList(list || []);
       } catch (err) {
         console.error("Failed to load list", err);
       }
     };
-    loadMenu();
+    void loadMenu();
   }, []);
-
-  // autosave
-  useEffect(() => {
-    // Add strict check: If session OR attendees are missing, stop.
-    if (!selectedSession || !selectedSession.attendees) return;
-
-    setSaveStatus("saving");
-
-    const timer = setTimeout(async () => {
-      try {
-        // Use the fallback here too, just in case
-        const updates = (selectedSession.attendees || []).map((a: any) => ({
-          attendanceId: a._id,
-          status: a.status,
-          notes: a.notes,
-        }));
-
-        await updateAttendanceBulk(updates);
-        setSaveStatus("saved");
-      } catch (err) {
-        setSaveStatus("error");
-      }
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [selectedSession]);
 
   //clicking a session
   const handleSelectSession = async (id: string) => {
@@ -57,17 +43,8 @@ export default function AttendancePOC() {
       const data = await getSessionById(id);
       setSelectedSession(data);
     } catch (err) {
-      alert("Error loading that session");
+      console.error("Failed to load session:", err);
     }
-  };
-
-  //update local state
-  const updateLocalState = (attendanceId: string, field: string, value: string) => {
-    if (!selectedSession) return;
-    const updatedAttendees = (selectedSession.attendees || []).map((att: any) =>
-      att._id === attendanceId ? { ...att, [field]: value } : att,
-    );
-    setSelectedSession({ ...selectedSession, attendees: updatedAttendees });
   };
 
   //no session selected
@@ -83,10 +60,12 @@ export default function AttendancePOC() {
             {sessionList.map((s) => (
               <button
                 key={s._id}
-                onClick={async () => handleSelectSession(s._id)}
+                onClick={() => {
+                  void handleSelectSession(s._id);
+                }}
                 className="p-6 text-left border rounded shadow hover:bg-blue-50 transition-colors"
               >
-                <div className="font-bold text-lg">{s.topic || "Untitled Session"}</div>
+                <div className="font-bold text-lg">{"Untitled Session"}</div>
                 <div className="text-gray-500 text-sm">
                   ID: {s._id} • {new Date(s.sessionDate).toLocaleDateString()}
                 </div>
@@ -109,7 +88,6 @@ export default function AttendancePOC() {
       {/* 2. KEEP THE HEADER (This is page-level, not list-level) */}
       <header className="mb-8 border-b pb-4 flex justify-between items-end">
         <div>
-          <h1 className="text-2xl font-bold">{selectedSession.topic}</h1>
           <p className="text-gray-500 text-sm">Auto-save enabled</p>
         </div>
       </header>
@@ -117,7 +95,7 @@ export default function AttendancePOC() {
       {/* 3. THE SWAP: Use your new component here */}
       <AttendanceList
         initialAttendees={selectedSession.attendees || []}
-        onUpdate={function (updatedData: any): void {
+        onUpdate={function (): void {
           throw new Error("Function not implemented.");
         }}
       />

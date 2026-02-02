@@ -5,11 +5,11 @@ import mongoose from "mongoose";
 import { FRONTEND_ORIGIN, MONGO_URI, PORT } from "./config";
 import errorHandler from "./middleware/errorHandler";
 import log from "./middleware/logger";
+import attendanceRoutes from "./routes/attendance";
 import programRoutes from "./routes/program";
 import sectionsRouter from "./routes/sections";
 import sessionRoutes from "./routes/session";
 import studentsRoutes from "./routes/students";
-import attendanceRoutes from "./routes/attendance";
 
 const app = express();
 

@@ -1,4 +1,5 @@
 import { validationResult } from "express-validator";
+import { Types } from "mongoose";
 
 import { AttendanceModel } from "../models/attendance";
 
@@ -69,9 +70,15 @@ export const getAttendanceBySessionId: RequestHandler = async (req, res, next) =
   }
 };
 
+type AttendanceUpdate = {
+  attendanceId: string;
+  status: "PRESENT" | "LATE" | "ABSENT";
+  notes: string;
+};
+
 export const updateBulkAttendance: RequestHandler = async (req, res, next) => {
   try {
-    const updates = req.body;
+    const updates = req.body as unknown;
 
     // 1. Safety Check: Is it an array?
     if (!Array.isArray(updates)) {
@@ -79,11 +86,11 @@ export const updateBulkAttendance: RequestHandler = async (req, res, next) => {
     }
 
     // filter out any items missing an 'attendanceId' to prevent crashes
-    const operations = updates
+    const operations = (updates as AttendanceUpdate[])
       .filter((u) => u.attendanceId)
       .map((update) => ({
         updateOne: {
-          filter: { _id: update.attendanceId },
+          filter: { _id: new Types.ObjectId(update.attendanceId) },
           update: {
             status: update.status,
             notes: update.notes,
