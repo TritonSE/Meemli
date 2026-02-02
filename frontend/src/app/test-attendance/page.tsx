@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { getSessionById, updateAttendanceBulk, getAllSessions } from "../../api/attendance";
+import AttendanceList from "../components/attendanceList";
 
 export default function AttendancePOC() {
   const [sessionList, setSessionList] = useState<any[]>([]);
@@ -96,91 +97,29 @@ export default function AttendancePOC() {
     );
   }
 
-  //session selected
+  // session selected
   return (
     <div className="p-8 font-sans max-w-4xl mx-auto">
-      {/* Back Button */}
-      <button
-        onClick={() => setSelectedSession(null)}
-        className="mb-6 text-sm font-semibold text-gray-500 hover:text-black flex items-center gap-2"
-      >
+      {/* 1. KEEP THE BACK BUTTON */}
+      <button onClick={() => setSelectedSession(null)} className="...">
         ← Back to List
       </button>
 
+      {/* 2. KEEP THE HEADER (This is page-level, not list-level) */}
       <header className="mb-8 border-b pb-4 flex justify-between items-end">
         <div>
-          <h1 className="text-2xl font-bold">{selectedSession.topic || "Session Attendance"}</h1>
+          <h1 className="text-2xl font-bold">{selectedSession.topic}</h1>
           <p className="text-gray-500 text-sm">Auto-save enabled</p>
-        </div>
-        <div className="font-medium text-sm">
-          {saveStatus === "saving" && <span className="text-yellow-600">Saving...</span>}
-          {saveStatus === "saved" && <span className="text-green-600">✓ Saved</span>}
-          {saveStatus === "error" && <span className="text-red-600">⚠ Error</span>}
         </div>
       </header>
 
-      <div className="space-y-4">
-        {(selectedSession.attendees || []).length === 0 ? (
-          <div className="text-gray-500 italic">No students in this session.</div>
-        ) : (
-          (selectedSession.attendees || []).map((att: any) => (
-            <div
-              key={att._id}
-              className="flex gap-4 p-4 border rounded shadow-sm bg-white items-center"
-            >
-              <div className="w-48 text-gray-900 font-semibold text-base">
-                {att.student?.displayName || att.student?.name || "Unknown Student"}
-              </div>
-
-              <div className="flex gap-2">
-                {/* PRESENT BUTTON */}
-                <button
-                  onClick={() => updateLocalState(att._id, "status", "PRESENT")}
-                  className={`px-3 py-1 rounded-md text-sm font-semibold border transition-colors ${
-                    att.status === "PRESENT"
-                      ? "bg-green-600 text-white border-green-600 shadow-sm" // Active Style
-                      : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50" // Inactive Style
-                  }`}
-                >
-                  Present
-                </button>
-
-                {/* LATE BUTTON */}
-                <button
-                  onClick={() => updateLocalState(att._id, "status", "LATE")}
-                  className={`px-3 py-1 rounded-md text-sm font-semibold border transition-colors ${
-                    att.status === "LATE"
-                      ? "bg-yellow-500 text-white border-yellow-500 shadow-sm"
-                      : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"
-                  }`}
-                >
-                  Late
-                </button>
-
-                {/* ABSENT BUTTON */}
-                <button
-                  onClick={() => updateLocalState(att._id, "status", "ABSENT")}
-                  className={`px-3 py-1 rounded-md text-sm font-semibold border transition-colors ${
-                    att.status === "ABSENT"
-                      ? "bg-red-600 text-white border-red-600 shadow-sm"
-                      : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"
-                  }`}
-                >
-                  Absent
-                </button>
-              </div>
-
-              <input
-                type="text"
-                value={att.notes || ""}
-                placeholder="Type here..."
-                onChange={(e) => updateLocalState(att._id, "notes", e.target.value)}
-                className="border border-gray-300 p-2 rounded w-full text-gray-900 placeholder-gray-500"
-              />
-            </div>
-          ))
-        )}
-      </div>
+      {/* 3. THE SWAP: Use your new component here */}
+      <AttendanceList
+        initialAttendees={selectedSession.attendees || []}
+        onUpdate={function (updatedData: any): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
     </div>
   );
 }
