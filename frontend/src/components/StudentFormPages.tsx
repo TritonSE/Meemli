@@ -32,9 +32,14 @@ type StudentFormErrors = {
   comments?: boolean;
 };
 
+type Draft = {
+  grade: string;
+  preassessmentScore: string;
+  postassessmentScore: string;
+} & Omit<ValuesType, "grade" | "postassessmentScore" | "preassessmentScore">;
+
 type StudentFormPagesProps = {
   values: ValuesType;
-  setValues: (update: (prev: ValuesType) => ValuesType) => void;
   steps: Array<{ title: string; fields: Array<string>; description: string }>;
   handleSubmit: (candidate: ValuesType) => void;
   mode: string;
@@ -50,7 +55,7 @@ const phoneRegex = /^\(\d{3}\)-\d{3}-\d{4}$/;
  * @returns A descriptive error message on the incorrect field,
  * or "passed" if all checks pass
  */
-function validator(field: string, draft: Partial<ValuesType>, errors: StudentFormErrors): string {
+function validator(field: string, draft: Partial<Draft>, errors: StudentFormErrors): string {
   let num;
   switch (field) {
     case "studentFirstName":
@@ -188,15 +193,15 @@ function validator(field: string, draft: Partial<ValuesType>, errors: StudentFor
   return "passed";
 }
 
-export function StudentFormPages({
-  values,
-  setValues,
-  steps,
-  handleSubmit,
-  mode,
-}: StudentFormPagesProps) {
+export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentFormPagesProps) {
+  const initalValues = {
+    ...values,
+    grade: String(values.grade ?? ""),
+    preassessmentScore: String(values.preassessmentScore ?? ""),
+    postassessmentScore: String(values.postassessmentScore ?? ""),
+  };
   const [step, setStep] = useState(0);
-  const [draft, setDraft] = useState<Partial<ValuesType>>(values);
+  const [draft, setDraft] = useState<Partial<Draft>>(initalValues);
   const [errors, setErrors] = useState<StudentFormErrors>({});
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -213,11 +218,9 @@ export function StudentFormPages({
    * @param fieldName The name of the field being updated
    */
   function handleDraftChange(input: string, field: keyof ValuesType) {
-    const convert = ["grade", "preassessmentScore", "postassessmentScore"];
-    const ret = convert.includes(field as string) ? Number(input) : input;
     setDraft((prev) => ({
       ...prev,
-      [field]: ret,
+      [field]: input,
     }));
   }
 
@@ -227,7 +230,7 @@ export function StudentFormPages({
    */
   function commitDraft() {
     // TODO : improve validation UX to show which fields are wrong
-    const candidate = { ...values, ...draft };
+    const candidate = { ...initalValues, ...draft };
     const curFields = steps[step].fields;
     const curErrors: StudentFormErrors = {};
 
@@ -241,7 +244,6 @@ export function StudentFormPages({
         return null;
       }
     }
-    setValues(() => candidate);
     return candidate;
   }
 
@@ -266,7 +268,13 @@ export function StudentFormPages({
   function handleSubmission() {
     const candidate = commitDraft();
     if (!candidate) return;
-    handleSubmit(candidate);
+    const ret = {
+      ...candidate,
+      grade: Number(candidate.grade),
+      postassessmentScore: Number(candidate.postassessmentScore),
+      preassessmentScore: Number(candidate.preassessmentScore),
+    };
+    handleSubmit(ret);
   }
 
   /**
@@ -362,7 +370,7 @@ export function StudentFormPages({
         <TextField
           label="Grade"
           name="grade"
-          value={draft.grade ?? ""}
+          value={draft.grade !== "0" ? draft.grade : ""}
           placeholder="ex. 3"
           onChange={(e) => handleDraftChange(e.target.value, "grade")}
           required={true}
@@ -424,7 +432,7 @@ export function StudentFormPages({
         <TextField
           label="Pre-Assessment Score"
           name="preassessmentScore"
-          value={draft.preassessmentScore ?? ""}
+          value={draft.preassessmentScore !== "0" ? draft.preassessmentScore : ""}
           placeholder="ex. 85"
           onChange={(e) => handleDraftChange(e.target.value, "preassessmentScore")}
           required={true}
@@ -433,7 +441,7 @@ export function StudentFormPages({
         <TextField
           label="Post-Assessment Score"
           name="postassessmentScore"
-          value={draft.postassessmentScore ?? ""}
+          value={draft.postassessmentScore !== "0" ? draft.postassessmentScore : ""}
           placeholder="ex. 92"
           onChange={(e) => handleDraftChange(e.target.value, "postassessmentScore")}
           required={true}

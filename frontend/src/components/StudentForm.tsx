@@ -52,8 +52,8 @@ export type StudentFormProps = {
  * form and the request succeeds
  */
 export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormProps) {
-  // One variable to hold all data for the form
-  const [values, setValues] = useState({
+  // All initial data
+  const values = {
     // split displayName into first and last name for easier editing
     studentFirstName: student ? student.displayName.split(" ")[0] : "",
     studentLastName: student ? student.displayName.split(" ")[1] || "" : "",
@@ -70,7 +70,7 @@ export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormPr
     postassessmentScore: student ? student.postassessmentScore : 0,
     comments: student ? student.comments : "",
     enrolledSections: student ? student.enrolledSections : [],
-  });
+  };
   const [isLoading, setLoading] = useState(false);
 
   // This state variable controls the error message that gets displayed to the user in the
@@ -180,13 +180,7 @@ export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormPr
   return (
     <div className="wrapper">
       <form className={styles.form}>
-        <StudentFormPages
-          mode={mode}
-          values={values}
-          setValues={setValues}
-          steps={steps}
-          handleSubmit={handleSubmit}
-        />
+        <StudentFormPages mode={mode} values={values} steps={steps} handleSubmit={handleSubmit} />
       </form>
     </div>
   );
