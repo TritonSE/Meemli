@@ -9,7 +9,6 @@ import { ProgressBar } from "./ProgressBar";
 import styles from "./StudentForm.module.css"
 import { TextField } from "./TextField";
 
-import type { MultiSelectOption } from "./MultiSelectDropdown";
 import type { ValuesType } from "./StudentForm";
 
 /**
@@ -195,8 +194,6 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
   const [draft , setDraft] = useState<Partial<ValuesType>>(values);
   const [errors, setErrors] = useState<StudentFormErrors>({});
   const [errorMessage, setErrorMessage] = useState("");
-  // TODO: Populate with sections from database
-  const options: MultiSelectOption[] = [];
 
   function handlePrevStep() {
       if (step > 0) {
@@ -437,8 +434,6 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
       <div className={styles.formRow}>
         <MultiSelectDropdown 
           label="Enroll in Sections"
-          required={false}
-          options={options}
           value={(draft.enrolledSections ?? [])}
           onChange={(next) => setDraft((prev) => ({...prev, enrolledSections: next}))}
           placeholder="Choose one or more sections"
@@ -474,7 +469,6 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
     </div>
     // remaining elements depend on which page the form is on
     const stepElement = stepViews[step] ?? <p>Error loading form</p>;
-    // concatenate DOM elements
     return (<div className={styles.entries}>
       {reusedElements}
       {stepElement}

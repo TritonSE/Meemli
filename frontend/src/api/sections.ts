@@ -1,4 +1,4 @@
-import { get, handleAPIError } from "./requests";
+import { get, handleAPIError, post, put } from "./requests";
 
 import type { APIResult } from "./requests";
 
@@ -14,14 +14,45 @@ export type Section = {
   days: string[];
 };
 
-const SECTIONS_ROUTE = "/api/sections";
+export type CreateSectionRequest = Omit<Section, "_id">;
+export type UpdateSectionRequest = Section;
 
 export async function getAllSections(): Promise<APIResult<Section[]>> {
   try {
-    const response = await get(SECTIONS_ROUTE);
+    const response = await get("/api/sections");
     const json = (await response.json()) as Section[];
     return {success: true, data: json};
   } catch (error) {
     return handleAPIError(error);
+  }
+}
+
+export async function getSectionById(id : string): Promise<APIResult<Section>> {
+  try {
+    const response = await get(`/api/sections/${id}`);
+    const json = (await response.json()) as Section;
+    return { success: true, data: json};
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+export async function updateSection(section : UpdateSectionRequest): Promise<APIResult<Section>> {
+  try {
+    const response = await put(`/api/sections/${section._id}`, section);
+    const json = (await response.json()) as Section;
+    return { success: true, data: json};
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+export async function createSection(student : CreateSectionRequest): Promise<APIResult<Section>> {
+  try {
+    const response = await post(`/api/sections`, student);
+    const json = (await response.json()) as Section;
+    return {success: true, data: json};
+  } catch (error) {
+    handleAPIError(error);
   }
 }
