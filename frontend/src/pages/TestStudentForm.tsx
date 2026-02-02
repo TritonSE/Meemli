@@ -6,6 +6,8 @@ export function TestStudentForm() {
     <Page>
       <title>StudentForm</title>
       <StudentForm mode="create" />
+      <title>Edit form</title>
+      <StudentForm mode="edit" />
     </Page>
   );
 }
