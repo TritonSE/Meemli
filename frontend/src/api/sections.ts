@@ -53,6 +53,6 @@ export async function createSection(student : CreateSectionRequest): Promise<API
     const json = (await response.json()) as Section;
     return {success: true, data: json};
   } catch (error) {
-    handleAPIError(error);
+    return handleAPIError(error);
   }
 }

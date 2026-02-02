@@ -94,7 +94,7 @@ export type UpdateStudentRequest = Student;
 
 export async function createStudent(student: CreateStudentRequest): Promise<APIResult<Student>> {
   try {
-    const response = (await post(STUDENTS_ROUTE, student)) as Student;
+    const response = await post(STUDENTS_ROUTE, student);
     const json = (await response.json()) as StudentJSON;
     return { success: true, data: parseStudent(json) };
   } catch (error) {
