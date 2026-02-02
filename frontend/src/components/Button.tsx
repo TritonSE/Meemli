@@ -8,16 +8,25 @@ import styles from "./Button.module.css";
 
 export type ButtonProps = {
   label: string;
+  kind: string;
 } & React.ComponentProps<"button">;
 
 export const Button = function Button({
   ref,
   label,
   className,
+  kind = "primary",
   ...props
 }: ButtonProps & { ref?: React.RefObject<HTMLButtonElement | null> }) {
-  
   let buttonClass = styles.button;
+  switch (kind) {
+    case "primary":
+      buttonClass += ` ${styles.primary}`;
+      break;
+    case "secondary":
+      buttonClass += ` ${styles.secondary}`;
+      break;
+  }
   if (className) {
     buttonClass += ` ${className}`;
   }

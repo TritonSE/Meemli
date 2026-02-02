@@ -6,20 +6,44 @@ import { useState } from "react";
 import { Button } from "./Button";
 import { MultiSelectDropdown } from "./MultiSelectDropdown";
 import { ProgressBar } from "./ProgressBar";
-import styles from "./StudentForm.module.css"
+import styles from "./StudentForm.module.css";
 import { TextField } from "./TextField";
 
-import type { MultiSelectOption } from "./MultiSelectDropdown";
-import type { StudentFormErrors , ValuesType } from "./StudentForm";
+import type { ValuesType } from "./StudentForm";
 
+/**
+ * Type definition for the errors object used in StudentForm validation.
+ */
+type StudentFormErrors = {
+  studentFirstName?: boolean;
+  studentLastName?: boolean;
+  meemliEmail?: boolean;
+  grade?: boolean;
+  schoolName?: boolean;
+  city?: boolean;
+  state?: boolean;
+  parentFirstName?: boolean;
+  parentLastName?: boolean;
+  parentPhoneNumber?: boolean;
+  parentEmail?: boolean;
+  preassessmentScore?: boolean;
+  postassessmentScore?: boolean;
+  enrolledSections?: boolean;
+  comments?: boolean;
+};
+
+type Draft = {
+  grade: string;
+  preassessmentScore: string;
+  postassessmentScore: string;
+} & Omit<ValuesType, "grade" | "postassessmentScore" | "preassessmentScore">;
 
 type StudentFormPagesProps = {
   values: ValuesType;
-  setValues: (update: (prev: ValuesType) => ValuesType) => void;
-  steps: Array<{ title: string; fields: Array<string>;  description: string }>;
+  steps: Array<{ title: string; fields: Array<string>; description: string }>;
   handleSubmit: (candidate: ValuesType) => void;
   mode: string;
-}
+};
 
 // regex expressions for valid emails and phone numbers
 const emailRegex = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/;
@@ -28,19 +52,19 @@ const phoneRegex = /^\(\d{3}\)-\d{3}-\d{4}$/;
  * Function that validates each field before next page is loaded
  * @param field The name of the field to validate
  * @param draft The current draft values to validate
- * @returns A descriptive error message on the incorrect field, 
+ * @returns A descriptive error message on the incorrect field,
  * or "passed" if all checks pass
  */
-function validator(field: string, draft: Partial<ValuesType>, errors: StudentFormErrors): string {
+function validator(field: string, draft: Partial<Draft>, errors: StudentFormErrors): string {
   let num;
-  switch (field){
+  switch (field) {
     case "studentFirstName":
     case "studentLastName":
-      if (!draft.studentFirstName || draft.studentFirstName.length === 0){
+      if (!draft.studentFirstName || draft.studentFirstName.length === 0) {
         errors.studentFirstName = true;
-        return "First name is required."
+        return "First name is required.";
       }
-      if (!draft.studentLastName || draft.studentLastName.length === 0){
+      if (!draft.studentLastName || draft.studentLastName.length === 0) {
         errors.studentLastName = true;
         return "Last name is requried.";
       }
@@ -63,10 +87,10 @@ function validator(field: string, draft: Partial<ValuesType>, errors: StudentFor
     case "grade":
       if (!draft.grade) {
         errors.grade = true;
-        return "Grade is required."
+        return "Grade is required.";
       }
       num = Number(draft.grade);
-      if (!Number.isInteger(num) || num < 1 || num > 12 ){
+      if (!Number.isInteger(num) || num < 1 || num > 12) {
         errors.grade = true;
         return "Grade must be an integer between 1 and 12 (inclusive).";
       }
@@ -103,11 +127,11 @@ function validator(field: string, draft: Partial<ValuesType>, errors: StudentFor
       break;
     case "parentFirstName":
     case "parentLastName":
-      if (!draft.parentFirstName || draft.parentFirstName.length === 0){
+      if (!draft.parentFirstName || draft.parentFirstName.length === 0) {
         errors.parentFirstName = true;
-        return "First name is required."
+        return "First name is required.";
       }
-      if (!draft.parentLastName || draft.parentLastName.length === 0){
+      if (!draft.parentLastName || draft.parentLastName.length === 0) {
         errors.parentLastName = true;
         return "Last name is requried.";
       }
@@ -167,96 +191,117 @@ function validator(field: string, draft: Partial<ValuesType>, errors: StudentFor
       return `Error: Invalid field passed to validator - ${field}`;
   }
   return "passed";
-
 }
 
-export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}: StudentFormPagesProps) {
+export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentFormPagesProps) {
+  const initalValues = {
+    ...values,
+    grade: String(values.grade ?? ""),
+    preassessmentScore: String(values.preassessmentScore ?? ""),
+    postassessmentScore: String(values.postassessmentScore ?? ""),
+  };
   const [step, setStep] = useState(0);
-  const [draft , setDraft] = useState<Partial<ValuesType>>(values);
+  const [draft, setDraft] = useState<Partial<Draft>>(initalValues);
   const [errors, setErrors] = useState<StudentFormErrors>({});
   const [errorMessage, setErrorMessage] = useState("");
-  // TODO: Populate with sections from database
-  const options: MultiSelectOption[] = [];
 
   function handlePrevStep() {
-      if (step > 0) {
-        setStep((s) => s - 1);
-      }
-      setErrors({});
-      setErrorMessage("");
+    if (step > 0) {
+      setStep((s) => s - 1);
     }
-  
-    
-    /** Handles changes to input fields by updating the corresponding value in state.
-     * @param input The new input value from the user
-     * @param fieldName The name of the field being updated
-    */
-    function handleDraftChange(input: string, field: keyof ValuesType) {
-      const convert = ["grade", "preassessmentScore", "postassessmentScore"];
-      const ret = convert.includes(field as string) ? Number(input) : input;
-      setDraft(prev => ({
-        ...prev,
-        [field]: ret
-      }));
-    }
-    
-    /**
-     * Validates inputs and updates values 
-     * @returns boolean based on if the commit was successful
-     */
-    function commitDraft() {
-      // TODO : improve validation UX to show which fields are wrong
-      const candidate = { ...values, ...draft };
-      const curFields = steps[step].fields;
-      const curErrors: StudentFormErrors = {} ;
+    setErrors({});
+    setErrorMessage("");
+  }
 
-      let errormsg = "";
-      for (const field of curFields) {
-        const validation = validator(field, candidate, curErrors);
-        if (!(validation === "passed")) {
-          errormsg = validation;
-          setErrors(curErrors);
-          setErrorMessage(errormsg)
-          return null;
-        }
-      }
-      setValues(() => candidate);
-      return candidate;
-    }
-    
-    function handleNextStep() {
-      const candidate = commitDraft();
-      if (!candidate) return;
-  
-      if (step < steps.length - 1) {
-        setStep(step + 1);
-      }
-      setErrors({});
-      setErrorMessage("");
-    }
-    // TODO: Add functionality for the cancel button (set display: none? not sure
-    // how to go about this)
-    function handleCancel() {
+  /** Handles changes to input fields by updating the corresponding value in state.
+   * @param input The new input value from the user
+   * @param fieldName The name of the field being updated
+   */
+  function handleDraftChange(input: string, field: keyof ValuesType) {
+    setDraft((prev) => ({
+      ...prev,
+      [field]: input,
+    }));
+  }
 
-    }
+  /**
+   * Validates inputs and updates values
+   * @returns boolean based on if the commit was successful
+   */
+  function commitDraft() {
+    // TODO : improve validation UX to show which fields are wrong
+    const candidate = { ...initalValues, ...draft };
+    const curFields = steps[step].fields;
+    const curErrors: StudentFormErrors = {};
 
-    /**
-     * Function that gets called when "Submit" button is pressed. 
-     * Perfomrs final round of validation and calls the handleSubmit() function.
-     */
-    function handleSubmission() {
-      const candidate = commitDraft();
-      if (!candidate) return;
-      handleSubmit(candidate);
+    let errormsg = "";
+    for (const field of curFields) {
+      const validation = validator(field, candidate, curErrors);
+      if (!(validation === "passed")) {
+        errormsg = validation;
+        setErrors(curErrors);
+        setErrorMessage(errormsg);
+        return null;
+      }
     }
-    /** 
-     * step<#> returns the reusable DOM for each step for both create and edit modes
-     * Depending on how reusable the multi-step form needs to be, these could be moved to their own components
-     */
-    const step0 = 
+    return candidate;
+  }
+
+  function handleNextStep() {
+    const candidate = commitDraft();
+    if (!candidate) return;
+
+    if (step < steps.length - 1) {
+      setStep(step + 1);
+    }
+    setErrors({});
+    setErrorMessage("");
+  }
+  // TODO: Add functionality for the cancel button (set display: none? not sure
+  // how to go about this)
+  function handleCancel() {}
+
+  /**
+   * Function that gets called when "Submit" button is pressed.
+   * Perfomrs final round of validation and calls the handleSubmit() function.
+   */
+  function handleSubmission() {
+    const candidate = commitDraft();
+    if (!candidate) return;
+    const ret = {
+      ...candidate,
+      grade: Number(candidate.grade),
+      postassessmentScore: Number(candidate.postassessmentScore),
+      preassessmentScore: Number(candidate.preassessmentScore),
+    };
+    handleSubmit(ret);
+  }
+
+  /**
+   * Create a row of 2 buttons with callback functions and labels
+   * @param handleBack left button function
+   * @param handleForward right button function
+   * @param l1 left button label
+   * @param l2 right button label
+   * @returns 2 buttons in a row
+   */
+  function makeButtons(handleBack: () => void, handleForward: () => void, l1: string, l2: string) {
+    return (
+      <div className={styles.buttonRow}>
+        <Button onClick={handleBack} kind="secondary" label={l1} />
+        <Button onClick={handleForward} kind="primary" label={l2} />
+      </div>
+    );
+  }
+
+  /**
+   * step<#> returns the reusable DOM for each step for both create and edit modes
+   * Depending on how reusable the multi-step form needs to be, these could be moved to their own components
+   */
+  const step0 = (
     <>
       <div className={styles.formRow}>
-        <TextField 
+        <TextField
           label="First Name"
           name="parentFirstName"
           value={draft.parentFirstName ?? ""}
@@ -265,7 +310,7 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
           required={true}
           error={Boolean(errors.parentFirstName)}
         />
-        <TextField 
+        <TextField
           label="Last Name"
           name="parentLastName"
           value={draft.parentLastName ?? ""}
@@ -276,7 +321,7 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
         />
       </div>
       <div className={styles.formRow}>
-        <TextField 
+        <TextField
           label="Parent Email"
           name="parentEmail"
           value={draft.parentEmail ?? ""}
@@ -285,7 +330,9 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
           required={true}
           error={Boolean(errors.parentEmail)}
         />
-        <TextField 
+      </div>
+      <div className={styles.formRow}>
+        <TextField
           label="Parent Phone Number"
           name="parentPhoneNumber"
           value={draft.parentPhoneNumber ?? ""}
@@ -295,16 +342,14 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
           error={Boolean(errors.parentPhoneNumber)}
         />
       </div>
-      <div className={styles.buttonRow}>
-        <Button onClick={handleCancel} label="Cancel" />
-        <Button onClick={handleNextStep} label="Next" />
-      </div>
+      {makeButtons(handleCancel, handleNextStep, "Cancel", "Next")}
     </>
+  );
 
-    const step1 = 
+  const step1 = (
     <>
       <div className={styles.formRow}>
-        <TextField 
+        <TextField
           label="First Name"
           name="studentFirstName"
           value={draft.studentFirstName ?? ""}
@@ -313,7 +358,7 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
           required={true}
           error={Boolean(errors.studentFirstName)}
         />
-        <TextField 
+        <TextField
           label="Last Name"
           name="studentLastName"
           value={draft.studentLastName ?? ""}
@@ -322,10 +367,10 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
           required={true}
           error={Boolean(errors.studentLastName)}
         />
-        <TextField 
+        <TextField
           label="Grade"
           name="grade"
-          value={draft.grade ?? ""}
+          value={draft.grade !== "0" ? draft.grade : ""}
           placeholder="ex. 3"
           onChange={(e) => handleDraftChange(e.target.value, "grade")}
           required={true}
@@ -333,7 +378,7 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
         />
       </div>
       <div className={styles.formRow}>
-        <TextField 
+        <TextField
           label="Student Email"
           name="meemliEmail"
           value={draft.meemliEmail ?? ""}
@@ -343,11 +388,11 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
           error={Boolean(errors.meemliEmail)}
         />
       </div>
-      <div className={styles.formRow}>
-        <h2>School Information</h2>
+      <div className={styles.subheadingRow}>
+        <h2 className={styles.subheading}>School Information</h2>
       </div>
       <div className={styles.formRow}>
-        <TextField 
+        <TextField
           label="School Name"
           name="schoolName"
           value={draft.schoolName ?? ""}
@@ -358,7 +403,7 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
         />
       </div>
       <div className={styles.formRow}>
-        <TextField 
+        <TextField
           label="City"
           name="city"
           value={draft.city ?? ""}
@@ -367,7 +412,7 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
           required={true}
           error={Boolean(errors.city)}
         />
-        <TextField 
+        <TextField
           label="State"
           name="state"
           value={draft.state ?? ""}
@@ -377,105 +422,112 @@ export function StudentFormPages ({values, setValues, steps, handleSubmit, mode}
           error={Boolean(errors.state)}
         />
       </div>
-      <div className={styles.buttonRow}>
-        <Button onClick={handlePrevStep} label="Back" />
-        <Button onClick={handleNextStep} label="Next" />
-      </div>
-    </>;
+      {makeButtons(handlePrevStep, handleNextStep, "Back", "Next")}
+    </>
+  );
 
-    const step2 = 
+  const step2 = (
     <>
       <div className={styles.formRow}>
-        <TextField 
+        <TextField
           label="Pre-Assessment Score"
           name="preassessmentScore"
-          value={draft.preassessmentScore ?? ""}
+          value={draft.preassessmentScore !== "0" ? draft.preassessmentScore : ""}
           placeholder="ex. 85"
           onChange={(e) => handleDraftChange(e.target.value, "preassessmentScore")}
           required={true}
           error={Boolean(errors.preassessmentScore)}
         />
-        <TextField 
+        <TextField
           label="Post-Assessment Score"
           name="postassessmentScore"
-          value={draft.postassessmentScore ?? ""}
+          value={draft.postassessmentScore !== "0" ? draft.postassessmentScore : ""}
           placeholder="ex. 92"
           onChange={(e) => handleDraftChange(e.target.value, "postassessmentScore")}
           required={true}
           error={Boolean(errors.postassessmentScore)}
         />
       </div>
-      <div className={styles.buttonRow}>
-        <Button onClick={handlePrevStep} label="Back" />
-        <Button onClick={handleNextStep} label="Next" />
-      </div>
-    </>;
-    // defined update function for dropdown in place since it'd be 
-    // weird to handle it in handleDraftChange
-    const step3 = 
+      {makeButtons(handlePrevStep, handleNextStep, "Back", "Next")}
+    </>
+  );
+  // defined update function for dropdown in place since it'd be
+  // weird to handle it in handleDraftChange
+  const step3 = (
     <>
       <div className={styles.formRow}>
-        <MultiSelectDropdown 
+        <MultiSelectDropdown
           label="Enroll in Sections"
-          required={false}
-          options={options}
-          value={(draft.enrolledSections ?? [])}
-          onChange={(next) => setDraft((prev) => ({...prev, enrolledSections: next}))}
-          placeholder="Choose one or more sections"
+          value={draft.enrolledSections ?? []}
+          onChange={(next) => setDraft((prev) => ({ ...prev, enrolledSections: next }))}
+          placeholder="Select"
         />
       </div>
       <div className={styles.formRow}>
-        <TextField 
+        <TextField
           label="Notes"
           name="comments"
           value={draft.comments ?? ""}
+          placeholder="Type here..."
           onChange={(e) => handleDraftChange(e.target.value, "comments")}
           error={Boolean(errors.comments)}
         />
       </div>
-      <div className={styles.buttonRow}>
-        <Button onClick={handlePrevStep} label="Back" />
-        <Button onClick={handleSubmission} label="Add" />
-      </div>
-    </>;
-    const stepViews = [step0, step1, step2, step3]
-    /**
-     * Returns the DOM for the current step of the multi-step form.
-     * @returns DOM for the webpage
-    */
+      {makeButtons(handlePrevStep, handleSubmission, "Back", "Add")}
+    </>
+  );
+  const stepViews = [step0, step1, step2, step3];
+  /**
+   * Returns the DOM for the current step of the multi-step form.
+   * @returns DOM for the webpage
+   */
   function renderCreateStep() {
     const curstep = steps[step];
-    const reusedElements =  <div className="reused">
-      <ProgressBar currentStep={step} totalSteps={steps.length} />
-      <h1>Add Student</h1>
-      <p>{curstep.description}</p>
-      <h2>{curstep.title}</h2>
-      <p>{errorMessage}</p>
-    </div>
+    const reusedElements = (
+      <div className={styles.reused}>
+        <ProgressBar currentStep={step} totalSteps={steps.length} />
+        <div className={styles.headerSegment}>
+          <h1 className={styles.pageTitle}>Add Student</h1>
+          <p className={styles.description}>{curstep.description}</p>
+        </div>
+        <div className={styles.infoBar}>
+          <h2 className={styles.subheading}>{curstep.title}</h2>
+          <p className={styles.error}>{errorMessage}</p>
+        </div>
+      </div>
+    );
     // remaining elements depend on which page the form is on
     const stepElement = stepViews[step] ?? <p>Error loading form</p>;
-    // concatenate DOM elements
-    return (<div className={styles.entries}>
-      {reusedElements}
-      {stepElement}
-    </div>
-    )
+    return (
+      <div className={styles.formPage}>
+        {reusedElements}
+        {stepElement}
+      </div>
+    );
   }
 
   function renderEditStep() {
     const curstep = steps[step];
     // TODO: Create and fill NavBar element
-    const reusedElements = (<div className="header">
-      <h1>Edit Student</h1>
-      <p>{curstep.description}</p>
-      <h2>{curstep.title}</h2>
-      <p>{errorMessage}</p>
-    </div>)
+    const reusedElements = (
+      <>
+        <div className={styles.headerSegment}>
+          <h1 className={styles.pageTitle}>Edit Student</h1>
+          <p>{curstep.description}</p>
+        </div>
+        <div className={styles.infoBar}>
+          <h2 className={styles.subheading}>{curstep.title}</h2>
+          <p className={styles.error}>{errorMessage}</p>
+        </div>
+      </>
+    );
     const stepElement = stepViews[step] ?? <p>Error loading form</p>;
-    return (<>
-      {reusedElements}
-      {stepElement}
-    </>)
+    return (
+      <div className={styles.formPage}>
+        {reusedElements}
+        {stepElement}
+      </div>
+    );
   }
   if (mode === "create") {
     return renderCreateStep();

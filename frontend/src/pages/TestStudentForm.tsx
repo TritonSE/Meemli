@@ -1,6 +1,5 @@
-
-import { Page } from "../components/Page"
-import { StudentForm} from "../components/StudentForm";
+import { Page } from "../components/Page";
+import { StudentForm } from "../components/StudentForm";
 
 export function TestStudentForm() {
   return (
@@ -8,5 +7,5 @@ export function TestStudentForm() {
       <title>StudentForm</title>
       <StudentForm mode="create" />
     </Page>
-  )
+  );
 }

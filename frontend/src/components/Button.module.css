@@ -9,3 +9,13 @@
   border-color: black;
   border-style: solid;
 }
+
+.primary {
+  background-color: #3f8d7c;
+  color: white;
+  border: none;
+}
+
+.secondary {
+  border: 1px #cdcfd0 solid;
+}

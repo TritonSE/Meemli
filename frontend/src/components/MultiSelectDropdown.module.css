@@ -1,0 +1,61 @@
+.root {
+  position: relative; /* anchor the overlay panel */
+  width: 100%;
+  flex: 1;
+}
+
+/* The bar */
+.trigger {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+
+  background: white;
+  color: black;
+
+  border: 1px solid #cdcfd0;
+  border-radius: 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  cursor: pointer;
+}
+
+.triggerText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.caret {
+  margin-left: 12px;
+  flex: 0 0 auto;
+}
+
+/* The “expanded” part that overlays content BELOW */
+.panel {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 8px); /* starts exactly under trigger */
+  width: 100%;
+
+  background: white;
+  color: black;
+
+  opacity: 1;
+  z-index: 9999;
+
+  border: 1px solid #cdcfd0;
+  border-radius: 8px;
+  padding: 10px;
+
+  /* scroll when too tall */
+  max-height: 220px;
+  overflow-y: auto;
+
+  /* optional: gives the overlay “above” feel */
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}

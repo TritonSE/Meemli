@@ -1,66 +1,87 @@
-"use client";
+/**
+ * Multiselect dropdown component for the Student Create/Edit forms.
+ * Fetches all sections from database and populates a multiselect dropdown bar
+ * and updates important states automatically.
+ */
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-export type MultiSelectOption = {
-  label: string;
-  value: string;
-  disabled?: boolean;
+import { getAllSections } from "../api/sections";
+
+import styles from "./MultiSelectDropdown.module.css";
+
+import type { Section } from "../api/sections";
+
+type SectionLike = {
+  _id: string;
+  code?: string;
+  program?: string;
+  // allow extra fields without TS errors
+  [key: string]: unknown;
 };
 
-export type MultiSelectDropdownProps = {
+type MultiSelectDropdownProps = {
   label?: string;
-  options: MultiSelectOption[];
-  value: string[]; // selected option values
+  /** Selected section ids */
+  value: string[];
+  /** Called with next selected ids */
   onChange: (next: string[]) => void;
 
-  placeholder?: string;
   disabled?: boolean;
-  className?: string;
-  maxMenuHeightPx?: number;
+  placeholder?: string;
 
-  // Optional: if you want a required asterisk on the label
-  required?: boolean;
+  getLabel?: (section: SectionLike) => string;
+  getValue?: (section: SectionLike) => string;
 };
 
 export function MultiSelectDropdown({
-  label,
-  options,
+  label = "Assigned Program(s)",
   value,
   onChange,
-  placeholder = "Select...",
   disabled = false,
-  className,
-  maxMenuHeightPx = 240,
-  required = false,
+  placeholder,
+  getLabel = (s) => (typeof s.code === "string" && s.code) || s._id,
+  getValue = (s) => s._id,
 }: MultiSelectDropdownProps) {
   const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement | null>(null);
+  const [sections, setSections] = useState<SectionLike[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  // will recalculate every time a check is ticked or unticked
   const selectedSet = useMemo(() => new Set(value), [value]);
 
-  const selectedOptions = useMemo(() => {
-    const map = new Map(options.map((o) => [o.value, o]));
-    return value.map((v) => map.get(v)).filter(Boolean) as MultiSelectOption[];
-  }, [options, value]);
+  // Fetch sections once on mount
+  useEffect(() => {
+    let cancelled = false;
 
-  function toggleValue(v: string) {
-    if (disabled) return;
-    const next = selectedSet.has(v)
-      ? value.filter((x) => x !== v)
-      : [...value, v];
-    onChange(next);
-  }
+    async function load() {
+      setLoading(true);
+      setError(null);
+      try {
+        getAllSections()
+          .then(async (res) => {
+            if (!res.success) {
+              return;
+            }
+            const data = res.data;
+            setSections(data);
+          })
+          .catch((e) => setError((e as Error).message))
+          .finally(() => setLoading(false));
+      } catch (e) {
+        if (!cancelled) setError((e as Error).message);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
 
-  function removeValue(v: string) {
-    if (disabled) return;
-    onChange(value.filter((x) => x !== v));
-  }
-
-  function clearAll() {
-    if (disabled) return;
-    onChange([]);
-  }
+    load().catch((e) => setError((e as Error).message));
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Close on outside click
   useEffect(() => {
@@ -73,109 +94,122 @@ export function MultiSelectDropdown({
     return () => document.removeEventListener("mousedown", onDocMouseDown);
   }, []);
 
-  // Close on Escape
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
+  function toggle(id: string) {
+    if (disabled) return;
+    if (selectedSet.has(id)) {
+      onChange(value.filter((v) => v !== id));
+    } else {
+      onChange([...value, id]);
     }
-    if (open) document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open]);
+  }
+
+  function clearAll() {
+    if (disabled) return;
+    onChange([]);
+  }
+
+  const selectedLabels = useMemo(() => {
+    if (sections.length === 0) return [];
+    const map = new Map(sections.map((s) => [getValue(s), getLabel(s)]));
+    return value.map((id) => map.get(id) ?? id);
+  }, [sections, value, getLabel, getValue]);
+
+  const triggerClass = open ? `${styles.trigger} ${styles.triggerOpen}` : styles.trigger;
 
   return (
-    <div ref={rootRef} className={`ms-root ${className ?? ""}`}>
-      {label && (
-        <div className="ms-labelRow">
-          <span className="ms-label">
-            {label}
-            {required && <span className="ms-required"> *</span>}
-          </span>
-
-          {!!value.length && (
-            <button
-              type="button"
-              className="ms-clearBtn"
-              onClick={clearAll}
-              disabled={disabled}
-            >
-              Clear
-            </button>
-          )}
-        </div>
-      )}
+    <div ref={rootRef} className={styles.root}>
+      {label && <div className={styles.label}>{label}</div>}
 
       <button
         type="button"
-        className={`ms-control ${open ? "is-open" : ""}`}
-        onClick={() => !disabled && setOpen((o) => !o)}
+        className={triggerClass}
         disabled={disabled}
+        onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        <div className="ms-valueArea">
-          {selectedOptions.length === 0 ? (
-            <span className="ms-placeholder">{placeholder}</span>
-          ) : (
-            <div className="ms-chips">
-              {selectedOptions.map((opt) => (
-                <span key={opt.value} className="ms-chip">
-                  {opt.label}
-                  <button
-                    type="button"
-                    className="ms-chipX"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeValue(opt.value);
-                    }}
-                    aria-label={`Remove ${opt.label}`}
-                    disabled={disabled}
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <span className="ms-caret" aria-hidden="true">
-          ▾
+        <span className={styles.triggerText}>
+          {loading
+            ? "Loading sections..."
+            : selectedLabels.length > 0
+              ? selectedLabels.join(", ")
+              : placeholder}
         </span>
+        <span className={styles.caret}>{open ? "▲" : "▼"}</span>
       </button>
 
       {open && (
-        <div
-          className="ms-menu"
-          role="listbox"
-          aria-multiselectable="true"
-          style={{ maxHeight: maxMenuHeightPx }}
-        >
-          {options.length === 0 ? (
-            <div className="ms-empty">No options</div>
+        <div className={styles.panel} role="listbox" aria-multiselectable="true">
+          {error ? (
+            <div className={styles.errorBox}>
+              <div className={styles.errorText}>Error: {error}</div>
+              <button
+                type="button"
+                className={styles.retryBtn}
+                onClick={() => {
+                  setLoading(true);
+                  setError(null);
+                  getAllSections()
+                    .then(async (res) => {
+                      if (!res.success) throw new Error("Failed to load sections");
+                      const data = res.data;
+                      if (!Array.isArray(data))
+                        throw new Error("Invalid /api/sections response: expected an array");
+                      const normalized = data.filter(
+                        (x: Section) => x && typeof x === "object" && typeof x._id === "string",
+                      );
+                      setSections(normalized);
+                    })
+                    .catch((e) => setError((e as Error).message))
+                    .finally(() => setLoading(false));
+                }}
+              >
+                Retry
+              </button>
+            </div>
           ) : (
-            options.map((opt) => {
-              const checked = selectedSet.has(opt.value);
-              const optDisabled = disabled || !!opt.disabled;
-
-              return (
-                <label
-                  key={opt.value}
-                  className={`ms-item ${optDisabled ? "is-disabled" : ""}`}
+            <>
+              <div className={styles.toolbar}>
+                <button
+                  type="button"
+                  className={styles.clearBtn}
+                  onClick={clearAll}
+                  disabled={disabled || value.length === 0}
                 >
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    disabled={optDisabled}
-                    onChange={() => toggleValue(opt.value)}
-                  />
-                  <span className="ms-itemText">{opt.label}</span>
-                </label>
-              );
-            })
+                  Clear
+                </button>
+              </div>
+
+              {sections.length === 0 && !loading ? (
+                <div className={styles.statusText}>No sections found.</div>
+              ) : (
+                <ul className={styles.list}>
+                  {sections.map((s) => {
+                    const id = getValue(s);
+                    const text = getLabel(s);
+                    const checked = selectedSet.has(id);
+
+                    return (
+                      <li key={id}>
+                        <label className={styles.itemLabel}>
+                          <input
+                            className={styles.checkbox}
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggle(id)}
+                            disabled={disabled}
+                          />
+                          {text}
+                        </label>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </>
           )}
         </div>
       )}
-
     </div>
   );
 }
