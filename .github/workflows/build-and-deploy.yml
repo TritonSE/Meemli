@@ -36,3 +36,5 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MEEMLI_DEV }}
           projectId: meemli-dev
           channelId: ${{inputs.firebaseHostingChannelId}}
+        env:
+          FIREBASE_CLI_EXPERIMENTS: webframeworks
