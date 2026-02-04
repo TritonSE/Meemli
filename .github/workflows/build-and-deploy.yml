@@ -24,7 +24,7 @@ jobs:
                   echo APP_PORT=${{secrets.APP_PORT}} >> .env
                   echo MONGO_URI=${{secrets.MONGO_URI}} >> .env
                   echo SERVICE_ACCOUNT_KEY=${{secrets.SERVICE_ACCOUNT_KEY}} >> .env
-                  echo SERVICE_ACCOUNT_KEY=${{secrets.FRONTEND_ORIGIN}} >> .env
+                  echo FRONTEND_ORIGIN=${{secrets.FRONTEND_ORIGIN}} >> .env
             - name: Create Frontend .env file
               run: |
                   cd frontend 
