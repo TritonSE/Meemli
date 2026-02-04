@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import { onRequest } from "firebase-functions/v2/https";
 import mongoose from "mongoose";
 
 import { FRONTEND_ORIGIN, MONGO_URI, PORT } from "./config";
@@ -23,9 +24,9 @@ app.use(express.json());
 
 app.use(log);
 
-app.use("/sections", sectionsRouter);
+app.use("/api/sections", sectionsRouter);
 app.use("/api/program", programRoutes);
-app.use("/students", studentsRoutes);
+app.use("/api/students", studentsRoutes);
 app.use("/api/sessions", sessionRoutes);
 
 app.use(errorHandler);
@@ -39,3 +40,5 @@ mongoose
     });
   })
   .catch(console.error);
+
+export const backend = onRequest({ region: "us-west1" }, app);
