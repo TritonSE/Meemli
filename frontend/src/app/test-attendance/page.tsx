@@ -79,7 +79,7 @@ export default function AttendancePOC() {
 
   // session selected
   return (
-    <div className="p-8 font-sans max-w-4xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto p-8">
       {/* 1. KEEP THE BACK BUTTON */}
       <button onClick={() => setSelectedSession(null)} className="...">
         ← Back to List

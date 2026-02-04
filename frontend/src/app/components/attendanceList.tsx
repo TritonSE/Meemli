@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-
 import { updateAttendanceBulk } from "../../api/attendance";
+import styles from "./attendanceList.module.css";
 
 type AttendanceListProps = {
   initialAttendees: any[];
@@ -58,58 +58,52 @@ export default function AttendanceList({ initialAttendees }: AttendanceListProps
     return () => clearTimeout(timer);
   }, [attendees]);
 
+  if (!attendees || attendees.length === 0) {
+    return <div className="p-10 text-gray-500">No students found for this session.</div>;
+  }
+
   return (
-    <div className="flex flex-col gap-4">
-      {/* Save Indicator (Figma usually puts this in a corner) */}
-      <div className="flex justify-end h-6">
-        {saveStatus === "saving" && (
-          <span className="text-blue-500 text-sm italic animate-pulse">Saving changes...</span>
-        )}
-        {saveStatus === "saved" && (
-          <span className="text-green-600 text-sm">✓ All changes saved</span>
-        )}
-        {saveStatus === "error" && <span className="text-red-500 text-sm">⚠ Save failed</span>}
+    <div className={styles.mainContainer}>
+      <div className={styles.headerRow}>
+        <div className={styles.columnHeader}>Student Name</div>
+        <div className={styles.columnHeader}>Status</div>
+        <div className={styles.columnHeader}>Notes</div>
       </div>
 
-      {/* The List Mapping */}
       {attendees.map((att) => (
-        <div
-          key={att._id}
-          className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl shadow-sm hover:border-blue-200 transition-all"
-        >
-          {/* STUDENT NAME SECTION */}
-          <div className="w-1/4">
-            <p className="text-gray-900 font-bold text-base leading-tight">
-              {att.student?.displayName || "Unknown Student"}
-            </p>
-            <p className="text-gray-400 text-xs">Student ID: {att.student?._id?.slice(-4)}</p>
-          </div>
+        <div key={att._id} className={styles.studentRow}>
+          {/* SAFETY CHECK: Use ?. to prevent "null displayName" error */}
+          <div className={styles.cell}>{att.student?.displayName || "Unknown Student"}</div>
 
-          {/* STATUS BUTTONS (Figma Layout) */}
-          <div className="flex gap-2">
-            {["PRESENT", "LATE", "ABSENT"].map((status) => (
+          <div className={styles.cell}>
+            <div className={styles.statusGroup}>
               <button
-                key={status}
-                onClick={() => updateLocalState(att._id, "status", status)}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all border ${
-                  att.status === status
-                    ? "bg-slate-900 text-white border-slate-900 shadow-md"
-                    : "bg-white text-gray-400 border-gray-100 hover:bg-gray-50"
-                }`}
+                onClick={() => updateLocalState(att._id, "status", "PRESENT")}
+                className={`${styles.statusBtn} ${att.status === "PRESENT" ? styles.btnPresent + " " + styles.active : ""}`}
               >
-                {status.toLowerCase()}
+                Present
               </button>
-            ))}
+              <button
+                onClick={() => updateLocalState(att._id, "status", "ABSENT")}
+                className={`${styles.statusBtn} ${att.status === "ABSENT" ? styles.btnAbsent + " " + styles.active : ""}`}
+              >
+                Absent
+              </button>
+              <button
+                onClick={() => updateLocalState(att._id, "status", "LATE")}
+                className={`${styles.statusBtn} ${att.status === "LATE" ? styles.btnLate + " " + styles.active : ""}`}
+              >
+                Late
+              </button>
+            </div>
           </div>
 
-          {/* NOTES SECTION */}
-          <div className="flex-1 ml-6">
+          <div className={styles.cell}>
             <input
-              type="text"
+              className={styles.notesInput}
               value={att.notes || ""}
               onChange={(e) => updateLocalState(att._id, "notes", e.target.value)}
-              placeholder="Add a note..."
-              className="w-full bg-gray-50 border-none rounded-lg p-2 text-sm text-gray-700 placeholder-gray-400 focus:ring-2 focus:ring-blue-100 outline-none"
+              placeholder="Type here..."
             />
           </div>
         </div>
