@@ -2,6 +2,7 @@ import { validationResult } from "express-validator";
 import { Types } from "mongoose";
 
 import StudentModel from "../models/student";
+import validationErrorParser from "../util/validationErrorParser";
 
 import type { RequestHandler } from "express";
 
@@ -27,9 +28,6 @@ type CreateStudentBody = {
 
 export const createStudent: RequestHandler = async (req, res, next) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(new Error(errors.array()[0].msg as string));
-  }
 
   const {
     parentContact: { firstName, lastName, phoneNumber, email },
@@ -48,6 +46,8 @@ export const createStudent: RequestHandler = async (req, res, next) => {
   const enrolledSectionsIds = enrolledSections.map((section) => new Types.ObjectId(section));
 
   try {
+    validationErrorParser(errors);
+
     const student = await StudentModel.create({
       parentContact: {
         firstName,
@@ -107,9 +107,6 @@ type EditStudentBody = Partial<CreateStudentBody>;
 
 export const editStudentById: RequestHandler = async (req, res, next) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(new Error(errors.array()[0].msg as string));
-  }
 
   const { id } = req.params;
   if (!Types.ObjectId.isValid(id)) {
@@ -119,6 +116,8 @@ export const editStudentById: RequestHandler = async (req, res, next) => {
   const updates: EditStudentBody = req.body as EditStudentBody;
 
   try {
+    validationErrorParser(errors);
+
     const student = await StudentModel.findByIdAndUpdate(id, updates, { new: true }).populate(
       "enrolledSections",
     );
