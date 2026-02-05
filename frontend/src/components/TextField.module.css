@@ -26,9 +26,9 @@
   border-radius: 8px;
   padding: 10px;
 }
-
 .input:focus {
-  border: 1px solid #3f8d7c;
+  border: 2px solid #3f8d7c;
+  outline: none;
 }
 
 .error {
