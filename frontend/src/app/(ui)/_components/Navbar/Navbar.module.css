@@ -11,9 +11,11 @@
   border-right: 1px solid var(--grey-200);
 
   .logo {
+    width: 2rem;
     transition: transform 0.2s ease-in-out;
     filter: none;
     background: none;
+    margin-top: 0.5rem;
   }
 
   .logo:hover {
