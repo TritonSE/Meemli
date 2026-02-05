@@ -1,7 +1,7 @@
 /**
  * Handle the multi-step student form pages, updating data, and navigation.
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "./Button";
 import { MultiSelectDropdown } from "./MultiSelectDropdown";
@@ -204,6 +204,18 @@ export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentF
   const [draft, setDraft] = useState<Partial<Draft>>(initalValues);
   const [errors, setErrors] = useState<StudentFormErrors>({});
   const [errorMessage, setErrorMessage] = useState("");
+  const [editSection, setEditSection] = useState<"student" | "parent" | "program">("student");
+
+  useEffect(() => {
+    setDraft({
+      ...values,
+      grade: String(values.grade ?? ""),
+      preassessmentScore: String(values.preassessmentScore ?? ""),
+      postassessmentScore: String(values.postassessmentScore ?? ""),
+    });
+    setErrors({});
+    setErrorMessage("");
+  }, [values]);
 
   function handlePrevStep() {
     if (step > 0) {
@@ -507,25 +519,210 @@ export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentF
   }
 
   function renderEditStep() {
-    const curstep = steps[step];
-    // TODO: Create and fill NavBar element
     const reusedElements = (
       <>
         <div className={styles.headerSegment}>
           <h1 className={styles.pageTitle}>Edit Student</h1>
-          <p>{curstep.description}</p>
         </div>
         <div className={styles.infoBar}>
-          <h2 className={styles.subheading}>{curstep.title}</h2>
           <p className={styles.error}>{errorMessage}</p>
+        </div>
+        <div className={styles.editTabs}>
+          <Button
+            kind={editSection === "student" ? "primary" : "secondary"}
+            label="Student Info"
+            onClick={() => setEditSection("student")}
+          />
+          <Button
+            kind={editSection === "parent" ? "primary" : "secondary"}
+            label="Parent Info"
+            onClick={() => setEditSection("parent")}
+          />
+          <Button
+            kind={editSection === "program" ? "primary" : "secondary"}
+            label="Program Info"
+            onClick={() => setEditSection("program")}
+          />
         </div>
       </>
     );
-    const stepElement = stepViews[step] ?? <p>Error loading form</p>;
+
+    const studentInfo = (
+      <>
+        <div className={styles.formRow}>
+          <TextField
+            label="First Name"
+            name="studentFirstName"
+            value={draft.studentFirstName ?? ""}
+            placeholder="ex. John"
+            onChange={(e) => handleDraftChange(e.target.value, "studentFirstName")}
+            required={true}
+            error={Boolean(errors.studentFirstName)}
+          />
+          <TextField
+            label="Last Name"
+            name="studentLastName"
+            value={draft.studentLastName ?? ""}
+            placeholder="ex. Smith"
+            onChange={(e) => handleDraftChange(e.target.value, "studentLastName")}
+            required={true}
+            error={Boolean(errors.studentLastName)}
+          />
+          <TextField
+            label="Grade"
+            name="grade"
+            value={draft.grade !== "0" ? draft.grade : ""}
+            placeholder="ex. 3"
+            onChange={(e) => handleDraftChange(e.target.value, "grade")}
+            required={true}
+            error={Boolean(errors.grade)}
+          />
+        </div>
+        <div className={styles.formRow}>
+          <TextField
+            label="Student Email"
+            name="meemliEmail"
+            value={draft.meemliEmail ?? ""}
+            placeholder="ex. jsmith@meemli.com"
+            onChange={(e) => handleDraftChange(e.target.value, "meemliEmail")}
+            required={true}
+            error={Boolean(errors.meemliEmail)}
+          />
+        </div>
+        <div className={styles.formRow}>
+          <TextField
+            label="School Name"
+            name="schoolName"
+            value={draft.schoolName ?? ""}
+            placeholder="ex. Doyle Elementary School"
+            onChange={(e) => handleDraftChange(e.target.value, "schoolName")}
+            required={true}
+            error={Boolean(errors.schoolName)}
+          />
+        </div>
+        <div className={styles.formRow}>
+          <TextField
+            label="City"
+            name="city"
+            value={draft.city ?? ""}
+            placeholder="ex. San Diego"
+            onChange={(e) => handleDraftChange(e.target.value, "city")}
+            required={true}
+            error={Boolean(errors.city)}
+          />
+          <TextField
+            label="State"
+            name="state"
+            value={draft.state ?? ""}
+            placeholder="ex. CA"
+            onChange={(e) => handleDraftChange(e.target.value, "state")}
+            required={true}
+            error={Boolean(errors.state)}
+          />
+        </div>
+      </>
+    );
+
+    const parentInfo = (
+      <>
+        <div className={styles.formRow}>
+          <TextField
+            label="Parent First Name"
+            name="parentFirstName"
+            value={draft.parentFirstName ?? ""}
+            placeholder="ex. John"
+            onChange={(e) => handleDraftChange(e.target.value, "parentFirstName")}
+            required={true}
+            error={Boolean(errors.parentFirstName)}
+          />
+          <TextField
+            label="Parent Last Name"
+            name="parentLastName"
+            value={draft.parentLastName ?? ""}
+            placeholder="ex. Smith"
+            onChange={(e) => handleDraftChange(e.target.value, "parentLastName")}
+            required={true}
+            error={Boolean(errors.parentLastName)}
+          />
+        </div>
+        <div className={styles.formRow}>
+          <TextField
+            label="Parent Email"
+            name="parentEmail"
+            value={draft.parentEmail ?? ""}
+            placeholder="ex. jsmith@gmail.com"
+            onChange={(e) => handleDraftChange(e.target.value, "parentEmail")}
+            required={true}
+            error={Boolean(errors.parentEmail)}
+          />
+        </div>
+        <div className={styles.formRow}>
+          <TextField
+            label="Parent Phone Number"
+            name="parentPhoneNumber"
+            value={draft.parentPhoneNumber ?? ""}
+            placeholder="ex. (123)-456-7890"
+            onChange={(e) => handleDraftChange(e.target.value, "parentPhoneNumber")}
+            required={true}
+            error={Boolean(errors.parentPhoneNumber)}
+          />
+        </div>
+      </>
+    );
+
+    const programInfo = (
+      <>
+        <div className={styles.formRow}>
+          <TextField
+            label="Pre-Assessment Score"
+            name="preassessmentScore"
+            value={draft.preassessmentScore !== "0" ? draft.preassessmentScore : ""}
+            placeholder="ex. 85"
+            onChange={(e) => handleDraftChange(e.target.value, "preassessmentScore")}
+            required={true}
+            error={Boolean(errors.preassessmentScore)}
+          />
+          <TextField
+            label="Post-Assessment Score"
+            name="postassessmentScore"
+            value={draft.postassessmentScore !== "0" ? draft.postassessmentScore : ""}
+            placeholder="ex. 92"
+            onChange={(e) => handleDraftChange(e.target.value, "postassessmentScore")}
+            required={true}
+            error={Boolean(errors.postassessmentScore)}
+          />
+        </div>
+        <div className={styles.formRow}>
+          <MultiSelectDropdown
+            label="Enroll in Sections"
+            value={draft.enrolledSections ?? []}
+            onChange={(next) => setDraft((prev) => ({ ...prev, enrolledSections: next }))}
+            placeholder="Select"
+          />
+        </div>
+        <div className={styles.formRow}>
+          <TextField
+            label="Notes"
+            name="comments"
+            value={draft.comments ?? ""}
+            placeholder="Type here..."
+            onChange={(e) => handleDraftChange(e.target.value, "comments")}
+            error={Boolean(errors.comments)}
+          />
+        </div>
+      </>
+    );
+
+    const stepElement =
+      editSection === "student" ? studentInfo : editSection === "parent" ? parentInfo : programInfo;
+
     return (
       <div className={styles.formPage}>
         {reusedElements}
         {stepElement}
+        <div className={styles.buttonRow}>
+          <Button onClick={handleSubmission} kind="primary" label="Save Changes" />
+        </div>
       </div>
     );
   }

@@ -1,6 +1,6 @@
 import { get, handleAPIError, post, put } from "./requests";
 
-import type { APIResult } from "./requests";
+import type { APIResult } from "@/src/api/requests";
 
 export type ParentContact = {
   firstName: string;

@@ -58,6 +58,17 @@
   gap: 10px;
 }
 
+.editTabs {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin: 12px 0 4px;
+}
+
+.editTabs button {
+  flex: 1;
+}
+
 .subheading {
   font-size: 16px;
   font-weight: 600;
