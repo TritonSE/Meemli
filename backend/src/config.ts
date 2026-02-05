@@ -28,4 +28,10 @@ const FIREBASE_API_KEY = throwIfUndefined(
   InternalError.NO_FIREBASE_API_KEY,
 );
 
-export { FIREBASE_API_KEY, FRONTEND_ORIGIN, MONGO_URI, PORT, serviceAccountKey };
+// Variable to bypass authorization route middleware.
+// WARNING: This should NEVER be enabled in PRD!!!
+// WARNING: If using this variable to test routes, note that you no longer have
+//    sender identification when handling requests, which may be needed.
+const AUTH_BYPASS = process.env.AUTH_BYPASS && process.env.AUTH_BYPASS === "True";
+
+export { AUTH_BYPASS, FIREBASE_API_KEY, FRONTEND_ORIGIN, MONGO_URI, PORT, serviceAccountKey };
