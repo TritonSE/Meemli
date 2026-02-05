@@ -1,7 +1,7 @@
 /**
  * Handle the multi-step student form pages, updating data, and navigation.
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "./Button";
 import { MultiSelectDropdown } from "./MultiSelectDropdown";
@@ -205,6 +205,17 @@ export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentF
   const [errors, setErrors] = useState<StudentFormErrors>({});
   const [errorMessage, setErrorMessage] = useState("");
   const [editSection, setEditSection] = useState<"student" | "parent" | "program">("student");
+
+  useEffect(() => {
+    setDraft({
+      ...values,
+      grade: String(values.grade ?? ""),
+      preassessmentScore: String(values.preassessmentScore ?? ""),
+      postassessmentScore: String(values.postassessmentScore ?? ""),
+    });
+    setErrors({});
+    setErrorMessage("");
+  }, [values]);
 
   function handlePrevStep() {
     if (step > 0) {
