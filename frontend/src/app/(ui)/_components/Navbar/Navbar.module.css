@@ -1,0 +1,63 @@
+.sideNav {
+  display: flex;
+  padding: 0.7rem;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+
+  width: clamp(60px, 7vw, 80px);
+  height: 100vh;
+
+  border-right: 1px solid var(--grey-200);
+
+  .logo {
+    width: 2rem;
+    transition: transform 0.2s ease-in-out;
+    filter: none;
+    background: none;
+    margin-top: 0.5rem;
+  }
+
+  .logo:hover {
+    transform: scale(1.3);
+  }
+
+  .navLink {
+    border-radius: 4px;
+  }
+
+  .navIcon {
+    width: clamp(8px, 100%, 60px);
+    padding: 10px;
+    border-radius: 4px;
+  }
+
+  .navLink:hover {
+    background-color: var(--primary-500);
+  }
+
+  .navLink:hover .navIcon {
+    filter: brightness(0) invert(1);
+  }
+
+  .activeNavLink {
+    background-color: var(--primary-500);
+    border-radius: 4px;
+  }
+
+  .activeNavLink .navIcon {
+    filter: brightness(0) invert(1);
+  }
+
+  .navLink:active {
+    background-color: var(--primary-600);
+  }
+
+  .navLinks {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 1rem;
+  }
+}
