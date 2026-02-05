@@ -9,11 +9,11 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-import { getAllSections } from "../api/sections";
+import { getAllSections } from "../../api/sections";
 
 import styles from "./MultiSelectDropdown.module.css";
 
-import type { Section } from "../api/sections";
+import type { Section } from "../../api/sections";
 
 type SectionLike = {
   _id: string;

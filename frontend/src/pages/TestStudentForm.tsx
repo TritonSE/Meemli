@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { getAllStudents } from "../api/students";
 import { Page } from "../components/Page";
-import { StudentForm } from "../components/StudentForm";
+import { StudentForm } from "../components/studentform/StudentForm";
 
 import type { Student } from "../api/students";
 

@@ -3,11 +3,11 @@
  */
 import { useEffect, useState } from "react";
 
-import { Button } from "./Button";
+import { Button } from "../Button";
 import { MultiSelectDropdown } from "./MultiSelectDropdown";
-import { ProgressBar } from "./ProgressBar";
+import { ProgressBar } from "../ProgressBar";
 import styles from "./StudentForm.module.css";
-import { TextField } from "./TextField";
+import { TextField } from "../TextField";
 
 import type { ValuesType } from "./StudentForm";
 

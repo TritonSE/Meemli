@@ -1,11 +1,11 @@
 import { useState } from "react";
 
-import { createStudent, updateStudent } from "../api/students";
+import { createStudent, updateStudent } from "../../api/students";
 
 import styles from "./StudentForm.module.css";
 import { StudentFormPages } from "./StudentFormPages";
 
-import type { Student } from "../api/students";
+import type { Student } from "../../api/students";
 
 /**
  * Type definition for the values object
