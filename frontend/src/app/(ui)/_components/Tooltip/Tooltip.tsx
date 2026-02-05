@@ -21,8 +21,8 @@ export function Tooltip({ content, children }: TooltipProps) {
     const rect = el.getBoundingClientRect();
 
     setPos({
-      top: rect.bottom + 8,
-      left: rect.right + 8,
+      top: rect.bottom - 37,
+      left: rect.right + 12,
     });
 
     setOpen(true);
