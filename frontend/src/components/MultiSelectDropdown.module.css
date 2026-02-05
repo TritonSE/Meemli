@@ -8,7 +8,7 @@
 .trigger {
   width: 100%;
   min-height: 44px;
-  padding: 10px 12px;
+  padding: 0 10px;
 
   background: white;
   color: black;
@@ -28,6 +28,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: left;
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
 }
 
 .caret {
@@ -35,11 +38,10 @@
   flex: 0 0 auto;
 }
 
-/* The “expanded” part that overlays content BELOW */
 .panel {
   position: absolute;
   left: 0;
-  top: calc(100% + 8px); /* starts exactly under trigger */
+  top: calc(100% + 8px);
   width: 100%;
 
   background: white;
@@ -58,4 +60,44 @@
 
   /* optional: gives the overlay “above” feel */
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.required {
+  color: red;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.listItem {
+  width: auto;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.listItemSelected {
+  background-color: #f7f6f6;
+}
+
+.itemBtn {
+  background-color: aquamarine;
+  margin: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-right: auto;
+
+  font-size: 12px;
+}
+
+.chosen {
+  background-color: aquamarine;
+  padding: 8px 12px;
+  border-radius: 8px;
+
+  font-size: 12px;
 }

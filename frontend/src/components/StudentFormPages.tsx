@@ -469,7 +469,8 @@ export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentF
     <>
       <div className={styles.formRow}>
         <MultiSelectDropdown
-          label="Enroll in Sections"
+          label="Assigned Program(s)"
+          required={true}
           value={draft.enrolledSections ?? []}
           onChange={(next) => setDraft((prev) => ({ ...prev, enrolledSections: next }))}
           placeholder="Select"

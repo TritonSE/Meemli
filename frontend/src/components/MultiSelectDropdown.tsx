@@ -2,6 +2,9 @@
  * Multiselect dropdown component for the Student Create/Edit forms.
  * Fetches all sections from database and populates a multiselect dropdown bar
  * and updates important states automatically.
+ *
+ * // TODO: Convert program IDs to colors and show colored backgrounds for buttons
+ * // TODO: Add checkmark icon for selected items
  */
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -27,17 +30,47 @@ type MultiSelectDropdownProps = {
   /** Called with next selected ids */
   onChange: (next: string[]) => void;
 
+  required?: boolean;
   disabled?: boolean;
   placeholder?: string;
 
   getLabel?: (section: SectionLike) => string;
   getValue?: (section: SectionLike) => string;
 };
+/**
+ * Styling for different programs. Hash the program id for consistency
+ * across different refreshes and users.
+ */
+type ProgramStyle = {
+  bg: string;
+  text: string;
+};
+
+const PALETTE: ProgramStyle[] = [
+  { bg: "#D8EFE8", text: "#233E3A" },
+  { bg: "#FDE4D7", text: "#771817" },
+  { bg: "#E7F5FE", text: "#1B3A4B" },
+  { bg: "#FAFBC6", text: "#6C4917" },
+];
+
+function hashToIndex(input: string, mod: number) {
+  let h = 0;
+  for (let i = 0; i < input.length; i++) {
+    h = (h * 31 + input.charCodeAt(i)) >>> 0;
+  }
+  return h % mod;
+}
+
+function programStyle(programId?: string): ProgramStyle {
+  if (!programId) return { bg: "transparent", text: "inherit" };
+  return PALETTE[hashToIndex(programId, PALETTE.length)];
+}
 
 export function MultiSelectDropdown({
   label = "Assigned Program(s)",
   value,
   onChange,
+  required,
   disabled = false,
   placeholder,
   getLabel = (s) => (typeof s.code === "string" && s.code) || s._id,
@@ -51,6 +84,14 @@ export function MultiSelectDropdown({
   const rootRef = useRef<HTMLDivElement | null>(null);
   // will recalculate every time a check is ticked or unticked
   const selectedSet = useMemo(() => new Set(value), [value]);
+
+  const sectionIdToProgramId = useMemo(() => {
+    const m = new Map<string, string | undefined>();
+    for (const s of sections) {
+      m.set(getValue(s), typeof s.program === "string" ? s.program : undefined);
+    }
+    return m;
+  }, [sections, getValue]);
 
   // Fetch sections once on mount
   useEffect(() => {
@@ -103,11 +144,6 @@ export function MultiSelectDropdown({
     }
   }
 
-  function clearAll() {
-    if (disabled) return;
-    onChange([]);
-  }
-
   const selectedLabels = useMemo(() => {
     if (sections.length === 0) return [];
     const map = new Map(sections.map((s) => [getValue(s), getLabel(s)]));
@@ -118,7 +154,12 @@ export function MultiSelectDropdown({
 
   return (
     <div ref={rootRef} className={styles.root}>
-      {label && <div className={styles.label}>{label}</div>}
+      {label && (
+        <div className={styles.label}>
+          {label}
+          {required && <span className={styles.required}>*</span>}
+        </div>
+      )}
 
       <button
         type="button"
@@ -132,7 +173,24 @@ export function MultiSelectDropdown({
           {loading
             ? "Loading sections..."
             : selectedLabels.length > 0
-              ? selectedLabels.join(", ")
+              ? value.map((id, i) => {
+                  const l = selectedLabels[i] ?? id;
+                  const prog = sectionIdToProgramId.get(id);
+                  const c = programStyle(prog);
+
+                  return (
+                    <div
+                      key={id}
+                      className={styles.chosen}
+                      style={{
+                        background: c.bg,
+                        color: c.text,
+                      }}
+                    >
+                      {l}
+                    </div>
+                  );
+                })
               : placeholder}
         </span>
         <span className={styles.caret}>{open ? "▲" : "▼"}</span>
@@ -169,42 +227,39 @@ export function MultiSelectDropdown({
             </div>
           ) : (
             <>
-              <div className={styles.toolbar}>
-                <button
-                  type="button"
-                  className={styles.clearBtn}
-                  onClick={clearAll}
-                  disabled={disabled || value.length === 0}
-                >
-                  Clear
-                </button>
-              </div>
-
               {sections.length === 0 && !loading ? (
                 <div className={styles.statusText}>No sections found.</div>
               ) : (
-                <ul className={styles.list}>
+                <div className={styles.list}>
                   {sections.map((s) => {
                     const id = getValue(s);
                     const text = getLabel(s);
                     const checked = selectedSet.has(id);
 
+                    const prog = typeof s.program === "string" ? s.program : undefined;
+                    const c = programStyle(prog);
+
+                    let className = styles.listItem;
+                    if (checked) className += ` ${styles.listItemSelected}`;
+
                     return (
-                      <li key={id}>
-                        <label className={styles.itemLabel}>
-                          <input
-                            className={styles.checkbox}
-                            type="checkbox"
-                            checked={checked}
-                            onChange={() => toggle(id)}
-                            disabled={disabled}
-                          />
+                      <div className={className} key={id}>
+                        <button
+                          type="button"
+                          className={styles.itemBtn}
+                          onClick={() => toggle(id)}
+                          style={{
+                            background: c.bg,
+                            color: c.text,
+                          }}
+                        >
                           {text}
-                        </label>
-                      </li>
+                        </button>
+                        <img alt="check icon" className={styles.selectedIcon} />
+                      </div>
                     );
                   })}
-                </ul>
+                </div>
               )}
             </>
           )}
