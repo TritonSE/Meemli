@@ -19,7 +19,7 @@ type RequestWithUserId = Request<object, object, RequestBody> & {
  */
 const verifyAuthToken = async (req: RequestWithUserId, res: Response, next: NextFunction) => {
   if (AUTH_BYPASS) return next();
-  
+
   const authHeader = req.headers.authorization;
   const token = authHeader?.startsWith("Bearer") ? authHeader.split(" ")[1] : null;
 

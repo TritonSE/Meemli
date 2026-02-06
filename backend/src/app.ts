@@ -1,6 +1,7 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
+import { onRequest } from "firebase-functions/v2/https";
 import mongoose from "mongoose";
 
 import { AUTH_BYPASS, FRONTEND_ORIGIN, MONGO_URI, PORT } from "./config";
@@ -29,9 +30,9 @@ app.use(express.json());
 
 app.use(log);
 
-app.use("/sections", verifyAuthToken, sectionsRouter);
+app.use("/api/sections", verifyAuthToken, sectionsRouter);
 app.use("/api/program", verifyAuthToken, programRoutes);
-app.use("/students", verifyAuthToken, studentsRoutes);
+app.use("/api/students", verifyAuthToken, studentsRoutes);
 app.use("/api/sessions", verifyAuthToken, sessionRoutes);
 
 app.use(errorHandler);
@@ -46,3 +47,5 @@ mongoose
     });
   })
   .catch(console.error);
+
+export const backend = onRequest({ region: "us-west1" }, app);
