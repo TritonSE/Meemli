@@ -16,4 +16,22 @@ const FRONTEND_ORIGIN = throwIfUndefined(
   InternalError.NO_FRONTEND_ORIGIN,
 );
 
-export { FRONTEND_ORIGIN, MONGO_URI, PORT };
+// Service account needed for bearer token verification
+const serviceAccountKey = throwIfUndefined(
+  process.env.SERVICE_ACCOUNT_KEY,
+  InternalError.NO_SERVICE_ACCOUNT_KEY,
+);
+
+// Firebase API key for testing bearer token verification
+const FIREBASE_API_KEY = throwIfUndefined(
+  process.env.FIREBASE_API_KEY,
+  InternalError.NO_FIREBASE_API_KEY,
+);
+
+// Variable to bypass authorization route middleware.
+// WARNING: This should NEVER be enabled in PRD!!!
+// WARNING: If using this variable to test routes, note that you no longer have
+//    sender identification when handling requests, which may be needed.
+const AUTH_BYPASS = process.env.AUTH_BYPASS && process.env.AUTH_BYPASS === "True";
+
+export { AUTH_BYPASS, FIREBASE_API_KEY, FRONTEND_ORIGIN, MONGO_URI, PORT, serviceAccountKey };
