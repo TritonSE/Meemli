@@ -30,9 +30,9 @@ app.use(express.json());
 
 app.use(log);
 
-app.use("/sections", verifyAuthToken, sectionsRouter);
+app.use("/api/sections", verifyAuthToken, sectionsRouter);
 app.use("/api/program", verifyAuthToken, programRoutes);
-app.use("/students", verifyAuthToken, studentsRoutes);
+app.use("/api/students", verifyAuthToken, studentsRoutes);
 app.use("/api/sessions", verifyAuthToken, sessionRoutes);
 
 app.use(errorHandler);
