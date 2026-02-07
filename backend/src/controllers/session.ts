@@ -1,26 +1,24 @@
 import { validationResult } from "express-validator";
 
+import { AttendanceModel } from "../models/attendance";
 import { SessionModel } from "../models/session";
 
 import type { RequestHandler } from "express";
-import type { Types } from "mongoose";
 
 type CreateSessionBody = {
   section: string;
   sessionDate: string;
-  attendees: Types.ObjectId[];
 };
 
 export const createSession: RequestHandler = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) throw new Error(errors.array()[0].msg as string);
-    const { section, sessionDate, attendees } = req.body as CreateSessionBody;
+    const { section, sessionDate } = req.body as CreateSessionBody;
 
     const session = await SessionModel.create({
       section,
       sessionDate,
-      attendees,
     });
 
     return res.status(201).json(session);
@@ -32,7 +30,6 @@ export const createSession: RequestHandler = async (req, res, next) => {
 type UpdateSessionBody = Partial<{
   section: string;
   sessionDate: string;
-  attendees: string[];
 }>;
 
 export const editSessionById: RequestHandler = async (req, res, next) => {
@@ -55,15 +52,37 @@ export const editSessionById: RequestHandler = async (req, res, next) => {
 };
 
 export const getSession: RequestHandler = async (req, res, next) => {
+  const { id } = req.params;
+
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) throw new Error(errors.array()[0].msg as string);
-    const { id } = req.params;
+    //Get the Session Info (Date, Section)
     const session = await SessionModel.findById(id);
+
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
     }
-    res.status(200).json(session);
+
+    // Check what we are searching for in the Attendance collection
+    const query = { session: id };
+    // Run the query
+    const attendanceRecords = await AttendanceModel.find(query).populate("student");
+
+    const response = {
+      ...session.toObject(),
+      attendees: attendanceRecords,
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllSessions: RequestHandler = async (req, res, next) => {
+  try {
+    const sessions = await SessionModel.find();
+
+    res.status(200).json(sessions);
   } catch (error) {
     next(error);
   }
