@@ -12,6 +12,7 @@ import programRoutes from "./routes/program";
 import sectionsRouter from "./routes/sections";
 import sessionRoutes from "./routes/session";
 import studentsRoutes from "./routes/students";
+import userRoutes from "./routes/user";
 import { verifyAuthToken } from "./validators/auth";
 
 const app = express();
@@ -36,6 +37,7 @@ app.use("/api/program", verifyAuthToken, programRoutes);
 app.use("/api/students", verifyAuthToken, studentsRoutes);
 app.use("/api/sessions", verifyAuthToken, sessionRoutes);
 app.use("/api/attendance", verifyAuthToken, attendanceRoutes);
+app.use("/api/user", verifyAuthToken, userRoutes);
 
 app.use(errorHandler);
 
