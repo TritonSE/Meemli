@@ -2,27 +2,71 @@
 
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* layers give style prioirity to rightmost layer*/
+@layer reset, default, utilities;
+
+@font-face {
+  font-family: "Montserrat";
+  src:
+    local("Montserrat"),
+    url("/fonts/Montserrat/Montserrat-VariableFont_wght.ttf") format("truetype");
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer reset {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    margin: 0;
+    padding: 0;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer default {
+  body {
+    background-color: white;
+    display: flex;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: revert;
+    padding: revert;
+  }
+}
+
+@layer utilities {
+  * {
+    --grey-25: #fcfbfb;
+    --grey-50: #e7e7e7;
+    --grey-100: #d0d0d0;
+    --grey-200: #b3b3b3;
+    --grey-300: #999999;
+    --grey-400: #7d7d7d;
+    --grey-500: #666666;
+    --grey-600: #4d4d4d;
+    --grey-700: #3f3f3f;
+    --grey-800: #2a2a2a;
+    --grey-900: #1a1a1a;
+    --grey-950: #0d0d0d;
+
+    --primary-25: #f9fdfc;
+    --primary-50: #f3faf7;
+    --primary-100: #d8efe8;
+    --primary-200: #b1ded0;
+    --primary-300: #9ad0c2;
+    --primary-400: #59a896;
+    --primary-500: #3f8d7c;
+    --primary-600: #307164;
+    --primary-700: #2a5b52;
+    --primary-800: #254a43;
+    --primary-900: #233e3a;
+  }
+
+  div[class="horizontalLine"] {
+    height: 1px;
+    width: 100%;
+    background-color: var(--grey-200);
+  }
 }
