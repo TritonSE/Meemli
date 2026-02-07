@@ -23,9 +23,12 @@ const serviceAccountKey = throwIfUndefined(
 );
 
 // Firebase API key for testing bearer token verification
-const FIREBASE_API_KEY = throwIfUndefined(
-  process.env.FIREBASE_API_KEY,
-  InternalError.NO_FIREBASE_API_KEY,
-);
+const FIREBASE_API_KEY = process.env.DEV_FIREBASE_API_KEY;
 
-export { FIREBASE_API_KEY, FRONTEND_ORIGIN, MONGO_URI, PORT, serviceAccountKey };
+// Variable to bypass authorization route middleware.
+// WARNING: This should NEVER be enabled in PRD!!!
+// WARNING: If using this variable to test routes, note that you no longer have
+//    sender identification when handling requests, which may be needed.
+const AUTH_BYPASS = process.env.AUTH_BYPASS && process.env.AUTH_BYPASS === "True";
+
+export { AUTH_BYPASS, FIREBASE_API_KEY, FRONTEND_ORIGIN, MONGO_URI, PORT, serviceAccountKey };
