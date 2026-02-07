@@ -1,7 +1,12 @@
 "use client";
 
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
 import React, { useEffect, useState } from "react";
+
 import { updateAttendanceBulk } from "../../api/attendance";
+
 import styles from "./attendanceList.module.css";
 
 type AttendanceListProps = {
@@ -79,20 +84,23 @@ export default function AttendanceList({ initialAttendees }: AttendanceListProps
             <div className={styles.statusGroup}>
               <button
                 onClick={() => updateLocalState(att._id, "status", "PRESENT")}
-                className={`${styles.statusBtn} ${att.status === "PRESENT" ? styles.btnPresent + " " + styles.active : ""}`}
+                className={`${styles.statusBtn} ${att.status === "PRESENT" ? `${styles.btnPresent} ${styles.active}` : ""}`}
               >
+                <CheckIcon sx={{ fontSize: 20 }} />
                 Present
               </button>
               <button
                 onClick={() => updateLocalState(att._id, "status", "ABSENT")}
-                className={`${styles.statusBtn} ${att.status === "ABSENT" ? styles.btnAbsent + " " + styles.active : ""}`}
+                className={`${styles.statusBtn} ${att.status === "ABSENT" ? `${styles.btnAbsent} ${styles.active}` : ""}`}
               >
+                <CloseIcon sx={{ fontSize: 20 }} />
                 Absent
               </button>
               <button
                 onClick={() => updateLocalState(att._id, "status", "LATE")}
-                className={`${styles.statusBtn} ${att.status === "LATE" ? styles.btnLate + " " + styles.active : ""}`}
+                className={`${styles.statusBtn} ${att.status === "LATE" ? `${styles.btnLate} ${styles.active}` : ""}`}
               >
+                <AccessTimeIcon sx={{ fontSize: 20 }} />
                 Late
               </button>
             </div>

@@ -20,19 +20,16 @@
   grid-template-columns: 283px 449px 1fr;
   align-items: center;
   width: 100%;
+  border-bottom: 1px solid #e3e2e2;
 }
 
 .headerRow {
   border-bottom: 1px solid var(--Gray-200, #e3e2e2);
   background: var(--Gray-50, #f7f6f6);
-  display: flex;
-  padding: 12px 24px;
+  display: grid;
+  grid-template-columns: 283px 449px 1fr;
   align-items: center;
-  align-self: stretch;
-}
-
-.studentRow {
-  border-bottom: 1px solid #e3e2e2;
+  border-radius: 12px 12px 0 0;
 }
 
 .cell {
@@ -43,6 +40,7 @@
 }
 
 .columnHeader {
+  padding: 12px 24px;
   color: var(--Gray-500, #9b9d9f);
 
   font-family: Montserrat;
@@ -51,7 +49,6 @@
   font-weight: 600;
   line-height: 18px;
   letter-spacing: -0.24px;
-  gap: 10px;
 }
 
 .statusGroup {
@@ -69,9 +66,12 @@
   min-width: 80px;
   white-space: nowrap;
   border-radius: 8px;
+  border: none;
   background: var(--Gray-25, #fcfbfb);
   font-weight: 600;
   color: var(--Gray-400, #b6b8ba);
+  cursor: pointer;
+  transition: all 0.2s ease;
 
   font-family: Montserrat;
   font-size: 14px;
@@ -79,6 +79,16 @@
   font-weight: 600;
   line-height: 20px;
   letter-spacing: -0.28px;
+}
+
+.statusBtn:hover {
+  opacity: 0.8;
+}
+
+/* Make icons inherit button color (Figma has them in a slightly lighter shade) */
+.statusBtn svg,
+.statusBtn .material-icons {
+  color: inherit;
 }
 
 /* Active States from Figma */
@@ -99,6 +109,7 @@
   line-height: 20px;
   letter-spacing: -0.28px;
 }
+
 .btnLate.active {
   display: flex;
   padding: 8px 14px;
@@ -116,6 +127,7 @@
   line-height: 20px;
   letter-spacing: -0.28px;
 }
+
 .btnAbsent.active {
   display: flex;
   padding: 8px 14px;
@@ -135,6 +147,10 @@
 }
 
 .notesInput {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
   color: var(--Gray-900, #231f20);
 
   font-family: Montserrat;
