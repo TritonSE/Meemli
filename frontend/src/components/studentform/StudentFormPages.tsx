@@ -447,7 +447,6 @@ export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentF
           value={draft.preassessmentScore !== "0" ? draft.preassessmentScore : ""}
           placeholder="ex. 85"
           onChange={(e) => handleDraftChange(e.target.value, "preassessmentScore")}
-          required={true}
           error={Boolean(errors.preassessmentScore)}
         />
         <TextField
@@ -456,7 +455,6 @@ export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentF
           value={draft.postassessmentScore !== "0" ? draft.postassessmentScore : ""}
           placeholder="ex. 92"
           onChange={(e) => handleDraftChange(e.target.value, "postassessmentScore")}
-          required={true}
           error={Boolean(errors.postassessmentScore)}
         />
       </div>
