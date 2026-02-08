@@ -48,7 +48,7 @@ type StudentFormPagesProps = {
 
 // regex expressions for valid emails and phone numbers
 const emailRegex = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/;
-const phoneRegex = /^\(\d{3}\)-\d{3}-\d{4}$/;
+const phoneRegex = /^\d{10}$/;
 /**
  * Function that validates each field before next page is loaded
  * @param field The name of the field to validate
@@ -149,7 +149,7 @@ function validator(field: string, draft: Partial<Draft>, errors: StudentFormErro
       }
       if (!phoneRegex.test(draft.parentPhoneNumber)) {
         errors.parentPhoneNumber = true;
-        return "Phone number must be formatted as (123)-456-7890.";
+        return "Phone number must be a 10-digit number.";
       }
       break;
     case "parentEmail":
@@ -349,7 +349,7 @@ export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentF
           label="Parent Phone Number"
           name="parentPhoneNumber"
           value={draft.parentPhoneNumber ?? ""}
-          placeholder="ex. (123)-456-7890"
+          placeholder="ex. 1234567890"
           onChange={(e) => handleDraftChange(e.target.value, "parentPhoneNumber")}
           required={true}
           error={Boolean(errors.parentPhoneNumber)}
@@ -447,7 +447,6 @@ export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentF
           value={draft.preassessmentScore !== "0" ? draft.preassessmentScore : ""}
           placeholder="ex. 85"
           onChange={(e) => handleDraftChange(e.target.value, "preassessmentScore")}
-          required={true}
           error={Boolean(errors.preassessmentScore)}
         />
         <TextField
@@ -456,7 +455,6 @@ export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentF
           value={draft.postassessmentScore !== "0" ? draft.postassessmentScore : ""}
           placeholder="ex. 92"
           onChange={(e) => handleDraftChange(e.target.value, "postassessmentScore")}
-          required={true}
           error={Boolean(errors.postassessmentScore)}
         />
       </div>
@@ -546,6 +544,172 @@ export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentF
             kind={editSection === "program" ? "primary" : "secondary"}
             label="Program Info"
             onClick={() => setEditSection("program")}
+          />
+        </div>
+      </>
+    );
+
+    const studentInfo = (
+      <>
+        <div className={styles.formRow}>
+          <TextField
+            label="First Name"
+            name="studentFirstName"
+            value={draft.studentFirstName ?? ""}
+            placeholder="ex. John"
+            onChange={(e) => handleDraftChange(e.target.value, "studentFirstName")}
+            required={true}
+            error={Boolean(errors.studentFirstName)}
+          />
+          <TextField
+            label="Last Name"
+            name="studentLastName"
+            value={draft.studentLastName ?? ""}
+            placeholder="ex. Smith"
+            onChange={(e) => handleDraftChange(e.target.value, "studentLastName")}
+            required={true}
+            error={Boolean(errors.studentLastName)}
+          />
+          <TextField
+            label="Grade"
+            name="grade"
+            value={draft.grade !== "0" ? draft.grade : ""}
+            placeholder="ex. 3"
+            onChange={(e) => handleDraftChange(e.target.value, "grade")}
+            required={true}
+            error={Boolean(errors.grade)}
+          />
+        </div>
+        <div className={styles.formRow}>
+          <TextField
+            label="Student Email"
+            name="meemliEmail"
+            value={draft.meemliEmail ?? ""}
+            placeholder="ex. jsmith@meemli.com"
+            onChange={(e) => handleDraftChange(e.target.value, "meemliEmail")}
+            required={true}
+            error={Boolean(errors.meemliEmail)}
+          />
+        </div>
+        <div className={styles.formRow}>
+          <TextField
+            label="School Name"
+            name="schoolName"
+            value={draft.schoolName ?? ""}
+            placeholder="ex. Doyle Elementary School"
+            onChange={(e) => handleDraftChange(e.target.value, "schoolName")}
+            required={true}
+            error={Boolean(errors.schoolName)}
+          />
+        </div>
+        <div className={styles.formRow}>
+          <TextField
+            label="City"
+            name="city"
+            value={draft.city ?? ""}
+            placeholder="ex. San Diego"
+            onChange={(e) => handleDraftChange(e.target.value, "city")}
+            required={true}
+            error={Boolean(errors.city)}
+          />
+          <TextField
+            label="State"
+            name="state"
+            value={draft.state ?? ""}
+            placeholder="ex. CA"
+            onChange={(e) => handleDraftChange(e.target.value, "state")}
+            required={true}
+            error={Boolean(errors.state)}
+          />
+        </div>
+      </>
+    );
+
+    const parentInfo = (
+      <>
+        <div className={styles.formRow}>
+          <TextField
+            label="Parent First Name"
+            name="parentFirstName"
+            value={draft.parentFirstName ?? ""}
+            placeholder="ex. John"
+            onChange={(e) => handleDraftChange(e.target.value, "parentFirstName")}
+            required={true}
+            error={Boolean(errors.parentFirstName)}
+          />
+          <TextField
+            label="Parent Last Name"
+            name="parentLastName"
+            value={draft.parentLastName ?? ""}
+            placeholder="ex. Smith"
+            onChange={(e) => handleDraftChange(e.target.value, "parentLastName")}
+            required={true}
+            error={Boolean(errors.parentLastName)}
+          />
+        </div>
+        <div className={styles.formRow}>
+          <TextField
+            label="Parent Email"
+            name="parentEmail"
+            value={draft.parentEmail ?? ""}
+            placeholder="ex. jsmith@gmail.com"
+            onChange={(e) => handleDraftChange(e.target.value, "parentEmail")}
+            required={true}
+            error={Boolean(errors.parentEmail)}
+          />
+        </div>
+        <div className={styles.formRow}>
+          <TextField
+            label="Parent Phone Number"
+            name="parentPhoneNumber"
+            value={draft.parentPhoneNumber ?? ""}
+            placeholder="ex. (123)-456-7890"
+            onChange={(e) => handleDraftChange(e.target.value, "parentPhoneNumber")}
+            required={true}
+            error={Boolean(errors.parentPhoneNumber)}
+          />
+        </div>
+      </>
+    );
+
+    const programInfo = (
+      <>
+        <div className={styles.formRow}>
+          <TextField
+            label="Pre-Assessment Score"
+            name="preassessmentScore"
+            value={draft.preassessmentScore !== "0" ? draft.preassessmentScore : ""}
+            placeholder="ex. 85"
+            onChange={(e) => handleDraftChange(e.target.value, "preassessmentScore")}
+            required={true}
+            error={Boolean(errors.preassessmentScore)}
+          />
+          <TextField
+            label="Post-Assessment Score"
+            name="postassessmentScore"
+            value={draft.postassessmentScore !== "0" ? draft.postassessmentScore : ""}
+            placeholder="ex. 92"
+            onChange={(e) => handleDraftChange(e.target.value, "postassessmentScore")}
+            required={true}
+            error={Boolean(errors.postassessmentScore)}
+          />
+        </div>
+        <div className={styles.formRow}>
+          <MultiSelectDropdown
+            label="Enroll in Sections"
+            value={draft.enrolledSections ?? []}
+            onChange={(next) => setDraft((prev) => ({ ...prev, enrolledSections: next }))}
+            placeholder="Select"
+          />
+        </div>
+        <div className={styles.formRow}>
+          <TextField
+            label="Notes"
+            name="comments"
+            value={draft.comments ?? ""}
+            placeholder="Type here..."
+            onChange={(e) => handleDraftChange(e.target.value, "comments")}
+            error={Boolean(errors.comments)}
           />
         </div>
       </>
