@@ -93,8 +93,7 @@ const makeStateValidator = (): ValidationChain => {
 
 const makePreassessmentScoreValidator = (): ValidationChain => {
   return body("preassessmentScore")
-    .exists()
-    .withMessage("preassessmentScore is required")
+    .optional()
     .bail()
     .isInt()
     .withMessage("preassessmentScore must be an integer");
@@ -102,8 +101,7 @@ const makePreassessmentScoreValidator = (): ValidationChain => {
 
 const makePostassessmentScoreValidator = (): ValidationChain => {
   return body("postassessmentScore")
-    .exists()
-    .withMessage("postassessmentScore is required")
+    .optional()
     .bail()
     .isInt()
     .withMessage("postassessmentScore must be an integer");
@@ -125,14 +123,11 @@ const makeEnrolledSectionsValidator = (): ValidationChain => {
 
 const makeCommentsValidator = (): ValidationChain => {
   return body("comments")
-    .exists()
-    .withMessage("comments is required")
-    .bail()
+    .optional()
     .isString()
     .withMessage("comments must be a string")
     .bail()
-    .isLength({ min: 0 })
-    .withMessage("comments must be at least empty string");
+    .isLength({ min: 0 });
 };
 
 export const validateCreateStudent = [
