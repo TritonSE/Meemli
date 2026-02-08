@@ -4,10 +4,11 @@
 import { useEffect, useState } from "react";
 
 import { Button } from "../Button";
-import { MultiSelectDropdown } from "./MultiSelectDropdown";
 import { ProgressBar } from "../ProgressBar";
-import styles from "./StudentForm.module.css";
 import { TextField } from "../TextField";
+
+import { MultiSelectDropdown } from "./MultiSelectDropdown";
+import styles from "./StudentForm.module.css";
 
 import type { ValuesType } from "./StudentForm";
 
@@ -439,45 +440,45 @@ export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentF
   // weird to handle it in handleDraftChange
   const step2 = (
     <>
-        <div className={styles.formRow}>
-          <TextField
-            label="Pre-Assessment Score"
-            name="preassessmentScore"
-            value={draft.preassessmentScore !== "0" ? draft.preassessmentScore : ""}
-            placeholder="ex. 85"
-            onChange={(e) => handleDraftChange(e.target.value, "preassessmentScore")}
-            required={true}
-            error={Boolean(errors.preassessmentScore)}
-          />
-          <TextField
-            label="Post-Assessment Score"
-            name="postassessmentScore"
-            value={draft.postassessmentScore !== "0" ? draft.postassessmentScore : ""}
-            placeholder="ex. 92"
-            onChange={(e) => handleDraftChange(e.target.value, "postassessmentScore")}
-            required={true}
-            error={Boolean(errors.postassessmentScore)}
-          />
-        </div>
-        <div className={styles.formRow}>
-          <MultiSelectDropdown
-            label="Enroll in Sections"
-            value={draft.enrolledSections ?? []}
-            onChange={(next) => setDraft((prev) => ({ ...prev, enrolledSections: next }))}
-            placeholder="Select"
-          />
-        </div>
-        <div className={styles.formRow}>
-          <TextField
-            label="Notes"
-            name="comments"
-            value={draft.comments ?? ""}
-            placeholder="Type here..."
-            onChange={(e) => handleDraftChange(e.target.value, "comments")}
-            error={Boolean(errors.comments)}
-          />
-        </div>
-      </>
+      <div className={styles.formRow}>
+        <TextField
+          label="Pre-Assessment Score"
+          name="preassessmentScore"
+          value={draft.preassessmentScore !== "0" ? draft.preassessmentScore : ""}
+          placeholder="ex. 85"
+          onChange={(e) => handleDraftChange(e.target.value, "preassessmentScore")}
+          required={true}
+          error={Boolean(errors.preassessmentScore)}
+        />
+        <TextField
+          label="Post-Assessment Score"
+          name="postassessmentScore"
+          value={draft.postassessmentScore !== "0" ? draft.postassessmentScore : ""}
+          placeholder="ex. 92"
+          onChange={(e) => handleDraftChange(e.target.value, "postassessmentScore")}
+          required={true}
+          error={Boolean(errors.postassessmentScore)}
+        />
+      </div>
+      <div className={styles.formRow}>
+        <MultiSelectDropdown
+          label="Enroll in Sections"
+          value={draft.enrolledSections ?? []}
+          onChange={(next) => setDraft((prev) => ({ ...prev, enrolledSections: next }))}
+          placeholder="Select"
+        />
+      </div>
+      <div className={styles.formRow}>
+        <TextField
+          label="Notes"
+          name="comments"
+          value={draft.comments ?? ""}
+          placeholder="Type here..."
+          onChange={(e) => handleDraftChange(e.target.value, "comments")}
+          error={Boolean(errors.comments)}
+        />
+      </div>
+    </>
   );
   const stepViews = [step0, step1, step2];
   /**

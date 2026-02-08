@@ -1,6 +1,8 @@
 "use client";
 import { Button } from "@tritonse/tse-constellation";
 
+import { TestStudentForm } from "@/src/pages/TestStudentForm";
+
 /* 
 All constellation components can be found here:
 https://tritonse.github.io/TSE-Constellation/?path=/docs/welcome--documentation
@@ -20,6 +22,7 @@ export default function Test() {
         <Button small> Small Button </Button>
         <Button destructive> Small Button </Button>
       </div>
+      <TestStudentForm />
     </div>
   );
 }

@@ -4,6 +4,8 @@ import { getAllStudents } from "../api/students";
 import { Page } from "../components/Page";
 import { StudentForm } from "../components/studentform/StudentForm";
 
+import styles from "./TestStudentForm.module.css";
+
 import type { Student } from "../api/students";
 
 export function TestStudentForm() {
@@ -11,6 +13,8 @@ export function TestStudentForm() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -29,29 +33,40 @@ export function TestStudentForm() {
 
   const selectedStudent = students.find((student) => student._id === selectedId) ?? null;
 
+  /**
+   * Render create form, then edit student buttons, then edit student form
+   */
   return (
     <Page>
       <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
         <section>
           <h1>StudentForm</h1>
-          <StudentForm
-            mode="create"
-            onSubmit={() => {
-              setLoading(true);
-              getAllStudents()
-                .then((result) => {
-                  if (result.success) {
-                    setStudents(result.data);
-                  } else {
-                    setErrorMessage(result.error);
-                  }
-                })
-                .catch((error) =>
-                  setErrorMessage(error instanceof Error ? error.message : String(error)),
-                )
-                .finally(() => setLoading(false));
-            }}
-          />
+          <button onClick={() => setAddOpen(!addOpen)}>Add Student</button>
+          {addOpen && (
+            <div className={styles.overlay} onClick={() => setAddOpen(!addOpen)}>
+              <div className={styles.wrapper} onClick={(e) => e.stopPropagation()}>
+                <StudentForm
+                  mode="create"
+                  onSubmit={() => {
+                    setLoading(true);
+                    getAllStudents()
+                      .then((result) => {
+                        if (result.success) {
+                          setStudents(result.data);
+                        } else {
+                          setErrorMessage(result.error);
+                        }
+                      })
+                      .catch((error) =>
+                        setErrorMessage(error instanceof Error ? error.message : String(error)),
+                      )
+                      .finally(() => setLoading(false));
+                  }}
+                  onCancel={() => setAddOpen(false)}
+                />
+              </div>
+            </div>
+          )}
         </section>
 
         <section>
@@ -64,7 +79,10 @@ export function TestStudentForm() {
               {students.map((student) => (
                 <button
                   key={student._id}
-                  onClick={() => setSelectedId(student._id)}
+                  onClick={() => {
+                    setSelectedId(student._id);
+                    setEditOpen(!editOpen);
+                  }}
                   type="button"
                   style={{
                     padding: "0.5rem 0.9rem",
@@ -80,25 +98,27 @@ export function TestStudentForm() {
               ))}
             </div>
           )}
-          {selectedStudent && (
-            <div style={{ marginTop: "1.5rem" }}>
-              <StudentForm
-                mode="edit"
-                student={selectedStudent}
-                key={selectedStudent._id}
-                onSubmit={() => {
-                  setLoading(true);
-                  getAllStudents()
-                    .then((result) => {
-                      if (result.success) setStudents(result.data);
-                      else setErrorMessage(result.error);
-                    })
-                    .catch((error) =>
-                      setErrorMessage(error instanceof Error ? error.message : String(error)),
-                    )
-                    .finally(() => setLoading(false));
-                }}
-              />
+          {selectedStudent && editOpen && (
+            <div className={styles.overlay} onClick={() => setEditOpen(!editOpen)}>
+              <div className={styles.wrapper} onClick={(e) => e.stopPropagation()}>
+                <StudentForm
+                  mode="edit"
+                  student={selectedStudent}
+                  key={selectedStudent._id}
+                  onSubmit={() => {
+                    setLoading(true);
+                    getAllStudents()
+                      .then((result) => {
+                        if (result.success) setStudents(result.data);
+                        else setErrorMessage(result.error);
+                      })
+                      .catch((error) =>
+                        setErrorMessage(error instanceof Error ? error.message : String(error)),
+                      )
+                      .finally(() => setLoading(false));
+                  }}
+                />
+              </div>
             </div>
           )}
         </section>

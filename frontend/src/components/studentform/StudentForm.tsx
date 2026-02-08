@@ -77,6 +77,7 @@ export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormPr
   // Constellation `Dialog` component. If it's `null`, there's no error, so we don't display the Dialog.
   // If it's non-null, there is an error, so we should display that error to the user.
   const [errorModalMessage, setErrorModalMessage] = useState<string | null>(null);
+  const [open, setOpen] = useState(true);
 
   /**
    * Handles the submission of the form. Uses different routes depending
@@ -166,22 +167,15 @@ export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormPr
       description: "Fill out student information.",
     },
     {
-      title: "Assessment Scores",
+      title: "Assessment Scores and Enrollment",
       fields: ["preassessmentScore", "postassessmentScore"],
-      description: "Enter assessment scores.",
-    },
-    {
-      title: "Assigned Programs",
-      fields: ["enrolledSections", "comments"],
-      description: "Assign student to Meemli programs.",
+      description: "Enter assessment scores and assign student to Meemli programs.",
     },
   ];
 
   return (
-    <div className="wrapper">
-      <form className={styles.form}>
-        <StudentFormPages mode={mode} values={values} steps={steps} handleSubmit={handleSubmit} />
-      </form>
-    </div>
+    <form className={styles.form}>
+      <StudentFormPages mode={mode} values={values} steps={steps} handleSubmit={handleSubmit} />
+    </form>
   );
 }
