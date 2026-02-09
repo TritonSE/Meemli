@@ -1,5 +1,3 @@
-import App from "./App";
-
-export default function Page() {
-  return <App />;
+export default function Home() {
+  return <div>This is Meemli Home page. </div>;
 }

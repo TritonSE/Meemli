@@ -1,6 +1,36 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(0, 0, 0, 0.25);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
 .wrapper {
   display: flex;
   flex-direction: row;
+
+  position: relative; /* sits inside overlay */
+  width: 60vw;
+
+  background: white;
+  border: 1px solid var(--grey-100);
+  border-radius: 12px;
+  padding: 24px;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+
+  /* if the form content gets tall */
+  max-height: 85vh;
+  overflow: auto;
+  justify-content: center;
 }
 .form {
   background-color: white;
@@ -8,11 +38,8 @@
   flex-direction: column;
   color: black;
   padding: 2vw;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 10vw;
-  width: 80%;
-  max-width: 640px;
+  width: 100%;
+  max-width: 750px;
   padding: 48px;
   height: 680px;
   border-radius: 12px;

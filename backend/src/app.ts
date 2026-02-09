@@ -3,7 +3,7 @@ import cors from "cors";
 import express from "express";
 import mongoose from "mongoose";
 
-import { FRONTEND_ORIGIN, MONGO_URI, PORT } from "./config";
+import { AUTH_BYPASS, FRONTEND_ORIGIN, MONGO_URI, PORT } from "./config";
 import errorHandler from "./middleware/errorHandler";
 import log from "./middleware/logger";
 import programRoutes from "./routes/program";
@@ -29,9 +29,9 @@ app.use(express.json());
 
 app.use(log);
 
-app.use("/sections", verifyAuthToken, sectionsRouter);
+app.use("/api/sections", verifyAuthToken, sectionsRouter);
 app.use("/api/program", verifyAuthToken, programRoutes);
-app.use("/students", verifyAuthToken, studentsRoutes);
+app.use("/api/students", verifyAuthToken, studentsRoutes);
 app.use("/api/sessions", verifyAuthToken, sessionRoutes);
 
 app.use(errorHandler);
@@ -42,6 +42,7 @@ mongoose
     console.info("Mongoose connected!");
     app.listen(PORT, () => {
       console.info(`> Listening on port ${PORT}`);
+      if (AUTH_BYPASS) console.info("Authorization Bypass is enabled");
     });
   })
   .catch(console.error);
