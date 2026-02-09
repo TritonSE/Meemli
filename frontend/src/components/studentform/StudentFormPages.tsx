@@ -735,7 +735,7 @@ export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentF
     );
 
     const stepElement =
-      editSection === "student" ? step0 : editSection === "parent" ? step1 : step2;
+      editSection === "parent" ? step0 : editSection === "student" ? step1 : step2;
 
     return (
       <div className={styles.formPage}>
