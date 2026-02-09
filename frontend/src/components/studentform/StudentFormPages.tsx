@@ -8,6 +8,8 @@ import { MultiSelectDropdown } from "./MultiSelectDropdown";
 import { ProgressBar } from "../ProgressBar";
 import styles from "./StudentForm.module.css";
 import { TextField } from "../TextField";
+import Select from "react-select";
+import { options } from "./AllStates";
 
 import type { ValuesType } from "./StudentForm";
 
@@ -423,16 +425,24 @@ export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentF
           onChange={(e) => handleDraftChange(e.target.value, "city")}
           required={true}
           error={Boolean(errors.city)}
+          className={styles.halfField}
         />
-        <TextField
-          label="State"
-          name="state"
-          value={draft.state ?? ""}
-          placeholder="ex. CA"
-          onChange={(e) => handleDraftChange(e.target.value, "state")}
-          required={true}
-          error={Boolean(errors.state)}
-        />
+        <div className={`${styles.selectField} ${styles.halfField}`}>
+          <label className={styles.selectLabel}>
+            State<span className={styles.required}>*</span>
+          </label>
+          <Select
+            aria-label="State"
+            name="state"
+            className={styles.stateSelect}
+            classNamePrefix="stateSelect"
+            value={options.find((option) => option.label === draft.state) ?? null}
+            options={options}
+            isSearchable={true}
+            placeholder="Search for a state..."
+            onChange={(option) => handleDraftChange(option?.label ?? "", "state")}
+          />
+        </div>
       </div>
       {makeButtons(handlePrevStep, handleNextStep, "Back", "Next")}
     </>

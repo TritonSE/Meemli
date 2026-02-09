@@ -50,6 +50,56 @@
   margin: 10px 0;
 }
 
+.selectField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.halfField {
+  flex: 1;
+  min-width: 0;
+}
+
+.selectLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.required {
+  color: #dc2626;
+  margin-left: 4px;
+}
+
+.stateSelect {
+  width: 100%;
+}
+
+:global(.stateSelect__control) {
+  min-height: 48px;
+  border-radius: 8px;
+  border: 1px solid #d6d6d6;
+  background: #fff;
+  box-shadow: none;
+}
+
+:global(.stateSelect__control--is-focused) {
+  border-color: #047857;
+  box-shadow: 0 0 0 2px rgba(4, 120, 87, 0.15);
+}
+
+:global(.stateSelect__value-container) {
+  padding: 0 0.75rem;
+}
+
+:global(.stateSelect__indicator-separator) {
+  display: none;
+}
+
+:global(.stateSelect__menu) {
+  z-index: 5;
+}
+
 .buttonRow {
   display: flex;
   flex-direction: row;
