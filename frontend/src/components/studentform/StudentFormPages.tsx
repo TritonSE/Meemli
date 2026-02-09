@@ -13,6 +13,11 @@ import { options } from "./AllStates";
 
 import type { ValuesType } from "./StudentForm";
 
+// Constants declaration
+
+// NOTES_MAX is the maximum number of characters for the notes section of the form
+const NOTES_MAX = 200;
+
 /**
  * Type definition for the errors object used in StudentForm validation.
  */
@@ -492,8 +497,12 @@ export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentF
           placeholder="Type here..."
           onChange={(e) => handleDraftChange(e.target.value, "comments")}
           error={Boolean(errors.comments)}
+          maxLength={NOTES_MAX}
         />
       </div>
+      <span className={styles.charCount}>
+        {(draft.comments ?? "").length} / {NOTES_MAX}
+      </span>
       {makeButtons(handlePrevStep, handleSubmission, "Back", "Add")}
     </>
   );

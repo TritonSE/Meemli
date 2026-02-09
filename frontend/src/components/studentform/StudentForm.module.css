@@ -71,6 +71,13 @@
   margin-left: 4px;
 }
 
+.charCount {
+  font-size: 0.8rem;
+  color: #475467;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
 .stateSelect {
   width: 100%;
 }
