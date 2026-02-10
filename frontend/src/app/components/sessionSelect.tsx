@@ -1,4 +1,4 @@
-import { AttendanceSession } from "@/src/api/attendance";
+import type { AttendanceSession } from "@/src/api/attendance";
 
 export function SectionSelect({
   sessions,

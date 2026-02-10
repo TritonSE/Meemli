@@ -32,8 +32,8 @@ type UpdateAttendanceBulkResponse = {
 
 // Function to get the session data
 export const getSessionById = async (id: string): Promise<AttendanceSession> => {
-  const response = await get(`/api/sessions/${id}`);
-  const data = await response.json();
+  const response = await get(`/sessions/${id}`);
+  const data: unknown = await response.json();
   return data as AttendanceSession;
 };
 
@@ -41,7 +41,7 @@ export const getSessionById = async (id: string): Promise<AttendanceSession> => 
 export const updateAttendanceBulk = async (
   updates: any[],
 ): Promise<UpdateAttendanceBulkResponse> => {
-  const response = await put("/api/attendance/bulk-update", updates, {
+  const response = await put("/attendance/bulk-update", updates, {
     "Content-Type": "application/json",
   });
 
@@ -50,7 +50,7 @@ export const updateAttendanceBulk = async (
 };
 
 export const getAllSessions = async (): Promise<AttendanceSession[]> => {
-  const response = await get("/api/sessions");
-  const data = await response.json();
+  const response = await get("/sessions");
+  const data: unknown = await response.json();
   return data as AttendanceSession[];
 };

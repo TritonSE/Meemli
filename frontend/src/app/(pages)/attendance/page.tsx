@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 
-import { getAllSessions, getSessionById, AttendanceSession } from "../../../api/attendance";
+import { getAllSessions, getSessionById } from "../../../api/attendance";
 import AttendanceList from "../../components/attendanceList";
-import { SectionSelect } from "../../components/sessionSelect";
 import { DateSelect } from "../../components/dateSelect";
+import { SectionSelect } from "../../components/sessionSelect";
+
+import type { AttendanceSession } from "../../../api/attendance";
 
 export default function Attendance() {
   const [sessionList, setSessionList] = useState<AttendanceSession[]>([]);
@@ -25,12 +27,16 @@ export default function Attendance() {
   useEffect(() => {
     const load = async () => {
       const data = await getAllSessions();
-      console.log("DEBUG: API Response", data); // CHECK YOUR BROWSER CONSOLE
       setSessionList(data || []);
       setSessionList(data);
     };
     void load();
   }, []);
+
+  const handleFetchFull = async (id: string) => {
+    const data = await getSessionById(id);
+    setSelectedSession(data);
+  };
 
   // Filter Logic when both dropdowns have a value, find the session
   useEffect(() => {
@@ -42,17 +48,12 @@ export default function Attendance() {
       });
 
       if (match) {
-        handleFetchFull(match._id);
+        void handleFetchFull(match._id);
       } else {
         setSelectedSession(null);
       }
     }
   }, [activeSectionId, activeDate, sessionList]);
-
-  const handleFetchFull = async (id: string) => {
-    const data = await getSessionById(id);
-    setSelectedSession(data);
-  };
 
   // session selected
   // return (

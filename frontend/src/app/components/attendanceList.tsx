@@ -3,7 +3,7 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { updateAttendanceBulk } from "../../api/attendance";
 
@@ -47,15 +47,24 @@ export default function AttendanceList({ initialAttendees }: AttendanceListProps
     }
 
     setSaveStatus("saving");
-    const timer = setTimeout(async () => {
-      const updates = attendees.map((a) => ({
-        attendanceId: a._id,
-        status: a.status,
-        notes: a.notes,
-      }));
-      await updateAttendanceBulk(updates);
-      setSaveStatus("saved");
-      setTimeout(() => setSaveStatus("idle"), 2000);
+    const timer = setTimeout(() => {
+      const saveData = async () => {
+        try {
+          const updates = attendees.map((a) => ({
+            attendanceId: a._id,
+            status: a.status,
+            notes: a.notes,
+          }));
+          await updateAttendanceBulk(updates);
+          setSaveStatus("saved");
+          setTimeout(() => setSaveStatus("idle"), 2000);
+        } catch (error) {
+          console.error("Failed to save attendance:", error);
+          setSaveStatus("idle");
+        }
+      };
+
+      void saveData();
     }, 1000);
 
     return () => clearTimeout(timer);
