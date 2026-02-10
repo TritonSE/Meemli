@@ -3,7 +3,7 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import { updateAttendanceBulk } from "../../api/attendance";
 
@@ -16,7 +16,9 @@ type AttendanceListProps = {
 
 type Student = {
   _id: string;
-  displayName: string;
+  firstName?: string;
+  lastName?: string;
+  displayName?: string;
 };
 
 type Attendee = {
@@ -31,6 +33,7 @@ export default function AttendanceList({ initialAttendees }: AttendanceListProps
   // Local copy of the data
   const [attendees, setAttendees] = useState<Attendee[]>(initialAttendees);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const isFirstRender = useRef(true);
   //update local state
   const updateLocalState = (id: string, field: string, value: string) => {
     setAttendees((prev) => prev.map((att) => (att._id === id ? { ...att, [field]: value } : att)));
@@ -38,26 +41,21 @@ export default function AttendanceList({ initialAttendees }: AttendanceListProps
 
   //autosave
   useEffect(() => {
-    if (!attendees || attendees.length === 0) return;
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
 
     setSaveStatus("saving");
-
-    const timer = setTimeout(() => {
-      void (async () => {
-        try {
-          const updates = attendees.map((a: Attendee) => ({
-            attendanceId: a._id,
-            status: a.status,
-            notes: a.notes,
-          }));
-
-          await updateAttendanceBulk(updates); //API function
-          setSaveStatus("saved");
-        } catch (err) {
-          console.error(err);
-          setSaveStatus("error");
-        }
-      })();
+    const timer = setTimeout(async () => {
+      const updates = attendees.map((a) => ({
+        attendanceId: a._id,
+        status: a.status,
+        notes: a.notes,
+      }));
+      await updateAttendanceBulk(updates);
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 2000);
     }, 1000);
 
     return () => clearTimeout(timer);
@@ -77,8 +75,11 @@ export default function AttendanceList({ initialAttendees }: AttendanceListProps
 
       {attendees.map((att) => (
         <div key={att._id} className={styles.studentRow}>
-          {/* SAFETY CHECK: Use ?. to prevent "null displayName" error */}
-          <div className={styles.cell}>{att.student?.displayName || "Unknown Student"}</div>
+          <div className={styles.cell}>
+            {att.student?.firstName && att.student?.lastName
+              ? `${att.student.firstName} ${att.student.lastName}`
+              : att.student?.displayName || "Unknown Student"}
+          </div>
 
           <div className={styles.cell}>
             <div className={styles.statusGroup}>

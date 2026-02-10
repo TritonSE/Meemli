@@ -1,15 +1,29 @@
 import { get, put } from "./requests";
 
-export type AttendanceUpdate = {
-  attendanceId: string;
-  status: string;
-  note: string;
+export type AttendanceSection = {
+  _id: string;
+  code: string;
 };
 
-type Session = {
+export type Student = {
   _id: string;
-  section: string;
-  sessionDate: Date;
+  firstName?: string;
+  lastName?: string;
+  displayName?: string;
+};
+
+export type Attendee = {
+  _id: string;
+  student: Student;
+  status: "PRESENT" | "ABSENT" | "LATE";
+  notes: string;
+};
+
+export type AttendanceSession = {
+  _id: string;
+  sessionDate: string | Date;
+  section: AttendanceSection;
+  attendees?: Attendee[];
 };
 
 type UpdateAttendanceBulkResponse = {
@@ -17,16 +31,17 @@ type UpdateAttendanceBulkResponse = {
 };
 
 // Function to get the session data
-export const getSessionById = async (id: string): Promise<Session> => {
-  const response = await get(`/sessions/${id}`);
-  return response.json() as Promise<Session>;
+export const getSessionById = async (id: string): Promise<AttendanceSession> => {
+  const response = await get(`/api/sessions/${id}`);
+  const data = await response.json();
+  return data as AttendanceSession;
 };
 
 // Function to save the attendance
 export const updateAttendanceBulk = async (
   updates: any[],
 ): Promise<UpdateAttendanceBulkResponse> => {
-  const response = await put("/attendance/bulk-update", updates, {
+  const response = await put("/api/attendance/bulk-update", updates, {
     "Content-Type": "application/json",
   });
 
@@ -34,7 +49,8 @@ export const updateAttendanceBulk = async (
   return response.json() as Promise<UpdateAttendanceBulkResponse>;
 };
 
-export const getAllSessions = async (): Promise<Session[]> => {
-  const response = await get("/sessions");
-  return response.json() as Promise<Session[]>;
+export const getAllSessions = async (): Promise<AttendanceSession[]> => {
+  const response = await get("/api/sessions");
+  const data = await response.json();
+  return data as AttendanceSession[];
 };

@@ -80,7 +80,7 @@ export const getSession: RequestHandler = async (req, res, next) => {
 
 export const getAllSessions: RequestHandler = async (req, res, next) => {
   try {
-    const sessions = await SessionModel.find();
+    const sessions = await SessionModel.find().populate("section");
 
     res.status(200).json(sessions);
   } catch (error) {
