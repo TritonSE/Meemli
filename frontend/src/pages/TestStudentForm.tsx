@@ -7,7 +7,7 @@ import { StudentForm } from "../components/studentform/StudentForm";
 
 import type { Student } from "../api/students";
 
-export function TestStudentForm() {
+function TestStudentForm() {
   const [students, setStudents] = useState<Student[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
@@ -42,7 +42,8 @@ export function TestStudentForm() {
           <h1>StudentForm</h1>
           <button onClick={() => setAddOpen(!addOpen)}>Add Student</button>
           {addOpen && (
-            <Modal onExit={() => setAddOpen(!addOpen)}
+            <Modal
+              onExit={() => setAddOpen(!addOpen)}
               child={
                 <>
                   <StudentForm
@@ -51,23 +52,23 @@ export function TestStudentForm() {
                       setLoading(true);
                       setAddOpen(false);
                       getAllStudents()
-                      .then((result) => {
-                        if (result.success) {
-                          setStudents(result.data);
-                        } else {
-                          setErrorMessage(result.error);
-                        }
-                      })
-                      .catch((error) =>
-                        setErrorMessage(error instanceof Error ? error.message : String(error)),
-                    )
-                    .finally(() => setLoading(false));
-                  }}
-                  onCancel={() => setAddOpen(false)}
+                        .then((result) => {
+                          if (result.success) {
+                            setStudents(result.data);
+                          } else {
+                            setErrorMessage(result.error);
+                          }
+                        })
+                        .catch((error) =>
+                          setErrorMessage(error instanceof Error ? error.message : String(error)),
+                        )
+                        .finally(() => setLoading(false));
+                    }}
+                    onCancel={() => setAddOpen(false)}
                   />
                 </>
-                }
-              />
+              }
+            />
           )}
         </section>
 
@@ -101,9 +102,9 @@ export function TestStudentForm() {
             </div>
           )}
           {selectedStudent && editOpen && (
-            <Modal 
-                onExit={() => setEditOpen(!editOpen)}
-                child={
+            <Modal
+              onExit={() => setEditOpen(!editOpen)}
+              child={
                 <StudentForm
                   mode="edit"
                   student={selectedStudent}
@@ -130,3 +131,4 @@ export function TestStudentForm() {
     </Page>
   );
 }
+export default TestStudentForm;

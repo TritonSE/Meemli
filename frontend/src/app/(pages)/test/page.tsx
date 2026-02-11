@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@tritonse/tse-constellation";
 
-import { TestStudentForm } from "@/src/pages/TestStudentForm";
+import TestStudentForm from "@/src/pages/TestStudentForm";
 
 /* 
 All constellation components can be found here:
