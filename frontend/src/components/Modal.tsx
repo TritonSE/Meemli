@@ -1,3 +1,5 @@
+import styles from "./Modal.module.css";
+
 import type { ReactNode } from "react";
 
 type ModalProps = {

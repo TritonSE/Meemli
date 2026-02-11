@@ -1,4 +1,4 @@
-import { handleAPIError, post } from "./requests";
+import { get, handleAPIError, post, put } from "./requests";
 
 import type { APIResult } from "@/src/api/requests";
 
@@ -52,22 +52,22 @@ export async function createUser(user: CreateUserRequest): Promise<APIResult<Use
   }
 }
 
-// export async function getStudent(id: string): Promise<APIResult<Student>> {
-//   try {
-//     const response = await get(studentByIdRoute(id));
-//     const json = (await response.json()) as StudentJSON;
-//     return { success: true, data: parseStudent(json) };
-//   } catch (error) {
-//     return handleAPIError(error);
-//   }
-// }
+export async function getUser(id: string): Promise<APIResult<User>> {
+  try {
+    const response = await get(userByIdRoute(id));
+    const json = (await response.json()) as UserJSON;
+    return { success: true, data: parseUser(json) };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
 
-// export async function updateStudent(student: UpdateStudentRequest): Promise<APIResult<Student>> {
-//   try {
-//     const response = await put(studentByIdRoute(student._id), student);
-//     const json = (await response.json()) as StudentJSON;
-//     return { success: true, data: parseStudent(json) };
-//   } catch (error) {
-//     return handleAPIError(error);
-//   }
-// }
+export async function updateUser(user: UpdateUserRequest): Promise<APIResult<User>> {
+  try {
+    const response = await put(userByIdRoute(user._id), user);
+    const json = (await response.json()) as UserJSON;
+    return { success: true, data: parseUser(json) };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
