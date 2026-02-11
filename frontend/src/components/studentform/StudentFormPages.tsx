@@ -15,7 +15,6 @@ import { options } from "./AllStates";
 import type { ValuesType } from "./StudentForm";
 
 // Constants declaration
-
 // NOTES_MAX is the maximum number of characters for the notes section of the form
 const NOTES_MAX = 200;
 
@@ -49,6 +48,7 @@ type Draft = {
 type StudentFormPagesProps = {
   values: ValuesType;
   steps: Array<{ title: string; fields: Array<string>; description: string }>;
+  handleCancel: () => void,
   handleSubmit: (candidate: ValuesType) => void;
   mode: string;
 };
@@ -100,7 +100,7 @@ function validator(field: string, draft: Partial<Draft>, errors: StudentFormErro
       num = Number(draft.grade);
       if (!Number.isInteger(num) || num < 1 || num > 12) {
         errors.grade = true;
-        return "Grade must be an integer between 1 and 12 (inclusive).";
+        return "Grade must be between 1 and 12.";
       }
       break;
     case "schoolName":
@@ -201,7 +201,7 @@ function validator(field: string, draft: Partial<Draft>, errors: StudentFormErro
   return "passed";
 }
 
-export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentFormPagesProps) {
+export function StudentFormPages({ values, steps, handleCancel, handleSubmit, mode }: StudentFormPagesProps) {
   const initalValues = {
     ...values,
     grade: String(values.grade ?? ""),
@@ -277,9 +277,6 @@ export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentF
     setErrors({});
     setErrorMessage("");
   }
-  // TODO: Add functionality for the cancel button (set display: none? not sure
-  // how to go about this)
-  function handleCancel() {}
 
   /**
    * Function that gets called when "Submit" button is pressed.
@@ -563,172 +560,6 @@ export function StudentFormPages({ values, steps, handleSubmit, mode }: StudentF
             kind={editSection === "program" ? "primary" : "secondary"}
             label="Program Info"
             onClick={() => setEditSection("program")}
-          />
-        </div>
-      </>
-    );
-
-    const studentInfo = (
-      <>
-        <div className={styles.formRow}>
-          <TextField
-            label="First Name"
-            name="studentFirstName"
-            value={draft.studentFirstName ?? ""}
-            placeholder="ex. John"
-            onChange={(e) => handleDraftChange(e.target.value, "studentFirstName")}
-            required={true}
-            error={Boolean(errors.studentFirstName)}
-          />
-          <TextField
-            label="Last Name"
-            name="studentLastName"
-            value={draft.studentLastName ?? ""}
-            placeholder="ex. Smith"
-            onChange={(e) => handleDraftChange(e.target.value, "studentLastName")}
-            required={true}
-            error={Boolean(errors.studentLastName)}
-          />
-          <TextField
-            label="Grade"
-            name="grade"
-            value={draft.grade !== "0" ? draft.grade : ""}
-            placeholder="ex. 3"
-            onChange={(e) => handleDraftChange(e.target.value, "grade")}
-            required={true}
-            error={Boolean(errors.grade)}
-          />
-        </div>
-        <div className={styles.formRow}>
-          <TextField
-            label="Student Email"
-            name="meemliEmail"
-            value={draft.meemliEmail ?? ""}
-            placeholder="ex. jsmith@meemli.com"
-            onChange={(e) => handleDraftChange(e.target.value, "meemliEmail")}
-            required={true}
-            error={Boolean(errors.meemliEmail)}
-          />
-        </div>
-        <div className={styles.formRow}>
-          <TextField
-            label="School Name"
-            name="schoolName"
-            value={draft.schoolName ?? ""}
-            placeholder="ex. Doyle Elementary School"
-            onChange={(e) => handleDraftChange(e.target.value, "schoolName")}
-            required={true}
-            error={Boolean(errors.schoolName)}
-          />
-        </div>
-        <div className={styles.formRow}>
-          <TextField
-            label="City"
-            name="city"
-            value={draft.city ?? ""}
-            placeholder="ex. San Diego"
-            onChange={(e) => handleDraftChange(e.target.value, "city")}
-            required={true}
-            error={Boolean(errors.city)}
-          />
-          <TextField
-            label="State"
-            name="state"
-            value={draft.state ?? ""}
-            placeholder="ex. CA"
-            onChange={(e) => handleDraftChange(e.target.value, "state")}
-            required={true}
-            error={Boolean(errors.state)}
-          />
-        </div>
-      </>
-    );
-
-    const parentInfo = (
-      <>
-        <div className={styles.formRow}>
-          <TextField
-            label="Parent First Name"
-            name="parentFirstName"
-            value={draft.parentFirstName ?? ""}
-            placeholder="ex. John"
-            onChange={(e) => handleDraftChange(e.target.value, "parentFirstName")}
-            required={true}
-            error={Boolean(errors.parentFirstName)}
-          />
-          <TextField
-            label="Parent Last Name"
-            name="parentLastName"
-            value={draft.parentLastName ?? ""}
-            placeholder="ex. Smith"
-            onChange={(e) => handleDraftChange(e.target.value, "parentLastName")}
-            required={true}
-            error={Boolean(errors.parentLastName)}
-          />
-        </div>
-        <div className={styles.formRow}>
-          <TextField
-            label="Parent Email"
-            name="parentEmail"
-            value={draft.parentEmail ?? ""}
-            placeholder="ex. jsmith@gmail.com"
-            onChange={(e) => handleDraftChange(e.target.value, "parentEmail")}
-            required={true}
-            error={Boolean(errors.parentEmail)}
-          />
-        </div>
-        <div className={styles.formRow}>
-          <TextField
-            label="Parent Phone Number"
-            name="parentPhoneNumber"
-            value={draft.parentPhoneNumber ?? ""}
-            placeholder="ex. (123)-456-7890"
-            onChange={(e) => handleDraftChange(e.target.value, "parentPhoneNumber")}
-            required={true}
-            error={Boolean(errors.parentPhoneNumber)}
-          />
-        </div>
-      </>
-    );
-
-    const programInfo = (
-      <>
-        <div className={styles.formRow}>
-          <TextField
-            label="Pre-Assessment Score"
-            name="preassessmentScore"
-            value={draft.preassessmentScore !== "0" ? draft.preassessmentScore : ""}
-            placeholder="ex. 85"
-            onChange={(e) => handleDraftChange(e.target.value, "preassessmentScore")}
-            required={true}
-            error={Boolean(errors.preassessmentScore)}
-          />
-          <TextField
-            label="Post-Assessment Score"
-            name="postassessmentScore"
-            value={draft.postassessmentScore !== "0" ? draft.postassessmentScore : ""}
-            placeholder="ex. 92"
-            onChange={(e) => handleDraftChange(e.target.value, "postassessmentScore")}
-            required={true}
-            error={Boolean(errors.postassessmentScore)}
-          />
-        </div>
-        <div className={styles.formRow}>
-          <MultiSelectDropdown
-            label="Enroll in Sections"
-            value={draft.enrolledSections ?? []}
-            onChange={(next) => setDraft((prev) => ({ ...prev, enrolledSections: next }))}
-            placeholder="Select"
-          />
-        </div>
-        <div className={styles.formRow}>
-          <TextField
-            label="Notes"
-            name="comments"
-            value={draft.comments ?? ""}
-            placeholder="Type here..."
-            onChange={(e) => handleDraftChange(e.target.value, "comments")}
-            error={Boolean(errors.comments)}
           />
         </div>
       </>

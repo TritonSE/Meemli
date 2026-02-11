@@ -1,16 +1,13 @@
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: 999;
+  z-index: 5;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
   background: rgba(0, 0, 0, 0.25);
-
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 
 .wrapper {
@@ -18,7 +15,8 @@
   flex-direction: row;
 
   position: relative; /* sits inside overlay */
-  width: 60vw;
+  width: 60%;
+  max-width: 700px;
 
   background: white;
   border: 1px solid var(--grey-100);
@@ -29,6 +27,6 @@
 
   /* if the form content gets tall */
   max-height: 85vh;
-  overflow: auto;
+  overflow: visible;
   justify-content: center;
 }

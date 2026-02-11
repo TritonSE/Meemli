@@ -193,7 +193,6 @@ export function MultiSelectDropdown({
                 })
               : placeholder}
         </span>
-        <span className={styles.caret}>{open ? "▲" : "▼"}</span>
       </button>
 
       {open && (

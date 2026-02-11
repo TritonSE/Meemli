@@ -1,42 +1,11 @@
-.overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 999;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: rgba(0, 0, 0, 0.25);
-
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-.wrapper {
-  display: flex;
-  flex-direction: row;
-
-  position: relative; /* sits inside overlay */
-  width: 60vw;
-
-  background: white;
-  border: 1px solid var(--grey-100);
-  border-radius: 12px;
-  padding: 24px;
-
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
-
-  /* if the form content gets tall */
-  max-height: 85vh;
-  overflow: auto;
-  justify-content: center;
-}
 .form {
   background-color: white;
   display: flex;
   flex-direction: column;
+
+  font-family: "Montserrat", sans-serif;
   color: black;
+
   padding: 2vw;
   width: 100%;
   max-width: 750px;
@@ -80,7 +49,7 @@
 .selectField {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 4px;
 }
 
 .halfField {
@@ -89,8 +58,7 @@
 }
 
 .selectLabel {
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 14px;
 }
 
 .required {
@@ -107,31 +75,39 @@
 
 .stateSelect {
   width: 100%;
+  border: none;
 }
 
-:global(.stateSelect__control) {
-  min-height: 48px;
-  border-radius: 8px;
-  border: 1px solid #d6d6d6;
+
+.form :global(.stateSelect__control) {
+  min-height: 44px !important;
+  border-radius: 8px !important;
   background: #fff;
   box-shadow: none;
 }
 
-:global(.stateSelect__control--is-focused) {
-  border-color: #047857;
-  box-shadow: 0 0 0 2px rgba(4, 120, 87, 0.15);
+/*
+This format is needed to style the default react components correctly
+*/
+.form :global(.stateSelect__control--is-focused):hover {
+  border: 2px solid var(--primary-500);
 }
 
-:global(.stateSelect__value-container) {
+
+.form :global(.stateSelect__control--is-focused) {
+  border: 2px solid var(--primary-500);
+}
+
+.form :global(.stateSelect__value-container) {
   padding: 0 0.75rem;
 }
 
-:global(.stateSelect__indicator-separator) {
+.form :global(.stateSelect__indicator-separator) {
   display: none;
 }
 
-:global(.stateSelect__menu) {
-  z-index: 5;
+.form :global(.stateSelect__menu) {
+  z-index: 999;
 }
 
 .buttonRow {

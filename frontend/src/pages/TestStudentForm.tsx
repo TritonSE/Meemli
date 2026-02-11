@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 
 import { getAllStudents } from "../api/students";
+import { Modal } from "../components/Modal";
 import { Page } from "../components/Page";
 import { StudentForm } from "../components/studentform/StudentForm";
-
-import styles from "./TestStudentForm.module.css";
 
 import type { Student } from "../api/students";
 
@@ -43,14 +42,15 @@ export function TestStudentForm() {
           <h1>StudentForm</h1>
           <button onClick={() => setAddOpen(!addOpen)}>Add Student</button>
           {addOpen && (
-            <div className={styles.overlay} onClick={() => setAddOpen(!addOpen)}>
-              <div className={styles.wrapper} onClick={(e) => e.stopPropagation()}>
-                <StudentForm
-                  mode="create"
-                  onSubmit={() => {
-                    setLoading(true);
-                    setAddOpen(false);
-                    getAllStudents()
+            <Modal onExit={() => setAddOpen(!addOpen)}
+              child={
+                <>
+                  <StudentForm
+                    mode="create"
+                    onSubmit={() => {
+                      setLoading(true);
+                      setAddOpen(false);
+                      getAllStudents()
                       .then((result) => {
                         if (result.success) {
                           setStudents(result.data);
@@ -60,13 +60,14 @@ export function TestStudentForm() {
                       })
                       .catch((error) =>
                         setErrorMessage(error instanceof Error ? error.message : String(error)),
-                      )
-                      .finally(() => setLoading(false));
+                    )
+                    .finally(() => setLoading(false));
                   }}
                   onCancel={() => setAddOpen(false)}
-                />
-              </div>
-            </div>
+                  />
+                </>
+                }
+              />
           )}
         </section>
 
@@ -100,8 +101,9 @@ export function TestStudentForm() {
             </div>
           )}
           {selectedStudent && editOpen && (
-            <div className={styles.overlay} onClick={() => setEditOpen(!editOpen)}>
-              <div className={styles.wrapper} onClick={(e) => e.stopPropagation()}>
+            <Modal 
+                onExit={() => setEditOpen(!editOpen)}
+                child={
                 <StudentForm
                   mode="edit"
                   student={selectedStudent}
@@ -120,8 +122,8 @@ export function TestStudentForm() {
                       .finally(() => setLoading(false));
                   }}
                 />
-              </div>
-            </div>
+              }
+            />
           )}
         </section>
       </div>

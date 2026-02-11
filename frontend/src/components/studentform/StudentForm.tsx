@@ -141,6 +141,12 @@ export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormPr
       })
       .catch(setErrorModalMessage);
   };
+  
+  const handleCancel = () => {
+    if (onCancel){
+      onCancel();
+    }
+  }
 
   /**  Define the steps of the multi-step form
    * Each step contains a title and the fields to be filled in that step
@@ -175,7 +181,7 @@ export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormPr
 
   return (
     <form className={styles.form}>
-      <StudentFormPages mode={mode} values={values} steps={steps} handleSubmit={handleSubmit} />
+      <StudentFormPages mode={mode} values={values} steps={steps} handleSubmit={handleSubmit} handleCancel={handleCancel}/>
     </form>
   );
 }
