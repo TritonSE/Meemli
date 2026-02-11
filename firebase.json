@@ -1,0 +1,36 @@
+{
+    "functions": [
+        {
+            "runtime": "nodejs22",
+            "source": "backend",
+            "ignore": [
+                ".git",
+                "firebase-debug.log",
+                "firebase-debug.*.log",
+                "**/.*",
+                "**/node_modules/**"
+            ]
+        }
+    ],
+    "hosting": {
+        "public": "frontend/out",
+        "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+        "frameworksBackend": {
+            "region": "us-west1"
+        },
+        "rewrites": [
+            {
+                "source": "/api/**",
+                "function": {
+                    "functionId": "backend",
+                    "pinTag": true,
+                    "region": "us-west1"
+                }
+            },
+            {
+                "source": "**",
+                "destination": "/index.html"
+            }
+        ]
+    }
+}
