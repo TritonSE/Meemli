@@ -58,7 +58,7 @@ export type StudentJSON = {
   comments: string;
 };
 
-const STUDENTS_ROUTE = "/api/students";
+const STUDENTS_ROUTE = "/students";
 const studentByIdRoute = (id: string) => `${STUDENTS_ROUTE}/${id}`;
 
 function parseStudent(student: StudentJSON): Student {
