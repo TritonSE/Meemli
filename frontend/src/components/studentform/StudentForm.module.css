@@ -78,7 +78,6 @@
   border: none;
 }
 
-
 .form :global(.stateSelect__control) {
   min-height: 44px !important;
   border-radius: 8px !important;
@@ -92,7 +91,6 @@ This format is needed to style the default react components correctly
 .form :global(.stateSelect__control--is-focused):hover {
   border: 2px solid var(--primary-500);
 }
-
 
 .form :global(.stateSelect__control--is-focused) {
   border: 2px solid var(--primary-500);

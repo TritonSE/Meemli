@@ -91,6 +91,6 @@ export const getAllSections: RequestHandler = async (req, res) => {
     }
     res.json(sections);
   } catch (error: unknown) {
-    handleError(res, error instanceof Error ? error.message : "Unknown error")
+    handleError(res, error instanceof Error ? error.message : "Unknown error");
   }
-}
+};

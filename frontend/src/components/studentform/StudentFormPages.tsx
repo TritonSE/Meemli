@@ -2,15 +2,15 @@
  * Handle the multi-step student form pages, updating data, and navigation.
  */
 import { useEffect, useState } from "react";
+import Select from "react-select";
 
 import { Button } from "../Button";
-import { MultiSelectDropdown } from "./MultiSelectDropdown";
 import { ProgressBar } from "../ProgressBar";
-import styles from "./StudentForm.module.css";
 import { TextField } from "../TextField";
 
-import Select from "react-select";
 import { options } from "./AllStates";
+import { MultiSelectDropdown } from "./MultiSelectDropdown";
+import styles from "./StudentForm.module.css";
 
 import type { ValuesType } from "./StudentForm";
 
@@ -48,7 +48,7 @@ type Draft = {
 type StudentFormPagesProps = {
   values: ValuesType;
   steps: Array<{ title: string; fields: Array<string>; description: string }>;
-  handleCancel: () => void,
+  handleCancel: () => void;
   handleSubmit: (candidate: ValuesType) => void;
   mode: string;
 };
@@ -201,7 +201,13 @@ function validator(field: string, draft: Partial<Draft>, errors: StudentFormErro
   return "passed";
 }
 
-export function StudentFormPages({ values, steps, handleCancel, handleSubmit, mode }: StudentFormPagesProps) {
+export function StudentFormPages({
+  values,
+  steps,
+  handleCancel,
+  handleSubmit,
+  mode,
+}: StudentFormPagesProps) {
   const initalValues = {
     ...values,
     grade: String(values.grade ?? ""),
@@ -224,7 +230,7 @@ export function StudentFormPages({ values, steps, handleCancel, handleSubmit, mo
     setErrors({});
     setErrorMessage("");
   }, [values]);
-    
+
   /** Handles changes to input fields by updating the corresponding value in state.
    * @param input The new input value from the user
    * @param fieldName The name of the field being updated
@@ -258,7 +264,6 @@ export function StudentFormPages({ values, steps, handleCancel, handleSubmit, mo
     }
     return candidate;
   }
-
 
   /**
    * Function that gets called when "Submit" button is pressed.
@@ -485,7 +490,7 @@ export function StudentFormPages({ values, steps, handleCancel, handleSubmit, mo
     setErrors({});
     setErrorMessage("");
   }
-  
+
   function handleNextStep() {
     const candidate = commitDraft();
     if (!candidate) return;
@@ -541,8 +546,8 @@ export function StudentFormPages({ values, steps, handleCancel, handleSubmit, mo
   function handleEditChange(val: "student" | "parent" | "program") {
     const candidate = commitDraft();
     if (candidate == null) {
-      return
-    };
+      return;
+    }
     setEditSection(val);
     let newstep;
     switch (val) {
@@ -559,7 +564,6 @@ export function StudentFormPages({ values, steps, handleCancel, handleSubmit, mo
     setStep(newstep);
     setErrors({});
     setErrorMessage("");
-    
   }
 
   function renderEditStep() {

@@ -1,7 +1,7 @@
 .root {
   position: relative; /* anchor the overlay panel */
   width: 100%;
-  
+
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -32,7 +32,7 @@
 }
 
 .trigger:focus {
-  border: 2px solid var(--primary-500)
+  border: 2px solid var(--primary-500);
 }
 
 .triggerText {
@@ -44,7 +44,7 @@
   flex-direction: row;
   gap: 2px;
 
-  color: #9B9D9F;
+  color: #9b9d9f;
 }
 
 .panel {

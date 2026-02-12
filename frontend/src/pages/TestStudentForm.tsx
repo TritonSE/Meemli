@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 
 import { getAllStudents } from "../api/students";
 import { Modal } from "../components/Modal";
-import { Page } from "../components/Page";
 import { StudentForm } from "../components/studentform/StudentForm";
 
 import type { Student } from "../api/students";
@@ -36,21 +35,21 @@ export function TestStudentForm() {
    * Render create form, then edit student buttons, then edit student form
    */
   return (
-    <Page>
-      <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-        <section>
-          <h1>StudentForm</h1>
-          <button onClick={() => setAddOpen(!addOpen)}>Add Student</button>
-          {addOpen && (
-            <Modal onExit={() => setAddOpen(!addOpen)}
-              child={
-                <>
-                  <StudentForm
-                    mode="create"
-                    onSubmit={() => {
-                      setLoading(true);
-                      setAddOpen(false);
-                      getAllStudents()
+    <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+      <section>
+        <h1>StudentForm</h1>
+        <button onClick={() => setAddOpen(!addOpen)}>Add Student</button>
+        {addOpen && (
+          <Modal
+            onExit={() => setAddOpen(!addOpen)}
+            child={
+              <>
+                <StudentForm
+                  mode="create"
+                  onSubmit={() => {
+                    setLoading(true);
+                    setAddOpen(false);
+                    getAllStudents()
                       .then((result) => {
                         if (result.success) {
                           setStudents(result.data);
@@ -60,73 +59,72 @@ export function TestStudentForm() {
                       })
                       .catch((error) =>
                         setErrorMessage(error instanceof Error ? error.message : String(error)),
-                    )
-                    .finally(() => setLoading(false));
-                  }}
-                  onCancel={() => setAddOpen(false)}
-                  />
-                </>
-                }
-              />
-          )}
-        </section>
-
-        <section>
-          <h2>Edit student</h2>
-          {isLoading && <p>Loading students...</p>}
-          {errorMessage && <p>Error : {errorMessage}</p>}
-          {!isLoading && !errorMessage && students.length === 0 && <p>No students found.</p>}
-          {students.length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
-              {students.map((student) => (
-                <button
-                  key={student._id}
-                  onClick={() => {
-                    setSelectedId(student._id);
-                    setEditOpen(!editOpen);
-                  }}
-                  type="button"
-                  style={{
-                    padding: "0.5rem 0.9rem",
-                    borderRadius: "8px",
-                    border: "1px solid #cbd5f5",
-                    background: student._id === selectedId ? "#1d4ed8" : "#ffffff",
-                    color: student._id === selectedId ? "#ffffff" : "#1e293b",
-                    cursor: "pointer",
-                  }}
-                >
-                  Edit {student.displayName}
-                </button>
-              ))}
-            </div>
-          )}
-          {selectedStudent && editOpen && (
-            <Modal 
-                onExit={() => setEditOpen(!editOpen)}
-                child={
-                <StudentForm
-                  mode="edit"
-                  student={selectedStudent}
-                  key={selectedStudent._id}
-                  onSubmit={() => {
-                    setLoading(true);
-                    setEditOpen(false);
-                    getAllStudents()
-                      .then((result) => {
-                        if (result.success) setStudents(result.data);
-                        else setErrorMessage(result.error);
-                      })
-                      .catch((error) =>
-                        setErrorMessage(error instanceof Error ? error.message : String(error)),
                       )
                       .finally(() => setLoading(false));
                   }}
+                  onCancel={() => setAddOpen(false)}
                 />
-              }
-            />
-          )}
-        </section>
-      </div>
-    </Page>
+              </>
+            }
+          />
+        )}
+      </section>
+
+      <section>
+        <h2>Edit student</h2>
+        {isLoading && <p>Loading students...</p>}
+        {errorMessage && <p>Error : {errorMessage}</p>}
+        {!isLoading && !errorMessage && students.length === 0 && <p>No students found.</p>}
+        {students.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
+            {students.map((student) => (
+              <button
+                key={student._id}
+                onClick={() => {
+                  setSelectedId(student._id);
+                  setEditOpen(!editOpen);
+                }}
+                type="button"
+                style={{
+                  padding: "0.5rem 0.9rem",
+                  borderRadius: "8px",
+                  border: "1px solid #cbd5f5",
+                  background: student._id === selectedId ? "#1d4ed8" : "#ffffff",
+                  color: student._id === selectedId ? "#ffffff" : "#1e293b",
+                  cursor: "pointer",
+                }}
+              >
+                Edit {student.displayName}
+              </button>
+            ))}
+          </div>
+        )}
+        {selectedStudent && editOpen && (
+          <Modal
+            onExit={() => setEditOpen(!editOpen)}
+            child={
+              <StudentForm
+                mode="edit"
+                student={selectedStudent}
+                key={selectedStudent._id}
+                onSubmit={() => {
+                  setLoading(true);
+                  setEditOpen(false);
+                  getAllStudents()
+                    .then((result) => {
+                      if (result.success) setStudents(result.data);
+                      else setErrorMessage(result.error);
+                    })
+                    .catch((error) =>
+                      setErrorMessage(error instanceof Error ? error.message : String(error)),
+                    )
+                    .finally(() => setLoading(false));
+                }}
+              />
+            }
+          />
+        )}
+      </section>
+    </div>
   );
 }
