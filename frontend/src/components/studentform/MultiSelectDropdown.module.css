@@ -42,6 +42,7 @@
   text-align: left;
   display: flex;
   flex-direction: row;
+  gap: 2px;
 
   color: #9B9D9F;
 }
