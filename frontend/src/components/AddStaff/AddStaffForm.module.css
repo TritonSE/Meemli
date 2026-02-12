@@ -1,0 +1,149 @@
+.form {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+
+  font-family: "Montserrat", sans-serif;
+  color: black;
+
+  width: 100%;
+  max-width: 750px;
+  padding: 0px 48px;
+  max-height: 614px;
+  border-radius: 12px;
+}
+.reused {
+  display: flex;
+  flex-direction: column;
+}
+.headerSegment {
+  display: flex;
+  flex-direction: column;
+  gap: 1vw;
+  padding: 24px 0 12px 0;
+}
+.pageTitle {
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.formPage {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.formRow {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 68px;
+  gap: 2vw;
+  margin: 10px 0;
+}
+
+.selectField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.halfField {
+  flex: 1;
+  min-width: 0;
+}
+
+.selectLabel {
+  font-size: 14px;
+}
+
+.required {
+  color: #dc2626;
+  margin-left: 4px;
+}
+
+.charCount {
+  font-size: 0.8rem;
+  color: #475467;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.stateSelect {
+  width: 100%;
+  border: none;
+}
+
+
+.form :global(.stateSelect__control) {
+  min-height: 44px !important;
+  border-radius: 8px !important;
+  background: #fff;
+  box-shadow: none;
+}
+
+/*
+This format is needed to style the default react components correctly
+*/
+.form :global(.stateSelect__control--is-focused):hover {
+  border: 2px solid var(--primary-500);
+}
+
+
+.form :global(.stateSelect__control--is-focused) {
+  border: 2px solid var(--primary-500);
+}
+
+.form :global(.stateSelect__value-container) {
+  padding: 0 0.75rem;
+}
+
+.form :global(.stateSelect__indicator-separator) {
+  display: none;
+}
+
+.form :global(.stateSelect__menu) {
+  z-index: 999;
+}
+
+.buttonRow {
+  display: flex;
+  flex-direction: row;
+  margin-top: 32px;
+  margin-left: auto;
+  margin-bottom: 32px;
+  gap: 24px;
+}
+
+.editTabs {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin: 12px 0 4px;
+}
+
+.editTabs button {
+  flex: 1;
+}
+
+.subheading {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.infoBar {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+}
+
+.form,
+.formRow,
+.formPage {
+  overflow: visible;
+}
+
+.error {
+  color: red;
+}
