@@ -1,6 +1,6 @@
 .required {
   margin-left: 4px;
-  color: red;
+  color: var(--error-700);
 }
 
 .field {

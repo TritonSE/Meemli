@@ -15,3 +15,7 @@
   border-radius: 4px;
   transition: width 200ms ease; /* smooth animation */
 }
+
+.wrapper {
+  padding-bottom: 20px;
+}

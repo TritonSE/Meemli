@@ -72,7 +72,7 @@
 }
 
 .required {
-  color: red;
+  color: var(--error-700);
 }
 
 .list {

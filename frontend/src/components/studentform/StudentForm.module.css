@@ -6,10 +6,9 @@
   font-family: "Montserrat", sans-serif;
   color: black;
 
-  padding: 2vw;
+  padding: 10px;
   width: 100%;
   max-width: 750px;
-  padding: 48px;
   height: 680px;
   border-radius: 12px;
 }
@@ -21,15 +20,17 @@
   display: flex;
   flex-direction: column;
   gap: 1vw;
-  padding: 24px 0 12px 0;
+  padding: 0 0 40px 0;
 }
 .pageTitle {
   font-size: 30px;
   font-weight: 600;
+  margin-bottom: 0;
 }
 .description {
   font-size: 12px;
   font-weight: 500;
+  margin-top: 5px;
 }
 .formPage {
   height: 100%;
@@ -62,7 +63,7 @@
 }
 
 .required {
-  color: #dc2626;
+  color: var(--error-700);
   margin-left: 4px;
 }
 
@@ -120,11 +121,11 @@ This format is needed to style the default react components correctly
   display: flex;
   flex-direction: row;
   gap: 10px;
-  margin: 12px 0 4px;
+  margin: 12px 0 12px 0;
 }
 
 .editTabs button {
-  flex: 1;
+  flex: 0 0 auto;
 }
 
 .subheading {

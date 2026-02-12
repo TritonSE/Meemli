@@ -120,6 +120,7 @@ function TestStudentForm() {
                     )
                     .finally(() => setLoading(false));
                 }}
+                onCancel={() => setEditOpen(false)}
               />
             }
           />

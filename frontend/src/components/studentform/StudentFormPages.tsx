@@ -577,14 +577,14 @@ export function StudentFormPages({
         </div>
         <div className={styles.editTabs}>
           <Button
-            kind={editSection === "parent" ? "primary" : "secondary"}
-            label="Parent Info"
-            onClick={() => handleEditChange("parent")}
-          />
-          <Button
             kind={editSection === "student" ? "primary" : "secondary"}
             label="Student Info"
             onClick={() => handleEditChange("student")}
+          />
+          <Button
+            kind={editSection === "parent" ? "primary" : "secondary"}
+            label="Parent Info"
+            onClick={() => handleEditChange("parent")}
           />
           <Button
             kind={editSection === "program" ? "primary" : "secondary"}
@@ -603,6 +603,7 @@ export function StudentFormPages({
         {reusedElements}
         {stepElement}
         <div className={styles.buttonRow}>
+          <Button onClick={handleCancel} kind="secondary" label="Cancel" />
           <Button onClick={handleSubmission} kind="primary" label="Save Changes" />
         </div>
       </div>
