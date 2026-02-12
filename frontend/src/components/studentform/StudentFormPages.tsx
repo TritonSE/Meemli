@@ -224,15 +224,7 @@ export function StudentFormPages({ values, steps, handleCancel, handleSubmit, mo
     setErrors({});
     setErrorMessage("");
   }, [values]);
-
-  function handlePrevStep() {
-    if (step > 0) {
-      setStep((s) => s - 1);
-    }
-    setErrors({});
-    setErrorMessage("");
-  }
-
+    
   /** Handles changes to input fields by updating the corresponding value in state.
    * @param input The new input value from the user
    * @param fieldName The name of the field being updated
@@ -267,16 +259,6 @@ export function StudentFormPages({ values, steps, handleCancel, handleSubmit, mo
     return candidate;
   }
 
-  function handleNextStep() {
-    const candidate = commitDraft();
-    if (!candidate) return;
-
-    if (step < steps.length - 1) {
-      setStep(step + 1);
-    }
-    setErrors({});
-    setErrorMessage("");
-  }
 
   /**
    * Function that gets called when "Submit" button is pressed.
@@ -495,6 +477,26 @@ export function StudentFormPages({ values, steps, handleCancel, handleSubmit, mo
     </>
   );
   const stepViews = [step0, step1, step2];
+
+  function handlePrevStep() {
+    if (step > 0) {
+      setStep((s) => s - 1);
+    }
+    setErrors({});
+    setErrorMessage("");
+  }
+  
+  function handleNextStep() {
+    const candidate = commitDraft();
+    if (!candidate) return;
+
+    if (step < steps.length - 1) {
+      setStep(step + 1);
+    }
+    setErrors({});
+    setErrorMessage("");
+  }
+
   /**
    * Returns the DOM for the current step of the multi-step form.
    * @returns DOM for the webpage
@@ -536,6 +538,30 @@ export function StudentFormPages({ values, steps, handleCancel, handleSubmit, mo
     );
   }
 
+  function handleEditChange(val: "student" | "parent" | "program") {
+    const candidate = commitDraft();
+    if (candidate == null) {
+      return
+    };
+    setEditSection(val);
+    let newstep;
+    switch (val) {
+      case "parent":
+        newstep = 0;
+        break;
+      case "student":
+        newstep = 1;
+        break;
+      case "program":
+        newstep = 2;
+        break;
+    }
+    setStep(newstep);
+    setErrors({});
+    setErrorMessage("");
+    
+  }
+
   function renderEditStep() {
     const reusedElements = (
       <>
@@ -547,19 +573,19 @@ export function StudentFormPages({ values, steps, handleCancel, handleSubmit, mo
         </div>
         <div className={styles.editTabs}>
           <Button
-            kind={editSection === "student" ? "primary" : "secondary"}
-            label="Student Info"
-            onClick={() => setEditSection("student")}
-          />
-          <Button
             kind={editSection === "parent" ? "primary" : "secondary"}
             label="Parent Info"
-            onClick={() => setEditSection("parent")}
+            onClick={() => handleEditChange("parent")}
+          />
+          <Button
+            kind={editSection === "student" ? "primary" : "secondary"}
+            label="Student Info"
+            onClick={() => handleEditChange("student")}
           />
           <Button
             kind={editSection === "program" ? "primary" : "secondary"}
             label="Program Info"
-            onClick={() => setEditSection("program")}
+            onClick={() => handleEditChange("program")}
           />
         </div>
       </>
