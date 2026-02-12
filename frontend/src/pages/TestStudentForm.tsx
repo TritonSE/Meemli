@@ -6,7 +6,7 @@ import { StudentForm } from "../components/studentform/StudentForm";
 
 import type { Student } from "../api/students";
 
-export function TestStudentForm() {
+function TestStudentForm() {
   const [students, setStudents] = useState<Student[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
@@ -128,3 +128,4 @@ export function TestStudentForm() {
     </div>
   );
 }
+export default TestStudentForm;

@@ -1,10 +1,11 @@
 import styles from "./Modal.module.css";
 
+import type { ReactNode } from "react";
+
 type ModalProps = {
-  child: React.ReactNode;
+  child: ReactNode;
   onExit: () => void;
 };
-
 export const Modal = function Modal({ child, onExit }: ModalProps) {
   return (
     <div className={styles.overlay} onClick={onExit}>
