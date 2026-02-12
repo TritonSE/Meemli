@@ -1,4 +1,3 @@
-import { Dialog } from "@tritonse/tse-constellation";
 import { useState } from "react";
 
 import { createStudent, updateStudent } from "../../api/students";
@@ -77,7 +76,7 @@ export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormPr
   // This state variable controls the error message that gets displayed to the user in the
   // Constellation `Dialog` component. If it's `null`, there's no error, so we don't display the Dialog.
   // If it's non-null, there is an error, so we should display that error to the user.
-  const [errorModalMessage, setErrorModalMessage] = useState<string | null>(null);
+  const [_, setErrorModalMessage] = useState<string | null>(null);
 
   /**
    * Handles the submission of the form. Uses different routes depending
@@ -191,15 +190,6 @@ export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormPr
           handleCancel={handleCancel}
         />
       </form>
-      <Dialog
-        styleVersion="styled"
-        variant="error"
-        title="An error occurred"
-        // Override the text color so it doesn't show white text on a white background
-        content={<p>{errorModalMessage}</p>}
-        isOpen={errorModalMessage !== null}
-        onClose={() => setErrorModalMessage(null)}
-      />
     </>
   );
 }
