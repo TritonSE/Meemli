@@ -47,6 +47,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  margin: 10px 0;
 }
 
 .halfField {
@@ -55,7 +56,9 @@
 }
 
 .selectLabel {
+  flex-direction: row;
   font-size: 14px;
+  font-weight: 500;
 }
 
 .required {
@@ -70,13 +73,12 @@
   margin-top: 4px;
 }
 
-.stateSelect {
+.select {
   width: 100%;
   border: none;
 }
 
-
-.form :global(.stateSelect__control) {
+.form :global(.select__control) {
   min-height: 44px !important;
   border-radius: 8px !important;
   background: #fff;
@@ -86,24 +88,24 @@
 /*
 This format is needed to style the default react components correctly
 */
-.form :global(.stateSelect__control--is-focused):hover {
+.form :global(.select__control--is-focused):hover {
   border: 2px solid var(--primary-500);
 }
 
 
-.form :global(.stateSelect__control--is-focused) {
+.form :global(.select__control--is-focused) {
   border: 2px solid var(--primary-500);
 }
 
-.form :global(.stateSelect__value-container) {
+.form :global(.select__value-container) {
   padding: 0 0.75rem;
 }
 
-.form :global(.stateSelect__indicator-separator) {
+.form :global(.select__indicator-separator) {
   display: none;
 }
 
-.form :global(.stateSelect__menu) {
+.form :global(.select__menu) {
   z-index: 999;
 }
 
