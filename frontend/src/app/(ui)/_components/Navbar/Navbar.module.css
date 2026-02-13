@@ -33,7 +33,7 @@
   }
 
   .navLink:hover {
-    background-color: var(--primary-500);
+    background-color: var(--grey-200);
   }
 
   .navLink:hover .navIcon {

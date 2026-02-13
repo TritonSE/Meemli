@@ -2,19 +2,122 @@
   display: flex;
   width: 900px;
   height: 400px;
-  background-color: grey;
+  background-color: white;
   border-radius: 10px;
   padding: 1.5rem;
   flex-direction: column;
+
+  .closeButton {
+    align-self: flex-end;
+    background-color: transparent;
+    padding: 4px;
+  }
+
+  .closeButton:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+  }
+
+  .studentInfoTag {
+    display: flex;
+    gap: 1rem;
+
+    .infoItems {
+      list-style: none;
+    }
+
+    .profileView {
+      .name {
+        font-size: 1.5rem;
+        font-weight: 500;
+      }
+
+      .email address {
+        font-style: normal;
+        color: var(--color-gray-700);
+      }
+
+      .school {
+        & > span {
+          font-weight: 500;
+          margin-right: 0.5rem;
+        }
+      }
+
+      li {
+        margin-bottom: 0.5rem;
+        color: var(--color-gray-700);
+      }
+    }
+  }
 }
 
-.studentProfileModal .closeButton {
-  align-self: flex-end;
-  background-color: transparent;
-  padding: 4px;
+.modalContentWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
 }
 
-.studentProfileModal .closeButton:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
+/* container to hold Nav and Content side-by-side */
+.tabsContainer {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  min-height: 300px; /* optional: ensures modal has height */
+}
+
+/* Left Column: The Tiles */
+.tabNav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 150px; /* ensures tiles don't get squished */
+  border-right: 1px solid #eaeaea; /* visual separation */
+  padding-right: 1rem;
+}
+
+.tabTile {
+  all: unset; /* resets default button styles */
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--grey-500);
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.tabTile:hover {
+  background-color: #f5f5f5;
+}
+
+/* the active State */
+.tabTile[data-active="true"] {
+  background-color: var(--primary-500);
+  color: white;
+  font-weight: 600;
+}
+
+/* right column: the content */
+.tabContent {
+  flex: 1; /* takes up remaining width */
+  animation: fadeIn 0.2s ease-in;
+}
+
+.contentCard {
+  background: white;
+  padding: 0 1rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
