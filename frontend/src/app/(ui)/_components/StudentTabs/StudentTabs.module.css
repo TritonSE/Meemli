@@ -1,0 +1,73 @@
+/* container to hold Nav and Content side-by-side */
+.tabsContainer {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  min-height: 300px; /* optional: ensures modal has height */
+  width: 100%;
+}
+
+/* left column: the tiles */
+.tabNav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 150px;
+  padding-right: 1rem;
+}
+
+.tabTile {
+  all: unset; /* resets default button styles */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--grey-500);
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.tabTile:hover {
+  background-color: var(--grey-50);
+
+  .tabIcon {
+    filter: brightness(0) invert(0.5);
+  }
+}
+
+/* the active state - governed by data attribute in js */
+.tabTile[data-active="true"] {
+  background-color: var(--primary-500);
+  color: white;
+  font-weight: 600;
+}
+
+.tabTile[data-active="true"] .tabIcon {
+  filter: brightness(0) invert(1);
+}
+
+/* right column: the content */
+.tabContent {
+  flex: 1;
+  animation: fadeIn 0.2s ease-in;
+}
+
+.contentCard {
+  background: white;
+  padding: 0 1rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

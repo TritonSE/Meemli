@@ -33,11 +33,11 @@
   }
 
   .navLink:hover {
-    background-color: var(--grey-200);
+    background-color: var(--grey-50);
   }
 
   .navLink:hover .navIcon {
-    filter: brightness(0) invert(1);
+    filter: brightness(0) invert(0.5);
   }
 
   .activeNavLink {
