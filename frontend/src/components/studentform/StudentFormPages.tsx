@@ -326,7 +326,7 @@ export function StudentFormPages({
       </div>
       <div className={styles.formRow}>
         <TextField
-          label="Parent Email"
+          label="E-mail Address"
           name="parentEmail"
           value={draft.parentEmail ?? ""}
           placeholder="ex. jsmith@gmail.com"
@@ -337,7 +337,7 @@ export function StudentFormPages({
       </div>
       <div className={styles.formRow}>
         <TextField
-          label="Parent Phone Number"
+          label="Phone Number"
           name="parentPhoneNumber"
           value={draft.parentPhoneNumber ?? ""}
           placeholder="ex. 1234567890"
@@ -382,7 +382,7 @@ export function StudentFormPages({
       </div>
       <div className={styles.formRow}>
         <TextField
-          label="Student Email"
+          label="Student E-mail"
           name="meemliEmail"
           value={draft.meemliEmail ?? ""}
           placeholder="ex. jsmith@meemli.com"

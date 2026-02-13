@@ -62,7 +62,7 @@
   opacity: 1;
   z-index: 99;
 
-  border: 1px solid #cdcfd0;
+  border: 1px solid var(--grey-300);
   border-radius: 8px;
   padding: 10px;
 
@@ -93,11 +93,10 @@
 }
 
 .listItemSelected {
-  background-color: #f7f6f6;
+  background-color: var(--grey-50);
 }
 
 .itemBtn {
-  background-color: aquamarine;
   margin: 8px;
   padding: 8px 12px;
   border-radius: 8px;
@@ -107,7 +106,6 @@
 }
 
 .chosen {
-  background-color: aquamarine;
   padding: 8px 12px;
   border-radius: 8px;
 

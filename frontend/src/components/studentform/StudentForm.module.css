@@ -126,6 +126,8 @@ This format is needed to style the default react components correctly
 
 .editTabs button {
   flex: 0 0 auto;
+  font-weight: 600;
+  font-size: 14px;
 }
 
 .subheading {
