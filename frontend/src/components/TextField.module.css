@@ -32,6 +32,9 @@
   border: 2px solid #3f8d7c;
   outline: none;
 }
+.input:hover {
+  border: 1px solid var(--grey-300);
+}
 
 .error {
   border-width: 2px;
