@@ -1,55 +1,84 @@
 .mainContainer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  min-height: 0;
+  height: 0;
+
   width: 100%;
   border: 1px solid #e3e2e2;
   border-radius: 12px;
   background: #ffffff;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
+}
+
+.tableHeader,
+.studentRow {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+  border-bottom: 1px solid #e3e2e2;
+  box-sizing: border-box;
+}
+
+.colName,
+.colStatus,
+.colNotes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: stretch;
+  padding: 12px 24px;
+  font-family: Montserrat;
+  box-sizing: border-box;
+}
+
+.colName {
+  flex: 0 0 320px;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+}
+.colStatus {
+  flex: 0 0 464px;
+  display: flex;
+  justify-content: flex-start;
+  padding: 12px 24px;
+}
+.colNotes {
+  flex: 0 0 320px;
+  padding: 12px 24px;
+}
+
+.tableHeader .colName,
+.tableHeader .colStatus,
+.tableHeader .colNotes {
+  background: #f7f6f6;
+  color: #9b9d9f;
+  text-transform: none;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.studentRow .colName,
+.studentRow .colStatus,
+.studentRow .colNotes {
+  background: #ffffff;
+  color: #231f20;
+  font-size: 14px;
+  font-weight: 500;
+  border-bottom: none;
 }
 
 .studentRow {
-  color: var(--Gray-900, #231f20);
-
-  font-family: Montserrat;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 20px;
-  letter-spacing: -0.28px;
-  display: grid;
-  grid-template-columns: 283px 449px 1fr;
-  align-items: center;
+  display: flex;
+  flex-direction: row;
   width: 100%;
-  border-bottom: 1px solid #e3e2e2;
-}
-
-.headerRow {
-  border-bottom: 1px solid var(--Gray-200, #e3e2e2);
-  background: var(--Gray-50, #f7f6f6);
-  display: grid;
-  grid-template-columns: 283px 449px 1fr;
   align-items: center;
-  border-radius: 12px 12px 0 0;
-}
-
-.cell {
-  padding: 12px 24px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.columnHeader {
-  padding: 12px 24px;
-  color: var(--Gray-500, #9b9d9f);
-
-  font-family: Montserrat;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 18px;
-  letter-spacing: -0.24px;
+  border-bottom: 1px solid #e3e2e2;
+  min-height: 64px;
 }
 
 .statusGroup {
@@ -182,4 +211,11 @@
   font-weight: 600;
   line-height: 24px;
   letter-spacing: -0.32px;
+}
+
+.rowsContainer {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }

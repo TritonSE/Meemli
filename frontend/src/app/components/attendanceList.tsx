@@ -82,72 +82,74 @@ export default function AttendanceList({
 
   return (
     <div className={styles.mainContainer}>
-      <div className={styles.headerRow}>
-        <div className={styles.columnHeader}>Student Name</div>
-        <div className={styles.columnHeader}>Status</div>
-        <div className={styles.columnHeader}>Notes</div>
+      <div className={styles.tableHeader}>
+        <div className={styles.colName}>Student Name</div>
+        <div className={styles.colStatus}>Status</div>
+        <div className={styles.colNotes}>Notes</div>
       </div>
 
-      {attendees.length > 0 ? (
-        attendees.map((att) => (
-          <div key={att._id} className={styles.studentRow}>
-            <div className={styles.cell}>
-              {att.student?.firstName && att.student?.lastName
-                ? `${att.student.firstName} ${att.student.lastName}`
-                : att.student?.displayName || "Unknown Student"}
-            </div>
+      <div className={styles.rowsContainer}>
+        {attendees.length > 0 ? (
+          attendees.map((att) => (
+            <div key={att._id} className={styles.studentRow}>
+              <div className={styles.colName}>
+                {att.student?.firstName && att.student?.lastName
+                  ? `${att.student.firstName} ${att.student.lastName}`
+                  : att.student?.displayName || "Unknown Student"}
+              </div>
 
-            <div className={styles.cell}>
-              <div className={styles.statusGroup}>
-                <button
-                  onClick={() => updateLocalState(att._id, "status", "PRESENT")}
-                  className={`${styles.statusBtn} ${att.status === "PRESENT" ? `${styles.btnPresent} ${styles.active}` : ""}`}
-                >
-                  <CheckIcon sx={{ fontSize: 20 }} />
-                  Present
-                </button>
-                <button
-                  onClick={() => updateLocalState(att._id, "status", "ABSENT")}
-                  className={`${styles.statusBtn} ${att.status === "ABSENT" ? `${styles.btnAbsent} ${styles.active}` : ""}`}
-                >
-                  <CloseIcon sx={{ fontSize: 20 }} />
-                  Absent
-                </button>
-                <button
-                  onClick={() => updateLocalState(att._id, "status", "LATE")}
-                  className={`${styles.statusBtn} ${att.status === "LATE" ? `${styles.btnLate} ${styles.active}` : ""}`}
-                >
-                  <AccessTimeIcon sx={{ fontSize: 20 }} />
-                  Late
-                </button>
+              <div className={styles.colStatus}>
+                <div className={styles.statusGroup}>
+                  <button
+                    onClick={() => updateLocalState(att._id, "status", "PRESENT")}
+                    className={`${styles.statusBtn} ${att.status === "PRESENT" ? `${styles.btnPresent} ${styles.active}` : ""}`}
+                  >
+                    <CheckIcon sx={{ fontSize: 20 }} />
+                    Present
+                  </button>
+                  <button
+                    onClick={() => updateLocalState(att._id, "status", "ABSENT")}
+                    className={`${styles.statusBtn} ${att.status === "ABSENT" ? `${styles.btnAbsent} ${styles.active}` : ""}`}
+                  >
+                    <CloseIcon sx={{ fontSize: 20 }} />
+                    Absent
+                  </button>
+                  <button
+                    onClick={() => updateLocalState(att._id, "status", "LATE")}
+                    className={`${styles.statusBtn} ${att.status === "LATE" ? `${styles.btnLate} ${styles.active}` : ""}`}
+                  >
+                    <AccessTimeIcon sx={{ fontSize: 20 }} />
+                    Late
+                  </button>
+                </div>
+              </div>
+
+              <div className={styles.colNotes}>
+                <input
+                  className={styles.notesInput}
+                  value={att.notes || ""}
+                  onChange={(e) => updateLocalState(att._id, "notes", e.target.value)}
+                  placeholder="Type here..."
+                />
               </div>
             </div>
-
-            <div className={styles.cell}>
-              <input
-                className={styles.notesInput}
-                value={att.notes || ""}
-                onChange={(e) => updateLocalState(att._id, "notes", e.target.value)}
-                placeholder="Type here..."
-              />
-            </div>
+          ))
+        ) : (
+          <div className={styles.table}>
+            {!isFilterSelected ? (
+              /* initial state - empty table */
+              <div className="h-20" />
+            ) : (
+              <div className="space-y-2">
+                <p className={styles.sessionNotFound}>
+                  There is no class scheduled on this day. Please select a scheduled class date to
+                  mark attendance.
+                </p>
+              </div>
+            )}
           </div>
-        ))
-      ) : (
-        <div className={styles.table}>
-          {!isFilterSelected ? (
-            /* initial state - empty table */
-            <div className="h-20" />
-          ) : (
-            <div className="space-y-2">
-              <p className={styles.sessionNotFound}>
-                There is no class scheduled on this day. Please select a scheduled class date to
-                mark attendance.
-              </p>
-            </div>
-          )}
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

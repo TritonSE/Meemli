@@ -51,26 +51,28 @@ export default function Attendance() {
   }, [activeSectionId, activeDate, sessionList]);
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-8 font-sans">
-      <header>
-        <h1 className={styles.attendance}>Attendance</h1>
-        <p className={styles.description}>Track attendance across programs</p>
-      </header>
+    <div className={styles.pageWrapper}>
+      <div className={styles.mainContent}>
+        <header>
+          <h1 className={styles.attendance}>Attendance</h1>
+          <p className={styles.description}>Track attendance across programs</p>
+        </header>
 
-      <div className="flex flex-col md:flex-row gap-6 mb-10">
-        <SectionSelect
-          sessions={sessionList}
-          value={activeSectionId}
-          onChange={setActiveSectionId}
-        />
-        <DateSelect value={activeDate} onChange={setActiveDate} />
-      </div>
+        <div className={styles.dropdownSection}>
+          <SectionSelect
+            sessions={sessionList}
+            value={activeSectionId}
+            onChange={setActiveSectionId}
+          />
+          <DateSelect value={activeDate} onChange={setActiveDate} />
+        </div>
 
-      <div className="mt-6">
-        <AttendanceList
-          initialAttendees={selectedSession?.attendees || []}
-          isFilterSelected={Boolean(activeSectionId && activeDate)}
-        />
+        <div className={styles.table}>
+          <AttendanceList
+            initialAttendees={selectedSession?.attendees || []}
+            isFilterSelected={Boolean(activeSectionId && activeDate)}
+          />
+        </div>
       </div>
     </div>
   );
