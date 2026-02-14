@@ -9,20 +9,15 @@ import { SectionSelect } from "../../components/sessionSelect";
 
 import type { AttendanceSession } from "../../../api/attendance";
 
+import styles from "../../components/attendancePage.module.css";
+
 export default function Attendance() {
   const [sessionList, setSessionList] = useState<AttendanceSession[]>([]);
   const [selectedSession, setSelectedSession] = useState<AttendanceSession | null>(null);
   const [activeSectionId, setActiveSectionId] = useState("");
   const [activeDate, setActiveDate] = useState("");
 
-  // load session
-  // useEffect(() => {
-  //   const load = async () => {
-  //     const data = await getAllSessions();
-  //     setSessionList(data || []);
-  //   };
-  //   load();
-  // }, []);
+  const isFilterSelected = Boolean(activeSectionId && activeDate);
 
   useEffect(() => {
     const load = async () => {
@@ -55,36 +50,11 @@ export default function Attendance() {
     }
   }, [activeSectionId, activeDate, sessionList]);
 
-  // session selected
-  // return (
-  //   <div className="w-full max-w-6xl mx-auto p-8">
-  //     {/* 1. KEEP THE BACK BUTTON */}
-  //     <button onClick={() => setSelectedSession(null)} className="...">
-  //       ← Back to List
-  //     </button>
-
-  //     {/* 2. KEEP THE HEADER (This is page-level, not list-level) */}
-  //     <header className="mb-8 border-b pb-4 flex justify-between items-end">
-  //       <div>
-  //         <p className="text-gray-500 text-sm">Auto-save enabled</p>
-  //       </div>
-  //     </header>
-
-  //     {/* 3. THE SWAP: Use your new component here */}
-  //     <AttendanceList
-  //       initialAttendees={selectedSession.attendees || []}
-  //       onUpdate={function (): void {
-  //         throw new Error("Function not implemented.");
-  //       }}
-  //     />
-  //   </div>
-  // );
-
   return (
     <div className="w-full max-w-6xl mx-auto p-8 font-sans">
-      <header className="mb-8 border-b pb-4 flex justify-between items-end">
-        <h1 className="text-2xl font-bold">Attendance</h1>
-        <p className="text-gray-400 text-sm">Auto-save enabled</p>
+      <header>
+        <h1 className={styles.attendance}>Attendance</h1>
+        <p className={styles.description}>Track attendance across programs</p>
       </header>
 
       <div className="flex flex-col md:flex-row gap-6 mb-10">
@@ -96,18 +66,12 @@ export default function Attendance() {
         <DateSelect value={activeDate} onChange={setActiveDate} />
       </div>
 
-      {selectedSession ? (
+      <div className="mt-6">
         <AttendanceList
-          initialAttendees={selectedSession.attendees || []}
-          onUpdate={function (): void {
-            throw new Error("Function not implemented.");
-          }}
+          initialAttendees={selectedSession?.attendees || []}
+          isFilterSelected={Boolean(activeSectionId && activeDate)}
         />
-      ) : (
-        <div className="py-20 border-2 border-dashed border-gray-200 rounded-xl text-center text-gray-400">
-          Select a section and date to see the student list.
-        </div>
-      )}
+      </div>
     </div>
   );
 }

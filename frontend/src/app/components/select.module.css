@@ -1,0 +1,133 @@
+.mainContainer {
+  display: flex;
+  padding: 10px 14px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+
+  border-radius: 8px;
+  border: 1px solid var(--Gray-300, #cdcfd0);
+  background: var(--Base-White, #fff);
+
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+}
+
+.datePickerWrapper {
+  position: relative;
+  display: inline-flex;
+  width: fit-content;
+  height: 42px;
+}
+
+.visualLabel {
+  display: flex;
+  padding: 10px 14px;
+  white-space: nowrap;
+  width: auto;
+
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+
+  border-radius: 8px;
+  border: 1px solid var(--Gray-300, #cdcfd0);
+  background: var(--Base-White, #fff);
+
+  color: var(--Gray-700, #494445);
+
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+}
+
+.textElement {
+  flex-grow: 1; /* Pushes the arrow to the far right */
+}
+
+/* makes MM/DD/YYYY output hidden */
+.hiddenInput {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 10;
+  font-size: 40px;
+}
+
+.selectSession {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 10;
+  font-size: 20px;
+}
+
+.blankState {
+  width: 150px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px dashed #cdcfd0;
+}
+
+.MenuList {
+  display: flex;
+  width: 100%;
+  padding: 6px;
+  flex-direction: column;
+
+  border-radius: 8px;
+  border: 1px solid var(--Gray-200, #e3e2e2);
+  background: var(--Base-White, #fff);
+
+  box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.15);
+}
+
+.MenuItem {
+  display: flex;
+  align-items: center;
+  padding: 10px 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  background: #fff;
+  color: #494445;
+  justify-content: space-between;
+
+  font-family: "Montserrat";
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+  transition: background 0.2s ease;
+}
+
+.MenuItem:hover {
+  background: #f7f6f6;
+}
+
+.activeItem {
+  background-color: #eff6ff;
+  background: #f7f6f6;
+  font-weight: 600;
+}
+
+.itemText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -1,0 +1,57 @@
+@media (max-width: 1200px) {
+  .pageWrapper {
+    padding: 48px 64px; /* Slightly less on tablets/small laptops */
+  }
+}
+
+@media (max-width: 768px) {
+  .pageWrapper {
+    padding: 32px 24px; /* Normal padding for mobile */
+  }
+}
+
+.attendance {
+  align-self: stretch;
+  color: var(--Gray-900, #231f20);
+
+  font-family: Montserrat;
+  font-size: 30px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 38px;
+  letter-spacing: -0.6px;
+}
+
+.description {
+  color: var(--Gray-600, #6c6a6b);
+
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: -0.32px;
+}
+
+.pageWrapper {
+  padding: 64px 128px;
+  box-sizing: border-box;
+  max-width: 1440px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.headerSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.controlsRow {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
