@@ -200,3 +200,80 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* --- CALENDAR CONTAINER & ACTIONS --- */
+.calendarContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-family: "Montserrat", sans-serif;
+}
+
+.actionRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid #e3e2e2;
+  padding-top: 16px;
+}
+
+.cancelBtn,
+.applyBtn {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 8px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelBtn {
+  background: white;
+  border: 1px solid #cdcfd0;
+  color: #494445;
+}
+
+.cancelBtn:hover {
+  background: #f7f6f6;
+}
+
+.applyBtn {
+  background: #518d7c; /* Your specific green from the mockup */
+  border: 1px solid #518d7c;
+  color: white;
+}
+
+.applyBtn:hover {
+  background: #417264;
+}
+
+/* --- OVERRIDING REACT-DAY-PICKER DEFAULTS --- */
+.customCalendar {
+  margin: 0;
+  --rdp-cell-size: 40px; /* Size of the date squares */
+  --rdp-accent-color: #518d7c; /* The green circle background */
+  --rdp-background-color: #f0fdf4; /* Hover state background */
+}
+
+/* Ensure font family carries over */
+.customCalendar,
+.customCalendar button {
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Day hover state */
+.customCalendar .rdp-day:hover:not(.rdp-day_selected) {
+  background-color: var(--rdp-background-color);
+  border-radius: 50%;
+}
+
+/* Selected day */
+.customCalendar .rdp-day_selected,
+.customCalendar .rdp-day_selected:focus-visible,
+.customCalendar .rdp-day_selected:hover {
+  background-color: var(--rdp-accent-color);
+  color: white;
+  border-radius: 50%;
+}
