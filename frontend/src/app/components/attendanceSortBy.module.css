@@ -2,7 +2,6 @@
   position: relative;
   display: inline-block;
 }
-
 .sortButton {
   display: flex;
   align-items: center;
@@ -11,12 +10,15 @@
   background-color: #ffffff;
   border: 1.5px solid #e5e7eb;
   border-radius: 8px;
+  font-family: Montserrat;
   font-size: 14px;
-  font-weight: 500;
-  color: #1f2937;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+  color: #494445;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: inherit;
   white-space: nowrap;
 }
 

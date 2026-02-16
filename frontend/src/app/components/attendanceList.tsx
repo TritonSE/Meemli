@@ -194,20 +194,25 @@ export default function AttendanceList({
             </div>
           ))
         ) : (
-          <div className={styles.table}>
+          <div className={`${styles.table} flex items-center justify-center min-h-[300px]`}>
             {!isFilterSelected ? (
-              /* initial state - empty table */
-              <div className="h-20" />
+              /* initial state - empty table w/ message */
+              <div className="space-y-2 text-center">
+                <p className={styles.sessionNotFound}>
+                  There is no class scheduled on this day. Please select a scheduled class date to
+                  mark attendance.
+                </p>
+              </div>
             ) : searchQuery.trim() ? (
               /* No results found for search */
-              <div className="space-y-2">
+              <div className="space-y-2 text-center">
                 <p className={styles.sessionNotFound}>
                   No students found matching "{searchQuery}". Try a different search term.
                 </p>
               </div>
             ) : (
               /* No session found */
-              <div className="space-y-2">
+              <div className="space-y-2 text-center">
                 <p className={styles.sessionNotFound}>
                   There is no class scheduled on this day. Please select a scheduled class date to
                   mark attendance.
