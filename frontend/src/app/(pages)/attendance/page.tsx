@@ -8,15 +8,24 @@ import styles from "../../components/attendancePage.module.css";
 import AttendanceSearch from "../../components/attendanceSearch";
 import AttendanceSortBy, { type SortOption } from "../../components/attendanceSortBy";
 import { DateSelect } from "../../components/dateSelect";
-import { SectionSelect } from "../../components/sessionSelect";
+import { SectionSelect } from "../../components/sectionSelect";
 
 import type { AttendanceSession } from "../../../api/attendance";
 
 export default function Attendance() {
+  // Get today's date in YYYY-MM-DD format, to use as default value for date picker
+  const getLocalDateString = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   const [sessionList, setSessionList] = useState<AttendanceSession[]>([]);
   const [selectedSession, setSelectedSession] = useState<AttendanceSession | null>(null);
   const [activeSectionId, setActiveSectionId] = useState("");
-  const [activeDate, setActiveDate] = useState("");
+  const [activeDate, setActiveDate] = useState(getLocalDateString());
 
   // Search and Sort states
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,6 +42,11 @@ export default function Attendance() {
       const data = await getAllSessions();
       setSessionList(data || []);
       setSessionList(data);
+
+      // Set the first section as default if available
+      if (data && data.length > 0 && data[0].section?._id) {
+        setActiveSectionId(data[0].section._id);
+      }
     };
     void load();
   }, []);
