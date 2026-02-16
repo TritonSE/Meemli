@@ -3,15 +3,19 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { updateAttendanceBulk } from "../../api/attendance";
 
 import styles from "./attendanceList.module.css";
 
+import type { SortOption } from "./attendanceSortBy";
+
 type AttendanceListProps = {
   initialAttendees: any[];
   isFilterSelected: boolean;
+  searchQuery?: string;
+  sortOption?: SortOption;
   onUpdate?: (updatedData: any) => void;
 };
 
@@ -33,10 +37,69 @@ type Attendee = {
 export default function AttendanceList({
   initialAttendees,
   isFilterSelected,
+  searchQuery = "",
+  sortOption = { field: "name", order: "asc", label: "Ascending" },
 }: AttendanceListProps) {
   const [attendees, setAttendees] = useState<Attendee[]>(initialAttendees);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const isFirstRender = useRef(true);
+
+  // Helper function to get full name
+  const getFullName = (student: Student) => {
+    if (student?.firstName && student?.lastName) {
+      return `${student.firstName} ${student.lastName}`;
+    }
+    return student?.displayName || "Unknown Student";
+  };
+
+  // Filter and sort attendees
+  const filteredAndSortedAttendees = useMemo(() => {
+    let result = [...attendees];
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((att) => {
+        const fullName = getFullName(att.student).toLowerCase();
+        return fullName.includes(query);
+      });
+    }
+
+    // Apply sorting
+    result.sort((a, b) => {
+      if (sortOption.field === "name") {
+        const nameA = getFullName(a.student).toLowerCase();
+        const nameB = getFullName(b.student).toLowerCase();
+        const comparison = nameA.localeCompare(nameB);
+        return sortOption.order === "asc" ? comparison : -comparison;
+      }
+
+      if (sortOption.field === "status") {
+        // Status priority: PRESENT -> ABSENT -> LATE
+        const statusOrder: Record<string, number> = {
+          PRESENT: 1,
+          ABSENT: 2,
+          LATE: 3,
+        };
+        const statusA = statusOrder[a.status] || 999;
+        const statusB = statusOrder[b.status] || 999;
+        const comparison = statusA - statusB;
+        return sortOption.order === "asc" ? comparison : -comparison;
+      }
+
+      if (sortOption.field === "notes") {
+        const notesA = (a.notes || "").toLowerCase();
+        const notesB = (b.notes || "").toLowerCase();
+        const comparison = notesA.localeCompare(notesB);
+        return sortOption.order === "asc" ? comparison : -comparison;
+      }
+
+      return 0;
+    });
+
+    return result;
+  }, [attendees, searchQuery, sortOption]);
+
   //update local state
   const updateLocalState = (id: string, field: string, value: string) => {
     setAttendees((prev) => prev.map((att) => (att._id === id ? { ...att, [field]: value } : att)));
@@ -89,14 +152,10 @@ export default function AttendanceList({
       </div>
 
       <div className={styles.rowsContainer}>
-        {attendees.length > 0 ? (
-          attendees.map((att) => (
+        {filteredAndSortedAttendees.length > 0 ? (
+          filteredAndSortedAttendees.map((att) => (
             <div key={att._id} className={styles.studentRow}>
-              <div className={styles.colName}>
-                {att.student?.firstName && att.student?.lastName
-                  ? `${att.student.firstName} ${att.student.lastName}`
-                  : att.student?.displayName || "Unknown Student"}
-              </div>
+              <div className={styles.colName}>{getFullName(att.student)}</div>
 
               <div className={styles.colStatus}>
                 <div className={styles.statusGroup}>
@@ -139,7 +198,15 @@ export default function AttendanceList({
             {!isFilterSelected ? (
               /* initial state - empty table */
               <div className="h-20" />
+            ) : searchQuery.trim() ? (
+              /* No results found for search */
+              <div className="space-y-2">
+                <p className={styles.sessionNotFound}>
+                  No students found matching "{searchQuery}". Try a different search term.
+                </p>
+              </div>
             ) : (
+              /* No session found */
               <div className="space-y-2">
                 <p className={styles.sessionNotFound}>
                   There is no class scheduled on this day. Please select a scheduled class date to

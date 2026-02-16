@@ -1,8 +1,9 @@
 import { Popover } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
+import styles from "./select.module.css";
 
 import type { AttendanceSession } from "@/src/api/attendance";
-import styles from "./select.module.css";
 
 export function SectionSelect({
   sessions,
