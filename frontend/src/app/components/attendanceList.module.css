@@ -1,0 +1,247 @@
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  border: 1px solid #e3e2e2;
+  border-radius: 12px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.tableHeader {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+  border-bottom: 1px solid #e3e2e2;
+  box-sizing: border-box;
+
+  /* Matches the scrollbar width */
+  padding-right: 8px;
+  background: #f7f6f6;
+}
+
+.studentRow {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+  border-bottom: 1px solid #e3e2e2;
+  box-sizing: border-box;
+}
+
+.colName,
+.colStatus,
+.colNotes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: stretch;
+  padding: 12px 24px;
+  font-family: Montserrat;
+  box-sizing: border-box;
+}
+
+.colName {
+  flex: 0 0 320px;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+}
+.colStatus {
+  flex: 0 0 464px;
+  display: flex;
+  justify-content: flex-start;
+  padding: 12px 24px;
+}
+.colNotes {
+  flex: 0 0 320px;
+  padding: 12px 24px;
+}
+
+.tableHeader .colName,
+.tableHeader .colStatus,
+.tableHeader .colNotes {
+  background: #f7f6f6;
+  color: #9b9d9f;
+  text-transform: none;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.studentRow .colName,
+.studentRow .colStatus,
+.studentRow .colNotes {
+  background: #ffffff;
+  color: #231f20;
+  font-size: 14px;
+  font-weight: 500;
+  border-bottom: none;
+}
+
+.studentRow {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+  border-bottom: 1px solid #e3e2e2;
+  min-height: 64px;
+}
+
+.statusGroup {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.statusBtn {
+  display: flex;
+  padding: 8px 14px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  min-width: 80px;
+  white-space: nowrap;
+  border-radius: 8px;
+  border: none;
+  background: var(--Gray-25, #fcfbfb);
+  font-weight: 600;
+  color: var(--Gray-400, #b6b8ba);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+}
+
+.statusBtn:hover {
+  opacity: 0.8;
+}
+
+/* Make icons inherit button color (Figma has them in a slightly lighter shade) */
+.statusBtn svg,
+.statusBtn .material-icons {
+  color: inherit;
+}
+
+/* Active States from Figma */
+.btnPresent.active {
+  display: flex;
+  padding: 8px 14px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  background: var(--Success-25, #ecfdf3);
+  color: var(--Success-700, #057747);
+
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+}
+
+.btnLate.active {
+  display: flex;
+  padding: 8px 14px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  background: var(--Warning-25, #fffaeb);
+  color: var(--Warning-700, #b54708);
+
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+}
+
+.btnAbsent.active {
+  display: flex;
+  padding: 8px 14px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  background: var(--Error-25, #fef3f2);
+  color: var(--Error-700, #b42318);
+
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+}
+
+.notesInput {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--Gray-900, #231f20);
+
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+}
+
+.notesInput::placeholder {
+  color: var(--Gray-500, #9b9d9f);
+
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+}
+
+.sessionNotFound {
+  color: var(--Gray-900, #231f20);
+
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: -0.32px;
+}
+
+.rowsContainer {
+  flex: 1;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+}
+.rowsContainer::-webkit-scrollbar {
+  width: 8px;
+  display: block;
+}
+
+.rowsContainer::-webkit-scrollbar-track {
+  background: #f7f6f6;
+  border-left: 1px solid #e3e2e2;
+}
+
+.rowsContainer::-webkit-scrollbar-thumb {
+  background: #d1d1d1;
+  border-radius: 4px;
+}
+
+.rowsContainer::-webkit-scrollbar-thumb:hover {
+  background: #9b9d9f;
+}

@@ -78,18 +78,12 @@ const validateEndTime = body("endTime")
     return true;
   });
 
-export const validateSessions: ValidationChain[] = [
-  body("sessions").optional().isArray().withMessage("Sessions must be an array of ObjectIDs"),
-  body("sessions.*").isMongoId().withMessage("Each session must be a valid MongoDB ObjectID"),
-];
-
 export const createSectionValidator = [
   validateCode,
   validateDays,
   validateEndTime,
   ...validateEnrolledStudents,
   validateProgram,
-  ...validateSessions,
   validateStartTime,
   ...validateTeachers,
 ];
@@ -100,7 +94,6 @@ export const updateSectionValidator = [
   validateEndTime.optional(),
   ...validateEnrolledStudents.map((v) => v.optional()),
   validateProgram.optional(),
-  ...validateSessions.map((v) => v.optional()),
   validateStartTime.optional(),
   ...validateTeachers.map((v) => v.optional()),
 ];
