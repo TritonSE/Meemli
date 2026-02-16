@@ -2,10 +2,6 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-
-  min-height: 0;
-  height: 0;
-
   width: 100%;
   border: 1px solid #e3e2e2;
   border-radius: 12px;
@@ -13,7 +9,19 @@
   overflow: hidden;
 }
 
-.tableHeader,
+.tableHeader {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+  border-bottom: 1px solid #e3e2e2;
+  box-sizing: border-box;
+
+  /* Matches the scrollbar width */
+  padding-right: 8px;
+  background: #f7f6f6;
+}
+
 .studentRow {
   display: flex;
   flex-direction: row;
@@ -215,7 +223,25 @@
 
 .rowsContainer {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: scroll;
   display: flex;
   flex-direction: column;
+}
+.rowsContainer::-webkit-scrollbar {
+  width: 8px;
+  display: block;
+}
+
+.rowsContainer::-webkit-scrollbar-track {
+  background: #f7f6f6;
+  border-left: 1px solid #e3e2e2;
+}
+
+.rowsContainer::-webkit-scrollbar-thumb {
+  background: #d1d1d1;
+  border-radius: 4px;
+}
+
+.rowsContainer::-webkit-scrollbar-thumb:hover {
+  background: #9b9d9f;
 }
