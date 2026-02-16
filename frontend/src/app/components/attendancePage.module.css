@@ -21,6 +21,7 @@
   font-weight: 400;
   line-height: 24px;
   letter-spacing: -0.32px;
+  margin-bottom: 32px;
 }
 
 .dropdownSection {
@@ -70,7 +71,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
 }
 
 .leftControls {
