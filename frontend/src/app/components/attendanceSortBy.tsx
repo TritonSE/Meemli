@@ -1,37 +1,32 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
 import { ArrowUpDown, Check } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+
 import styles from "./attendanceSortBy.module.css";
 
 export type SortField = "name" | "status" | "notes";
 export type SortOrder = "asc" | "desc";
 
-export interface SortOption {
+export type SortOption = {
   field: SortField;
   order: SortOrder;
   label: string;
-}
+};
 
-interface AttendanceSortByProps {
+type AttendanceSortByProps = {
   value: SortOption;
   onChange: (option: SortOption) => void;
-}
+};
 
-export default function AttendanceSortBy({
-  value,
-  onChange,
-}: AttendanceSortByProps) {
+export default function AttendanceSortBy({ value, onChange }: AttendanceSortByProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };

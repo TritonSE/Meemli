@@ -6,7 +6,7 @@
   gap: 8px;
 
   border-radius: 8px;
-  border: 1px solid var(--Gray-300, #cdcfd0);
+  border: 1.5px solid var(--Gray-300, #cdcfd0);
   background: var(--Base-White, #fff);
 
   font-family: Montserrat;
@@ -15,6 +15,20 @@
   font-weight: 600;
   line-height: 20px;
   letter-spacing: -0.28px;
+  transition: all 0.2s ease;
+}
+
+.mainContainer:hover {
+  border-color: #b0b2b3;
+}
+
+.mainContainer:focus-within {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+}
+
+.mainContainer:focus-within:hover {
+  border-color: #10b981;
 }
 
 .datePickerWrapper {
@@ -22,6 +36,11 @@
   display: inline-flex;
   width: fit-content;
   height: 42px;
+}
+
+.datePickerWrapper:hover .visualLabel,
+.datePickerWrapper:hover .dateLabel {
+  border-color: #b0b2b3;
 }
 
 .visualLabel {
@@ -36,7 +55,7 @@
   width: 100%;
 
   border-radius: 8px;
-  border: 1px solid var(--Gray-300, #cdcfd0);
+  border: 1.5px solid var(--Gray-300, #cdcfd0);
   background: var(--Base-White, #fff);
 
   color: var(--Gray-700, #494445);
@@ -47,6 +66,45 @@
   font-weight: 600;
   line-height: 20px;
   letter-spacing: -0.28px;
+  transition: all 0.2s ease;
+}
+
+.dateLabel {
+  display: flex;
+  padding: 10px 14px;
+  white-space: nowrap;
+  width: auto;
+
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+
+  border-radius: 8px;
+  border: 1.5px solid var(--Gray-300, #cdcfd0);
+  background: var(--Base-White, #fff);
+
+  color: var(--Gray-700, #494445);
+
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.datePickerWrapper:focus-within .visualLabel,
+.datePickerWrapper:focus-within .dateLabel {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+}
+.datePickerWrapper.isOpen .visualLabel,
+.datePickerWrapper.isOpen .dateLabel {
+  border-color: #10b981;
+  background-color: #f0fdf4;
 }
 
 .textElement {
@@ -63,7 +121,18 @@
   opacity: 0;
   cursor: pointer;
   z-index: 10;
-  font-size: 40px;
+}
+
+/* Stretches the clickable calendar icon to cover the entire input */
+.hiddenInput::-webkit-calendar-picker-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
 }
 
 .selectSession {

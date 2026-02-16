@@ -40,7 +40,13 @@ export function SectionSelect({
   const handleClose = () => setAnchorEl(null);
 
   return (
-    <div className={`${styles.datePickerWrapper} ${!hasSessions ? styles.blankState : ""}`}>
+    <div
+      className={`
+    ${styles.datePickerWrapper} 
+    ${!hasSessions ? styles.blankState : ""} 
+    ${anchorEl ? styles.isOpen : ""}
+  `}
+    >
       <div
         className={styles.visualLabel}
         onClick={handleOpen}

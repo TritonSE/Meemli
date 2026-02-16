@@ -76,7 +76,7 @@ export default function Attendance() {
             />
             <DateSelect value={activeDate} onChange={setActiveDate} />
           </div>
-          
+
           <div className={styles.rightControls}>
             <AttendanceSortBy value={sortOption} onChange={setSortOption} />
             <AttendanceSearch value={searchQuery} onChange={setSearchQuery} />

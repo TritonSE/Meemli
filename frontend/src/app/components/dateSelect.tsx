@@ -29,7 +29,7 @@ export function DateSelect({ value, onChange }: { value: string; onChange: (d: s
 
   return (
     <div className={styles.datePickerWrapper}>
-      <div className={styles.visualLabel}>
+      <div className={styles.dateLabel}>
         {
           <svg
             xmlns="http://www.w3.org/2000/svg"
