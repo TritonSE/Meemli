@@ -60,6 +60,8 @@
     --primary-700: #2a5b52;
     --primary-800: #254a43;
     --primary-900: #233e3a;
+
+    --error-700: #b42318;
   }
 
   div[class="horizontalLine"] {

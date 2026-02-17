@@ -6,6 +6,8 @@ import { StudentTabs } from "../../(ui)/_components/StudentTabs/StudentTabs";
 
 import styles from "./StudentProfile.module.css";
 
+import TestStudentForm from "@/src/pages/TestStudentForm";
+
 /* 
 All constellation components can be found here:
 https://tritonse.github.io/TSE-Constellation/?path=/docs/welcome--documentation
@@ -60,6 +62,7 @@ export default function Test() {
           </div>
         </div>
       </div>
+      <TestStudentForm />
     </div>
   );
 }
