@@ -1,0 +1,122 @@
+/* StudentCard.module.css */
+
+/* Base container for the card */
+.container {
+  display: flex;
+  box-sizing: border-box;
+}
+
+/* --- MODAL VARIANT STYLES --- */
+.studentProfileModal {
+  display: flex;
+  width: 900px;
+  height: 400px;
+  background-color: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  flex-direction: column;
+
+  /* Note: Assuming you handle the close button logically elsewhere, 
+     but keeping styling here as requested */
+  .closeButton {
+    align-self: flex-end;
+    background-color: transparent;
+    padding: 4px;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+    }
+  }
+
+  .studentInfoTag {
+    display: flex;
+    gap: 1rem;
+
+    .infoItems {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      .name {
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin: 0;
+      }
+
+      .email {
+        font-style: normal;
+        color: var(--color-gray-700, #4a5568); /* Fallback added */
+
+        address {
+          font-style: normal;
+        }
+      }
+
+      .school {
+        & > span {
+          font-weight: 500;
+          margin-right: 0.5rem;
+        }
+      }
+
+      li {
+        margin-bottom: 0.5rem;
+        color: var(--color-gray-700, #4a5568);
+      }
+    }
+  }
+
+  .studentProfileContent {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+}
+
+/* --- LIST VARIANT STYLES --- */
+/* We scope this under a class to prevent style bleeding */
+.listViewContainer {
+  .studentInfoTag {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+
+    .listView {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      .name {
+        font-size: 1rem;
+        font-weight: 500;
+      }
+
+      .email {
+        font-style: normal;
+        color: var(--color-gray-700, #4a5568);
+
+        address {
+          font-style: normal;
+        }
+      }
+
+      li {
+        color: var(--color-gray-700, #4a5568);
+      }
+    }
+  }
+}
+
+.modalContentOverride {
+  width: 100% !important; /* Let the Modal wrapper decide width */
+  height: auto !important; /* Let content determine height */
+  box-shadow: none !important; /* Remove double shadow */
+  border: none !important;
+  background: transparent !important;
+}

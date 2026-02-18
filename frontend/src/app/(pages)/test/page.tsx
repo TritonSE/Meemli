@@ -1,67 +1,161 @@
 "use client";
-import Image from "next/image";
+import { useState } from "react";
 
-import { ProfilePicture } from "../../(ui)/_components/ProfilePicture/ProfilePicture";
-import { StudentTabs } from "../../(ui)/_components/StudentTabs/StudentTabs";
+// Components
+import { StudentCard } from "../../(ui)/_components/StudentCard/StudentCard";
+import { StudentProfileModal } from "../../(ui)/_components/StudentProfileView/StudentProfileView";
 
-import styles from "./StudentProfile.module.css";
+import type { Student } from "@/src/api/students";
 
+// API & Types
+import { getStudent } from "@/src/api/students";
 import TestStudentForm from "@/src/pages/TestStudentForm";
 
-/* 
-All constellation components can be found here:
-https://tritonse.github.io/TSE-Constellation/?path=/docs/welcome--documentation
-*/
 export default function Test() {
+  // --- FAKE DATA for testing student profile view ---
+  const FAKE_STUDENTS = [
+    {
+      _id: "1",
+      displayName: "Alice Johnson",
+      meemliEmail: "alice@test.com",
+      grade: 10,
+      schoolName: "Lincoln High",
+      city: "San Diego",
+      state: "CA",
+      parentContact: {
+        firstName: "Mrs",
+        lastName: "Johnson",
+        phoneNumber: "555-0101",
+        email: "mom@test.com",
+      },
+      preassessmentScore: 0,
+      postassessmentScore: 0,
+      enrolledSections: [],
+      comments: "",
+    },
+    {
+      _id: "2",
+      displayName: "Bob Smith",
+      meemliEmail: "bob@test.com",
+      grade: 11,
+      schoolName: "Washington High",
+      city: "Seattle",
+      state: "WA",
+      parentContact: {
+        firstName: "Mr",
+        lastName: "Smith",
+        phoneNumber: "555-0102",
+        email: "dad@test.com",
+      },
+      preassessmentScore: 0,
+      postassessmentScore: 0,
+      enrolledSections: [],
+      comments: "",
+    },
+    {
+      _id: "3",
+      displayName: "Charlie Davis",
+      meemliEmail: "charlie@test.com",
+      grade: 9,
+      schoolName: "Roosevelt High",
+      city: "Austin",
+      state: "TX",
+      parentContact: {
+        firstName: "Ms",
+        lastName: "Davis",
+        phoneNumber: "555-0103",
+        email: "mum@test.com",
+      },
+      preassessmentScore: 0,
+      postassessmentScore: 0,
+      enrolledSections: [],
+      comments: "",
+    },
+  ];
+
+  // --- 2. STATE ---
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+
+  // New state for handling the "Real ID" input
+  const [manualId, setManualId] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // --- 3. HANDLER FOR BACKEND CALL ---
+  const handleOpenRealStudent = async () => {
+    if (!manualId) return;
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const result = await getStudent(manualId);
+
+      if (result.success) {
+        // SUCCESS: populates the state and OPENS the modal automatically
+        setSelectedStudent(result.data);
+      } else {
+        setError("Student not found or API error");
+      }
+    } catch (err) {
+      setError("Network or Server Error");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
-      This Test Page is meant for developers and will be removed in the MVP.
-      <br />
-      <div style={{ display: "flex", gap: "8px" }}>
-        Constellation Button examples removed because of button style conflicts...constellation is
-        still available to use.
-      </div>
-      <div className={styles.studentProfileModal}>
-        <button className={styles.closeButton}>
-          <Image src={"/icons/x.svg"} alt="Close" width={20} height={20} />
-        </button>
+      <div style={{ padding: "20px" }}>
+        <h1>Test Page</h1>
 
-        <div className={styles.studentProfileContent}>
-          <div className={styles.studentInfoTag}>
-            {/* I think i should turn this into name card component that takes in a user and has two styles
-            The first style is for list view with just name and email and profile picture. The second should be view mode with name, email, grade, school, etc used for this case. */}
-
-            <ProfilePicture size="medium" letter="John" />
-            <ul className={`${styles.infoItems} ${styles.profileView}`}>
-              <li className={styles.name}> John Smith </li>
-              <li className={styles.email}>
-                {" "}
-                <address>john.smith@example.com</address>
-              </li>
-              <li className={styles.school}>
-                {" "}
-                <span> 14th Grade </span> University California San Diego | La Jolla, CA{" "}
-              </li>
-            </ul>
+        {/* --- TEST REAL ID --- */}
+        <div
+          style={{
+            marginBottom: "2rem",
+            padding: "1rem",
+            border: "1px dashed #ccc",
+            background: "#f9f9f9",
+          }}
+        >
+          <h3>Test Real Backend ID</h3>
+          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+            <input
+              type="text"
+              placeholder="Paste MongoDB ID here..."
+              value={manualId}
+              onChange={(e) => setManualId(e.target.value)}
+              style={{ padding: "8px", width: "300px" }}
+            />
+            <button
+              onClick={() => void handleOpenRealStudent()}
+              disabled={loading}
+              style={{ padding: "8px 16px", cursor: "pointer" }}
+            >
+              {loading ? "Fetching..." : "Open Real Modal"}
+            </button>
           </div>
-
-          <div className={styles.studentInfoTag} style={{ display: "none" }}>
-            {/* This is the list view style name card */}
-            <ProfilePicture size="small" letter="John" />
-            <ul className={`${styles.infoItems} ${styles.listView}`}>
-              <li className={styles.name}> John Smith </li>
-              <li className={styles.email}>
-                {" "}
-                <address>john.smith@example.com</address>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <StudentTabs />
-          </div>
+          {error && <p style={{ color: "red", marginTop: "8px" }}>{error}</p>}
         </div>
+
+        {/* --- EXISTING FAKE LIST --- */}
+        <h3>Fake Data List</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: "400px" }}>
+          {FAKE_STUDENTS.map((student: Student) => (
+            <div
+              key={student._id}
+              onClick={() => setSelectedStudent(student)}
+              style={{ cursor: "pointer" }}
+            >
+              <StudentCard variant="list" data={student} />
+            </div>
+          ))}
+        </div>
+
+        <StudentProfileModal student={selectedStudent} onClose={() => setSelectedStudent(null)} />
       </div>
+
       <TestStudentForm />
     </div>
   );
