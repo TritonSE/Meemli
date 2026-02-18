@@ -15,10 +15,10 @@ const studentSchema = new Schema({
   schoolName: { type: String, required: true },
   city: { type: String, required: true },
   state: { type: String, required: true },
-  preassessmentScore: { type: Number, required: true },
-  postassessmentScore: { type: Number, required: true },
+  preassessmentScore: { type: Number, required: false },
+  postassessmentScore: { type: Number, required: false },
   enrolledSections: { type: [Schema.Types.ObjectId], required: true },
-  comments: { type: String, required: true },
+  comments: { type: String, required: false },
 });
 
 type Student = InferSchemaType<typeof studentSchema>;

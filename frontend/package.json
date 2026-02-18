@@ -23,7 +23,8 @@
     "next": "16.0.10",
     "react": "19.2.1",
     "react-day-picker": "^9.13.2",
-    "react-dom": "19.2.1"
+    "react-dom": "19.2.1",
+    "react-select": "^5.10.2"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.7.1",
