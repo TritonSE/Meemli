@@ -20,6 +20,9 @@
 }
 
 @layer default {
+  main {
+    flex: 1;
+  }
   body {
     background-color: white;
     display: flex;
