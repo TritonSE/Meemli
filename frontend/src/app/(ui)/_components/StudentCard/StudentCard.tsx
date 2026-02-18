@@ -14,7 +14,6 @@ type StudentCardProps = {
 
 export const StudentCard: React.FC<StudentCardProps> = ({ variant, data, className = "" }) => {
   // 1. Loading State
-  // Handles the "await" gap or null data gracefully
   if (!data) {
     return (
       <div
@@ -34,7 +33,6 @@ export const StudentCard: React.FC<StudentCardProps> = ({ variant, data, classNa
 
   // 2. Data Preparation
   // Since we only have 'Student', we access fields directly.
-  // Location formatting logic is kept here for cleanliness.
   const location = `${data.city}, ${data.state}`;
 
   // --- RENDER: MODAL VIEW ---

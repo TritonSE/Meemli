@@ -28,9 +28,23 @@ export const StudentProfileModal = ({ student, onClose }: StudentProfileModalPro
             <Image src="/icons/x.svg" alt="Close" width={24} height={24} />
           </button>
           <StudentCard variant="modal" data={student} className={override.modalContentOverride} />
-          <StudentTabs />
+          <StudentTabs student={student} />
         </div>
       }
     />
   );
 };
+
+// TODO
+/*
+STYLE
+make name tag go far to the let instead of kinad centered with tabs
+add line separating tabs and content.
+
+LOGIC:
+make parent info populate based in student passed into student profile props.
+implement notes area 
+
+SEMANTICS:
+make sure content div has proper semantics.
+*/

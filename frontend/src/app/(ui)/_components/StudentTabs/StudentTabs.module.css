@@ -1,23 +1,26 @@
-/* container to hold Nav and Content side-by-side */
+/* =========================================
+   1. OUTER LAYOUT (The Skeleton)
+   ========================================= */
+
 .tabsContainer {
   display: flex;
   gap: 2rem;
   align-items: flex-start;
-  min-height: 300px; /* optional: ensures modal has height */
+  min-height: 300px;
   width: 100%;
 }
 
-/* left column: the tiles */
+/* Left Column: Navigation */
 .tabNav {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   min-width: 150px;
-  padding-right: 1rem;
+  flex-shrink: 0;
 }
 
 .tabTile {
-  all: unset; /* resets default button styles */
+  all: unset;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -33,41 +36,120 @@
 
 .tabTile:hover {
   background-color: var(--grey-50);
-
-  .tabIcon {
-    filter: brightness(0) invert(0.5);
-  }
 }
 
-/* the active state - governed by data attribute in js */
+.tabTile:hover .tabIcon {
+  filter: brightness(0.5);
+}
+
+/* Active State */
 .tabTile[data-active="true"] {
   background-color: var(--primary-500);
   color: white;
   font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .tabTile[data-active="true"] .tabIcon {
-  filter: brightness(0) invert(1);
+  filter: brightness(0) invert(1); /* Turns icon white */
 }
 
-/* right column: the content */
+/* Right Column: Content Area */
 .tabContent {
   flex: 1;
+  width: 100%;
   animation: fadeIn 0.2s ease-in;
-}
-
-.contentCard {
-  background: white;
-  padding: 0 1rem;
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateX(5px);
+    transform: translateY(5px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
+}
+
+/* =========================================
+   2. INTERNAL PANELS (The Generalization)
+   ========================================= */
+
+/* Use this for specific layouts (Info, Notes) */
+.panelContainer {
+  /* Renamed from your new CSS to match existing padding logic */
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Use this for the "Coming Soon" or simple text cards */
+.contentCard {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px dashed var(--grey-300); /* Visual cue that it's a placeholder */
+}
+
+/* Shared Header Styling for all panels */
+.sectionBlock h3,
+.panelContainer h3 {
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin: 0 0 1rem 0;
+  color: var(--grey-500); /* Matched to your variables */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-bottom: 0.5rem;
+}
+
+/* --- Info Tab: Grid System --- */
+.infoGrid {
+  display: grid;
+  /* Responsive grid: fits as many columns as possible, min 200px wide */
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.infoItem label {
+  font-size: 0.75rem;
+  color: var(--grey-300);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.infoItem p {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--grey-600);
+  margin: 0;
+  word-break: break-word;
+}
+
+.notesBox {
+  background-color: var(--grey-50);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--grey-200);
+  min-height: 120px;
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #333;
+}
+
+.emptyState {
+  color: var(--grey-400);
+  font-style: italic;
+  text-align: center;
+  padding: 2rem 0;
 }

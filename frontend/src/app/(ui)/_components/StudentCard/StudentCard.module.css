@@ -16,8 +16,6 @@
   padding: 1.5rem;
   flex-direction: column;
 
-  /* Note: Assuming you handle the close button logically elsewhere, 
-     but keeping styling here as requested */
   .closeButton {
     align-self: flex-end;
     background-color: transparent;
@@ -48,7 +46,7 @@
 
       .email {
         font-style: normal;
-        color: var(--color-gray-700, #4a5568); /* Fallback added */
+        color: var(--color-gray-700, #4a5568);
 
         address {
           font-style: normal;
@@ -77,7 +75,6 @@
 }
 
 /* --- LIST VARIANT STYLES --- */
-/* We scope this under a class to prevent style bleeding */
 .listViewContainer {
   .studentInfoTag {
     display: flex;
