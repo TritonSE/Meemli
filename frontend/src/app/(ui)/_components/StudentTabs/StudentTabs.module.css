@@ -4,7 +4,7 @@
 
 .tabsContainer {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
   align-items: flex-start;
   min-height: 300px;
   width: 100%;
@@ -17,6 +17,8 @@
   gap: 0.5rem;
   min-width: 150px;
   flex-shrink: 0;
+  padding-right: 1.5rem;
+  border-right: var(--grey-200) 1px solid;
 }
 
 .tabTile {
@@ -46,7 +48,6 @@
 .tabTile[data-active="true"] {
   background-color: var(--primary-500);
   color: white;
-  font-weight: 600;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -79,11 +80,10 @@
 /* Use this for specific layouts (Info, Notes) */
 .panelContainer {
   /* Renamed from your new CSS to match existing padding logic */
-  padding: 0.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
   width: 100%;
+  overflow: hidden;
 }
 
 /* Use this for the "Coming Soon" or simple text cards */

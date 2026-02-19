@@ -54,7 +54,6 @@ const InfoPanel = ({ student }: { student: Student }) => {
           </div>
         </div>
       </div>
-      {/* You can add more blocks here later, e.g. <div className={styles.sectionBlock}><h3>School Info</h3>...</div> */}
     </div>
   );
 };
