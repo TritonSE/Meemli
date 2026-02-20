@@ -221,6 +221,7 @@
   letter-spacing: -0.32px;
 }
 
+/* For scrollbar */
 .rowsContainer {
   flex: 1;
   overflow-y: scroll;
@@ -244,4 +245,15 @@
 
 .rowsContainer::-webkit-scrollbar-thumb:hover {
   background: #9b9d9f;
+}
+
+/* For autosave */
+.saveStatus {
+  font-family: Montserrat;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--Gray-500, #9b9d9f);
+  padding: 8px 4px;
+  min-height: 28px;
+  align-self: flex-end;
 }

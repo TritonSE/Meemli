@@ -41,7 +41,7 @@ export default function AttendanceList({
   sortOption = { field: "name", order: "asc", label: "Ascending" },
 }: AttendanceListProps) {
   const [attendees, setAttendees] = useState<Attendee[]>(initialAttendees);
-  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [saveStatus, setSaveStatus] = useState<"saving" | "saved" | "error">("saved");
   const isFirstRender = useRef(true);
 
   // Helper function to get full name
@@ -130,10 +130,9 @@ export default function AttendanceList({
           }));
           await updateAttendanceBulk(updates);
           setSaveStatus("saved");
-          setTimeout(() => setSaveStatus("idle"), 2000);
         } catch (error) {
           console.error("Failed to save attendance:", error);
-          setSaveStatus("idle");
+          setSaveStatus("error");
         }
       };
 
@@ -144,84 +143,91 @@ export default function AttendanceList({
   }, [attendees]);
 
   return (
-    <div className={styles.mainContainer}>
-      <div className={styles.tableHeader}>
-        <div className={styles.colName}>Student Name</div>
-        <div className={styles.colStatus}>Status</div>
-        <div className={styles.colNotes}>Notes</div>
-      </div>
+    <>
+      <div className={styles.mainContainer}>
+        <div className={styles.tableHeader}>
+          <div className={styles.colName}>Student Name</div>
+          <div className={styles.colStatus}>Status</div>
+          <div className={styles.colNotes}>Notes</div>
+        </div>
 
-      <div className={styles.rowsContainer}>
-        {filteredAndSortedAttendees.length > 0 ? (
-          filteredAndSortedAttendees.map((att) => (
-            <div key={att._id} className={styles.studentRow}>
-              <div className={styles.colName}>{getFullName(att.student)}</div>
+        <div className={styles.rowsContainer}>
+          {filteredAndSortedAttendees.length > 0 ? (
+            filteredAndSortedAttendees.map((att) => (
+              <div key={att._id} className={styles.studentRow}>
+                <div className={styles.colName}>{getFullName(att.student)}</div>
 
-              <div className={styles.colStatus}>
-                <div className={styles.statusGroup}>
-                  <button
-                    onClick={() => updateLocalState(att._id, "status", "PRESENT")}
-                    className={`${styles.statusBtn} ${att.status === "PRESENT" ? `${styles.btnPresent} ${styles.active}` : ""}`}
-                  >
-                    <CheckIcon sx={{ fontSize: 20 }} />
-                    Present
-                  </button>
-                  <button
-                    onClick={() => updateLocalState(att._id, "status", "ABSENT")}
-                    className={`${styles.statusBtn} ${att.status === "ABSENT" ? `${styles.btnAbsent} ${styles.active}` : ""}`}
-                  >
-                    <CloseIcon sx={{ fontSize: 20 }} />
-                    Absent
-                  </button>
-                  <button
-                    onClick={() => updateLocalState(att._id, "status", "LATE")}
-                    className={`${styles.statusBtn} ${att.status === "LATE" ? `${styles.btnLate} ${styles.active}` : ""}`}
-                  >
-                    <AccessTimeIcon sx={{ fontSize: 20 }} />
-                    Late
-                  </button>
+                <div className={styles.colStatus}>
+                  <div className={styles.statusGroup}>
+                    <button
+                      onClick={() => updateLocalState(att._id, "status", "PRESENT")}
+                      className={`${styles.statusBtn} ${att.status === "PRESENT" ? `${styles.btnPresent} ${styles.active}` : ""}`}
+                    >
+                      <CheckIcon sx={{ fontSize: 20 }} />
+                      Present
+                    </button>
+                    <button
+                      onClick={() => updateLocalState(att._id, "status", "ABSENT")}
+                      className={`${styles.statusBtn} ${att.status === "ABSENT" ? `${styles.btnAbsent} ${styles.active}` : ""}`}
+                    >
+                      <CloseIcon sx={{ fontSize: 20 }} />
+                      Absent
+                    </button>
+                    <button
+                      onClick={() => updateLocalState(att._id, "status", "LATE")}
+                      className={`${styles.statusBtn} ${att.status === "LATE" ? `${styles.btnLate} ${styles.active}` : ""}`}
+                    >
+                      <AccessTimeIcon sx={{ fontSize: 20 }} />
+                      Late
+                    </button>
+                  </div>
+                </div>
+
+                <div className={styles.colNotes}>
+                  <input
+                    className={styles.notesInput}
+                    value={att.notes || ""}
+                    onChange={(e) => updateLocalState(att._id, "notes", e.target.value)}
+                    placeholder="Type here..."
+                  />
                 </div>
               </div>
-
-              <div className={styles.colNotes}>
-                <input
-                  className={styles.notesInput}
-                  value={att.notes || ""}
-                  onChange={(e) => updateLocalState(att._id, "notes", e.target.value)}
-                  placeholder="Type here..."
-                />
-              </div>
+            ))
+          ) : (
+            <div className={`${styles.table} flex items-center justify-center min-h-[300px]`}>
+              {!isFilterSelected ? (
+                /* initial state - empty table w/ message */
+                <div className="space-y-2 text-center">
+                  <p className={styles.sessionNotFound}>
+                    There is no class scheduled on this day. Please select a scheduled class date to
+                    mark attendance.
+                  </p>
+                </div>
+              ) : searchQuery.trim() ? (
+                /* No results found for search */
+                <div className="space-y-2 text-center">
+                  <p className={styles.sessionNotFound}>
+                    No students found matching "{searchQuery}". Try a different search term.
+                  </p>
+                </div>
+              ) : (
+                /* No session found */
+                <div className="space-y-2 text-center">
+                  <p className={styles.sessionNotFound}>
+                    There is no class scheduled on this day. Please select a scheduled class date to
+                    mark attendance.
+                  </p>
+                </div>
+              )}
             </div>
-          ))
-        ) : (
-          <div className={`${styles.table} flex items-center justify-center min-h-[300px]`}>
-            {!isFilterSelected ? (
-              /* initial state - empty table w/ message */
-              <div className="space-y-2 text-center">
-                <p className={styles.sessionNotFound}>
-                  There is no class scheduled on this day. Please select a scheduled class date to
-                  mark attendance.
-                </p>
-              </div>
-            ) : searchQuery.trim() ? (
-              /* No results found for search */
-              <div className="space-y-2 text-center">
-                <p className={styles.sessionNotFound}>
-                  No students found matching "{searchQuery}". Try a different search term.
-                </p>
-              </div>
-            ) : (
-              /* No session found */
-              <div className="space-y-2 text-center">
-                <p className={styles.sessionNotFound}>
-                  There is no class scheduled on this day. Please select a scheduled class date to
-                  mark attendance.
-                </p>
-              </div>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+      <div className={styles.saveStatus}>
+        {saveStatus === "saving" && "Saving..."}
+        {saveStatus === "saved" && "✓ All Changes Saved"}
+        {saveStatus === "error" && "Failed to Save"}
+      </div>
+    </>
   );
 }
