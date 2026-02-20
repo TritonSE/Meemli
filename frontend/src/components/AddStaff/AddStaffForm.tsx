@@ -1,6 +1,8 @@
+import { sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
 
 import { createUser } from "../../api/user";
+import { auth } from "../../util/firebase";
 import { Button } from "../Button";
 import { TextField } from "../TextField";
 
@@ -19,6 +21,7 @@ type FormErrors = {
   personalEmail?: string;
   meemliEmail?: string;
   api?: string;
+  passwordReset?: string;
 };
 
 export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaffFormProps) {
@@ -95,6 +98,15 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
     })
       .then((result) => {
         if (result.success) {
+          sendPasswordResetEmail(auth, meemliEmail.trim())
+            .then(() => {})
+            .catch((error) => {
+              setFormErrors({
+                passwordReset: "Failed to send password reset email",
+              });
+              console.error("Error sending password reset email:", error);
+            });
+
           // Reset form
           setFirstName("");
           setLastName("");

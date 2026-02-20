@@ -1,14 +1,18 @@
-// import { initializeApp } from "firebase/app";
-// import { getAuth } from "firebase/auth";
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
-// // TODO: Replace the following with your app's Firebase project configuration
-// // See: https://firebase.google.com/docs/web/learn-more#config-object
-// const firebaseConfig = {
-//   // ...
-// };
+const firebaseConfig = {
+  apiKey: "AIzaSyC9fIXfDllUVyDZccNeElVSp6308fTwAJk",
+  authDomain: "meemli-dev.firebaseapp.com",
+  projectId: "meemli-dev",
+  storageBucket: "meemli-dev.firebasestorage.app",
+  messagingSenderId: "503836608250",
+  appId: "1:503836608250:web:b7d8e7b7585cf3b096ab43",
+  measurementId: "G-GV7CVH52RM",
+} as const;
 
-// // Initialize Firebase
-// const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
-// // Initialize Firebase Authentication and get a reference to the service
-// const auth = getAuth(app);
+const auth = getAuth(app);
+
+export { auth };
