@@ -7,8 +7,6 @@ import { Button } from "@/src/components/Button";
 import { Modal } from "@/src/components/Modal";
 import { Page } from "@/src/components/Page";
 
-import styles from "./page.module.css";
-
 export default function Staff() {
   const [addOpen, setAddOpen] = useState(false);
 
@@ -22,7 +20,7 @@ export default function Staff() {
             onExit={() => setAddOpen(!addOpen)}
             child={
               <>
-                <AddStaffForm onExit={() => setAddOpen(false)}/>
+                <AddStaffForm onExit={() => setAddOpen(false)} />
               </>
             }
           />

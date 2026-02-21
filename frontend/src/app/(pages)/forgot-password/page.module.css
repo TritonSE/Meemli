@@ -1,0 +1,41 @@
+/* form layout inside the card */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  position: relative;
+}
+
+.actions {
+  margin-top: 6px;
+}
+
+.primaryBtn {
+  width: 100%;
+  height: 44px;
+  border-radius: 10px;
+  transition: ease-in-out 0.2s;
+}
+
+.primaryBtn:hover {
+  background: #307164;
+}
+
+/* bottom link */
+.footerLinkRow {
+  margin-top: 6px;
+}
+
+.link {
+  font-size: 13px;
+  font-weight: 600;
+  color: #3f8d7c;
+  text-decoration: none;
+}
+
+.link:hover {
+  color: #307164;
+}

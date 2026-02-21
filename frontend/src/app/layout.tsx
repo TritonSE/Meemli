@@ -16,7 +16,7 @@ const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 
   const pathname = usePathname();
-  const hideNavbar = pathname === "/login" || pathname === "/activate" || pathname === "/forgot-password";
+  const hideNavbar = pathname === "/login/" || pathname === "/activate/" || pathname === "/forgot-password/";
 
   return (
     <html lang="en">
