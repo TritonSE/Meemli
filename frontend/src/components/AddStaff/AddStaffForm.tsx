@@ -1,6 +1,10 @@
+
+import { sendPasswordResetEmail } from "firebase/auth";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 
+import { createUser } from "../../api/user";
+import { auth } from "../../util/firebase";
 import { Button } from "../Button";
 import { MultiSelectDropdown } from "../studentform/MultiSelectDropdown";
 import { TextField } from "../TextField";
@@ -9,58 +13,134 @@ import styles from "./AddStaffForm.module.css";
 
 type AddStaffFormProps = {
   onExit: () => void;
+  onSuccess?: () => void;
 };
 
-type Option = { value: string; label: string };
+type FormErrors = {
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+  role?: string;
+  personalEmail?: string;
+  meemliEmail?: string;
+  api?: string;
+  passwordReset?: string;
+};
 
-export const AddStaffForm = function AddStaffForm({ onExit }: AddStaffFormProps) {
-  const [role, setRole] = useState<Option | null>(null);
-  const [assignedPrograms, setAssignedPrograms] = useState<Option[]>([]);
+export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaffFormProps) {
+  const [isLoading, setLoading] = useState(false);
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
 
-  // TODO: replace these with API calls
-  const roleOptions: Option[] = [
-    { value: "STAFF", label: "Staff" },
-    { value: "ADMIN", label: "Admin" },
-    { value: "OWNER", label: "Owner" },
-  ];
+  // Form state
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [role, setRole] = useState("");
+  const [personalEmail, setPersonalEmail] = useState("");
+  const [meemliEmail, setMeemliEmail] = useState("");
+  const [programs, setPrograms] = useState("");
 
-  const programOptions: Option[] = [
-    { value: "CSE11", label: "CSE 11" },
-    { value: "CSE12", label: "CSE 12" },
-    { value: "CSE100", label: "CSE 100" },
-  ];
-  
-  // const [isLoading, setLoading] = useState(false);
+  // Validate form fields
+  const validateForm = (): boolean => {
+    const errors: FormErrors = {};
 
-  // useEffect(() => {
-  //   setLoading(true);
-  //   // API Logic here, similar to:
-  //   // getAllStudents()
-  //   //   .then((result) => {
-  //   //     if (result.success) {
-  //   //       setStudents(result.data);
-  //   //       setSelectedId(result.data[0]?._id ?? null);
-  //   //     } else {
-  //   //       setErrorMessage(result.error);
-  //   //     }
-  //   //   })
-  //   //   .catch((error) => setErrorMessage(error instanceof Error ? error.message : String(error)))
-  //   //   .finally(() => setLoading(false));
-  //   setLoading(false);
-  // }, []);
+    if (!firstName.trim()) {
+      errors.firstName = "First name is required";
+    }
+    if (!lastName.trim()) {
+      errors.lastName = "Last name is required";
+    }
+    if (!phoneNumber.trim()) {
+      errors.phoneNumber = "Phone number is required";
+    }
+    if (!role.trim()) {
+      errors.role = "Role is required";
+    } else if (!["staff", "administrator", "owner"].includes(role.toLowerCase())) {
+      errors.role = "Role must be one of: staff, administrator, or owner";
+    }
+    if (!personalEmail.trim()) {
+      errors.personalEmail = "Personal email is required";
+    }
+    if (!meemliEmail.trim()) {
+      errors.meemliEmail = "Meemli email is required";
+    }
 
-  // TODO: do smth like:
-  //   <TextField
-  //   label="First Name"
-  //   name="parentFirstName"
-  //   value={draft.parentFirstName ?? ""}
-  //   placeholder="ex. John"
-  //   onChange={(e) => handleDraftChange(e.target.value, "parentFirstName")}
-  //   required={true}
-  //   error={Boolean(errors.parentFirstName)}
-  // />
+    // Email format validation - check for @ and . after @
+    const isValidEmail = (email: string) => {
+      const atIndex = email.indexOf("@");
+      return atIndex > 0 && email.includes(".", atIndex);
+    };
+    if (personalEmail && !isValidEmail(personalEmail)) {
+      errors.personalEmail = "Invalid personal email format";
+    }
+    if (meemliEmail && !isValidEmail(meemliEmail)) {
+      errors.meemliEmail = "Invalid meemli email format";
+    }
 
-  // TODO: add validators
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // Handle form submission
+  const handleSubmit = () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    setFormErrors({});
+
+    const isAdmin = role.toLowerCase() === "administrator" || role.toLowerCase() === "owner";
+
+    createUser({
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      personalEmail: personalEmail.trim(),
+      meemliEmail: meemliEmail.trim(),
+      admin: isAdmin,
+    })
+      .then((result) => {
+        if (result.success) {
+          sendPasswordResetEmail(auth, meemliEmail.trim())
+            .then(() => {})
+            .catch((error) => {
+              setFormErrors({
+                passwordReset: "Failed to send password reset email",
+              });
+              console.error("Error sending password reset email:", error);
+            });
+
+          // Reset form
+          setFirstName("");
+          setLastName("");
+          setPhoneNumber("");
+          setRole("");
+          setPersonalEmail("");
+          setMeemliEmail("");
+          setPrograms("");
+
+          // Call success callback if provided
+          if (onSuccess) {
+            onSuccess();
+          }
+
+          // Exit form
+          onExit();
+        } else {
+          setFormErrors({
+            api: result.error || "Failed to add staff member",
+          });
+        }
+      })
+      .catch((error) => {
+        setFormErrors({
+          api: error instanceof Error ? error.message : "An unexpected error occurred",
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   return (
     <div className={styles.form}>
@@ -71,58 +151,72 @@ export const AddStaffForm = function AddStaffForm({ onExit }: AddStaffFormProps)
         </div>
       </div>
 
+      {/* error message */}
+      {Object.keys(formErrors).length > 0 && (
+        <div style={{ color: "red", fontSize: "0.9rem", whiteSpace: "pre-wrap" }}>
+          {Object.values(formErrors).join("\n")}
+        </div>
+      )}
+
       {/* content */}
       <div className={styles.formRow}>
-        <TextField 
-          label="First Name" 
-          placeholder="ex. John"
-          required />
-        <TextField 
-          label="Last Name" 
-          placeholder="ex. Smith"
-          required />
+        <TextField
+          label="First Name"
+          required
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+        />
+        <TextField
+          label="Last Name"
+          required
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+        />
       </div>
       <div className={styles.formRow}>
-        <TextField 
-          label="Phone Number" 
-          placeholder="ex. (123)456-7890"
-          required />
+        <TextField
+          label="Personal Email"
+          required
+          value={personalEmail}
+          onChange={(e) => setPersonalEmail(e.target.value)}
+        />
       </div>
-    <div className={styles.selectField}>
-      <label className={styles.selectLabel}>
-        Role<span className={styles.required}>*</span>
-      </label>
-      <Select
-        inputId="role"
-        options={roleOptions}
-        value={role}
-        onChange={(opt) => setRole(opt as Option | null)}
-        placeholder="Select"
-        isClearable
-        className={styles.select}
-        classNamePrefix="select"
-      />
-    </div>
-    <div className={styles.selectField}>
-      <label className={styles.selectLabel}>
-        Assigned Program(s)
-      </label>
-      <Select
-        inputId="assignedPrograms"
-        options={programOptions}
-        value={assignedPrograms}
-        onChange={(opts) => setAssignedPrograms((opts as Option[]) ?? [])}
-        placeholder="Select"
-        isMulti
-        closeMenuOnSelect={false}
-        className={styles.select}
-        classNamePrefix="select"
-      />
-    </div>
+      <div className={styles.formRow}>
+        <TextField
+          label="Meemli Email"
+          required
+          value={meemliEmail}
+          onChange={(e) => setMeemliEmail(e.target.value)}
+        />
+      </div>
+      <div className={styles.formRow}>
+        <TextField
+          label="Phone Number"
+          required
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+        />
+      </div>
+      <div className={styles.formRow}>
+        <TextField label="Role" required value={role} onChange={(e) => setRole(e.target.value)} />
+      </div>
+      <div className={styles.formRow}>
+        <TextField
+          label="Assigned Program(s)"
+          value={programs}
+          onChange={(e) => setPrograms(e.target.value)}
+        />
+      </div>
+
       {/* Cancel / Submit */}
       <div className={styles.buttonRow}>
-        <Button label="Cancel" kind="secondary" onClick={onExit} />
-        <Button label="Add" kind="primary" />
+        <Button label="Cancel" kind="secondary" onClick={onExit} disabled={isLoading} />
+        <Button
+          label={isLoading ? "Adding..." : "Add"}
+          kind="primary"
+          onClick={handleSubmit}
+          disabled={isLoading}
+        />
       </div>
     </div>
   );

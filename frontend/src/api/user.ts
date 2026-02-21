@@ -23,7 +23,7 @@ export type UserJSON = {
   admin: boolean;
 };
 
-const USER_ROUTE = "/api/user";
+const USER_ROUTE = "/user";
 const userByIdRoute = (id: string) => `${USER_ROUTE}/${id}`;
 
 function parseUser(user: UserJSON): User {

@@ -1,8 +1,10 @@
 "use client";
 
+
 import "./globals.css";
 import { defaultTheme, ThemeProvider } from "@tritonse/tse-constellation";
 import Head from "next/head";
+import { usePathname } from "next/navigation";
 
 import { Navbar } from "./(ui)/_components/Navbar/Navbar";
 
@@ -12,6 +14,10 @@ const metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+
+  const pathname = usePathname();
+  const hideNavbar = pathname === "/login" || pathname === "/activate" || pathname === "/forgot-password";
+
   return (
     <html lang="en">
       <Head>
@@ -38,9 +44,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             black: "#232220",
           }}
         >
-          <header>
-            <Navbar />
-          </header>
+          {!hideNavbar && (
+            <header>
+              <Navbar />
+            </header>
+          )}
           <main>{children}</main>
         </ThemeProvider>
       </body>

@@ -92,7 +92,6 @@ This format is needed to style the default react components correctly
   border: 2px solid var(--primary-500);
 }
 
-
 .form :global(.select__control--is-focused) {
   border: 2px solid var(--primary-500);
 }
