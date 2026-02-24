@@ -30,7 +30,6 @@
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
-  font-weight: 500;
   color: var(--grey-500);
   transition: all 0.2s ease;
   text-align: left;
@@ -77,66 +76,58 @@
    2. INTERNAL PANELS (The Generalization)
    ========================================= */
 
-/* Use this for specific layouts (Info, Notes) */
 .panelContainer {
-  /* Renamed from your new CSS to match existing padding logic */
   display: flex;
   flex-direction: column;
   width: 100%;
   overflow: hidden;
 }
 
-/* Use this for the "Coming Soon" or simple text cards */
 .contentCard {
   background: white;
   padding: 1rem;
   border-radius: 8px;
-  border: 1px dashed var(--grey-300); /* Visual cue that it's a placeholder */
+  border: 1px dashed var(--grey-300);
 }
 
 /* Shared Header Styling for all panels */
 .sectionBlock h3,
 .panelContainer h3 {
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 450;
   margin: 0 0 1rem 0;
-  color: var(--grey-500); /* Matched to your variables */
-  text-transform: uppercase;
+  color: var(--grey-700);
   letter-spacing: 0.05em;
   padding-bottom: 0.5rem;
 }
 
-/* --- Info Tab: Grid System --- */
 .infoGrid {
   display: grid;
-  /* Responsive grid: fits as many columns as possible, min 200px wide */
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1.5rem;
 }
 
 .infoItem {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.7rem;
 }
 
 .infoItem label {
   font-size: 0.75rem;
-  color: var(--grey-300);
+  color: var(--grey-700);
   font-weight: 600;
   text-transform: uppercase;
 }
 
 .infoItem p {
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--grey-600);
-  margin: 0;
+  color: var(--grey-500);
   word-break: break-word;
 }
 
 .notesBox {
-  background-color: var(--grey-50);
+  background-color: var(--grey-25);
   padding: 1rem;
   border-radius: 8px;
   border: 1px solid var(--grey-200);
@@ -144,7 +135,7 @@
   white-space: pre-wrap;
   font-size: 0.95rem;
   line-height: 1.5;
-  color: #333;
+  color: var(--grey-500);
 }
 
 .emptyState {

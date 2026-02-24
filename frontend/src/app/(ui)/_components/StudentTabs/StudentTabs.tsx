@@ -22,7 +22,6 @@ type TabItem = {
 
 const TAB_CONFIG: readonly TabItem[] = [
   { id: "info", label: "Info", icon: "/icons/nav/staff.svg" },
-  { id: "programs", label: "Programs", icon: "/icons/nav/programs.svg" },
   { id: "attendance", label: "Attendance", icon: "/icons/nav/attendance.svg" },
   { id: "assessments", label: "Assessments", icon: "/icons/nav/students.svg" },
   { id: "notes", label: "Notes", icon: "/icons/table.svg" },
@@ -36,20 +35,20 @@ const InfoPanel = ({ student }: { student: Student }) => {
   return (
     <div className={styles.panelContainer}>
       <div className={styles.sectionBlock}>
-        <h3>Parent / Guardian Contact</h3>
+        <h3>Parent Information</h3>
         <div className={styles.infoGrid}>
           <div className={styles.infoItem}>
-            <label>Name</label>
+            <label>Parent Name</label>
             <p>
               {parentContact.firstName} {parentContact.lastName}
             </p>
           </div>
           <div className={styles.infoItem}>
-            <label>Email</label>
+            <label>Parent Email</label>
             <p>{parentContact.email}</p>
           </div>
           <div className={styles.infoItem}>
-            <label>Phone</label>
+            <label>Parent Phone</label>
             <p>{parentContact.phoneNumber}</p>
           </div>
         </div>
