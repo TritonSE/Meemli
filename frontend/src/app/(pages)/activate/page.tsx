@@ -1,28 +1,28 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useMemo, useState } from "react";
 
-import { AuthCard } from '../../../components/AuthCard';
-import { Button } from '../../../components/Button';
-import { TextField } from '../../../components/TextField';
+import { AuthCard } from "../../../components/AuthCard";
+import { Button } from "../../../components/Button";
+import { TextField } from "../../../components/TextField";
 
-import styles from './page.module.css';
+import styles from "./page.module.css";
 
-type Step = 'invited' | 'form' | 'success';
+type Step = "invited" | "form" | "success";
 
 export default function ActivatePage() {
   const searchParams = useSearchParams();
 
   // Example: /activate?email=janedoe@gmail.com&inviter=Usha%20Sekar
-  const email = useMemo(() => searchParams.get('email') ?? 'janedoe@gmail.com', [searchParams]);
-  const inviter = useMemo(() => searchParams.get('inviter') ?? 'Usha Sekar', [searchParams]);
+  const email = useMemo(() => searchParams.get("email") ?? "janedoe@gmail.com", [searchParams]);
+  const inviter = useMemo(() => searchParams.get("inviter") ?? "Usha Sekar", [searchParams]);
 
-  const [step, setStep] = useState<Step>('invited');
+  const [step, setStep] = useState<Step>("invited");
 
-  const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -40,12 +40,12 @@ export default function ActivatePage() {
     // const token = searchParams.get('token')
     // await activateAccount({ token, email, password })
 
-    setStep('success');
+    setStep("success");
   }
 
   return (
     <>
-      {step === 'invited' && (
+      {step === "invited" && (
         <AuthCard
           aria-label="Activation invite"
           title="You’ve been invited!"
@@ -57,13 +57,13 @@ export default function ActivatePage() {
               label="Continue"
               type="button"
               className={styles.primaryBtn}
-              onClick={() => setStep('form')}
+              onClick={() => setStep("form")}
             />
           </div>
         </AuthCard>
       )}
 
-      {step === 'form' && (
+      {step === "form" && (
         <AuthCard
           aria-label="Activate account"
           title="Activate Account"
@@ -89,7 +89,7 @@ export default function ActivatePage() {
               {/* TODO: make component for password field and use it here + in login */}
               <div className={styles.inputWithIcon}>
                 <TextField
-                  {...({ type: showPw ? 'text' : 'password' } as any)}
+                  {...({ type: showPw ? "text" : "password" } as any)}
                   label=""
                   name="password"
                   placeholder="Password"
@@ -102,7 +102,7 @@ export default function ActivatePage() {
                   type="button"
                   className={styles.eyeBtn}
                   onClick={() => setShowPw((v) => !v)}
-                  aria-label={showPw ? 'Hide password' : 'Show password'}
+                  aria-label={showPw ? "Hide password" : "Show password"}
                 >
                   {/* simple inline icon (no dependency) */}
                   {showPw ? (
@@ -148,7 +148,7 @@ export default function ActivatePage() {
 
               <div className={styles.inputWithIcon}>
                 <TextField
-                  {...({ type: showConfirm ? 'text' : 'password' } as any)}
+                  {...({ type: showConfirm ? "text" : "password" } as any)}
                   label=""
                   name="confirm"
                   placeholder="Password"
@@ -161,7 +161,7 @@ export default function ActivatePage() {
                   type="button"
                   className={styles.eyeBtn}
                   onClick={() => setShowConfirm((v) => !v)}
-                  aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
+                  aria-label={showConfirm ? "Hide confirm password" : "Show confirm password"}
                 >
                   {showConfirm ? (
                     <svg viewBox="0 0 24 24" fill="none">
@@ -220,7 +220,7 @@ export default function ActivatePage() {
         </AuthCard>
       )}
 
-      {step === 'success' && (
+      {step === "success" && (
         <AuthCard
           aria-label="Account activated"
           title="Account activated!"

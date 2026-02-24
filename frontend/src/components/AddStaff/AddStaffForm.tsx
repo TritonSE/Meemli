@@ -1,12 +1,11 @@
-
 import { sendPasswordResetEmail } from "firebase/auth";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Select from "react-select";
 
 import { createUser } from "../../api/user";
 import { auth } from "../../util/firebase";
 import { Button } from "../Button";
-import { MultiSelectDropdown } from "../studentform/MultiSelectDropdown";
+import { ErrorMessage } from "../ErrorMessage";
 import { TextField } from "../TextField";
 
 import styles from "./AddStaffForm.module.css";
@@ -27,18 +26,34 @@ type FormErrors = {
   passwordReset?: string;
 };
 
+type Option = { value: string; label: string };
+
 export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaffFormProps) {
   const [isLoading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState<FormErrors>({});
+
+  const [role, setRole] = useState<Option | null>(null);
+  const [programs, setPrograms] = useState<Option[]>([]);
+
+  // TODO: replace these with API calls
+  const roleOptions: Option[] = [
+    { value: "STAFF", label: "Staff" },
+    { value: "ADMIN", label: "Admin" },
+    { value: "OWNER", label: "Owner" },
+  ];
+
+  const programOptions: Option[] = [
+    { value: "CSE11", label: "CSE 11" },
+    { value: "CSE12", label: "CSE 12" },
+    { value: "CSE100", label: "CSE 100" },
+  ];
 
   // Form state
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [role, setRole] = useState("");
   const [personalEmail, setPersonalEmail] = useState("");
   const [meemliEmail, setMeemliEmail] = useState("");
-  const [programs, setPrograms] = useState("");
 
   // Validate form fields
   const validateForm = (): boolean => {
@@ -53,9 +68,9 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
     if (!phoneNumber.trim()) {
       errors.phoneNumber = "Phone number is required";
     }
-    if (!role.trim()) {
+    if (!role?.value.trim()) {
       errors.role = "Role is required";
-    } else if (!["staff", "administrator", "owner"].includes(role.toLowerCase())) {
+    } else if (!["staff", "administrator", "owner"].includes(role?.value.toLowerCase())) {
       errors.role = "Role must be one of: staff, administrator, or owner";
     }
     if (!personalEmail.trim()) {
@@ -90,7 +105,8 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
     setLoading(true);
     setFormErrors({});
 
-    const isAdmin = role.toLowerCase() === "administrator" || role.toLowerCase() === "owner";
+    const isAdmin =
+      role?.label.toLowerCase() === "administrator" || role?.label.toLowerCase() === "owner";
 
     createUser({
       firstName: firstName.trim(),
@@ -114,10 +130,10 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
           setFirstName("");
           setLastName("");
           setPhoneNumber("");
-          setRole("");
+          setRole(null);
           setPersonalEmail("");
           setMeemliEmail("");
-          setPrograms("");
+          setPrograms([]);
 
           // Call success callback if provided
           if (onSuccess) {
@@ -146,67 +162,96 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
     <div className={styles.form}>
       {/* header */}
       <div className={styles.reused}>
-        <div className={styles.headerSegment}>
-          <h1 className={styles.pageTitle}>Add Staff</h1>
-        </div>
+        <h1 className={styles.pageTitle}>Add Staff</h1>
       </div>
-
-      {/* error message */}
-      {Object.keys(formErrors).length > 0 && (
-        <div style={{ color: "red", fontSize: "0.9rem", whiteSpace: "pre-wrap" }}>
-          {Object.values(formErrors).join("\n")}
-        </div>
-      )}
 
       {/* content */}
       <div className={styles.formRow}>
-        <TextField
-          label="First Name"
-          required
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-        />
-        <TextField
-          label="Last Name"
-          required
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-        />
+        <div className={styles.formField}>
+          <TextField
+            label="First Name"
+            required
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          <ErrorMessage message={formErrors.firstName} />
+        </div>
+        <div className={styles.formField}>
+          <TextField
+            label="Last Name"
+            required
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
+          <ErrorMessage message={formErrors.lastName} />
+        </div>
       </div>
       <div className={styles.formRow}>
-        <TextField
-          label="Personal Email"
-          required
-          value={personalEmail}
-          onChange={(e) => setPersonalEmail(e.target.value)}
+        <div className={styles.formField}>
+          <TextField
+            label="Personal Email"
+            required
+            value={personalEmail}
+            onChange={(e) => setPersonalEmail(e.target.value)}
+          />
+          <ErrorMessage message={formErrors.personalEmail} />
+        </div>
+      </div>
+      <div className={styles.formRow}>
+        <div className={styles.formField}>
+          <TextField
+            label="Meemli Email"
+            required
+            value={meemliEmail}
+            onChange={(e) => setMeemliEmail(e.target.value)}
+          />
+          <ErrorMessage message={formErrors.meemliEmail} />
+        </div>
+      </div>
+      <div className={styles.formRow}>
+        <div className={styles.formField}>
+          <TextField
+            label="Phone Number"
+            required
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+          />
+          <ErrorMessage message={formErrors.phoneNumber} />
+        </div>
+      </div>
+      <div className={styles.selectField}>
+        <label className={styles.selectLabel}>
+          Role<span className={styles.required}>*</span>
+        </label>
+        <Select
+          inputId="role"
+          options={roleOptions}
+          value={role}
+          onChange={(opt) => setRole(opt as Option | null)}
+          placeholder="Select"
+          isClearable
+          className={styles.select}
+          classNamePrefix="select"
         />
+        <ErrorMessage message={formErrors.role} />
       </div>
-      <div className={styles.formRow}>
-        <TextField
-          label="Meemli Email"
-          required
-          value={meemliEmail}
-          onChange={(e) => setMeemliEmail(e.target.value)}
-        />
-      </div>
-      <div className={styles.formRow}>
-        <TextField
-          label="Phone Number"
-          required
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-        />
-      </div>
-      <div className={styles.formRow}>
-        <TextField label="Role" required value={role} onChange={(e) => setRole(e.target.value)} />
-      </div>
-      <div className={styles.formRow}>
-        <TextField
-          label="Assigned Program(s)"
+      <div className={styles.selectField}>
+        <label className={styles.selectLabel}>Assigned Program(s)</label>
+        <Select
+          inputId="assignedPrograms"
+          options={programOptions}
           value={programs}
-          onChange={(e) => setPrograms(e.target.value)}
+          onChange={(opts) => setPrograms((opts as Option[]) ?? [])}
+          placeholder="Select"
+          isMulti
+          closeMenuOnSelect={false}
+          className={styles.select}
+          classNamePrefix="select"
         />
       </div>
+
+      {formErrors.api && <ErrorMessage message={formErrors.api} />}
+      {formErrors.passwordReset && <ErrorMessage message={formErrors.passwordReset} />}
 
       {/* Cancel / Submit */}
       <div className={styles.buttonRow}>

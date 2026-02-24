@@ -14,7 +14,7 @@
   right: 0;
   font-size: 14px;
   font-weight: 600;
-  color: #3F8D7C;
+  color: #3f8d7c;
   transition: ease-in-out 0.2s;
 }
 
@@ -52,4 +52,19 @@
 
 .signInBtn:hover {
   background: #307164;
+}
+
+.error {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 4px;
+  align-self: stretch;
+  font-family: Montserrat;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 18px; /* 150% */
+  letter-spacing: -0.24px;
+  color: #b42318;
 }

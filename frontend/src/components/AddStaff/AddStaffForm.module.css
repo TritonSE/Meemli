@@ -7,21 +7,16 @@
   color: black;
 
   width: 100%;
-  max-width: 750px;
-  padding: 0px 48px;
+  max-width: 640px;
   max-height: 614px;
+  padding: 24px 24px;
   border-radius: 12px;
 }
 .reused {
   display: flex;
   flex-direction: column;
 }
-.headerSegment {
-  display: flex;
-  flex-direction: column;
-  gap: 1vw;
-  padding: 24px 0 12px 0;
-}
+
 .pageTitle {
   font-size: 30px;
   font-weight: 600;
@@ -38,9 +33,15 @@
   display: flex;
   flex-direction: row;
   width: 100%;
-  height: 68px;
   gap: 2vw;
   margin: 10px 0;
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-grow: 1;
 }
 
 .selectField {
@@ -111,9 +112,8 @@ This format is needed to style the default react components correctly
 .buttonRow {
   display: flex;
   flex-direction: row;
-  margin-top: 32px;
   margin-left: auto;
-  margin-bottom: 32px;
+  margin-top: 48px;
   gap: 24px;
 }
 

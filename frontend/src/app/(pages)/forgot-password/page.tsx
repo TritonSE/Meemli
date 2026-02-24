@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
+import Link from "next/link";
+import { useState } from "react";
 
-import { AuthCard } from '../../../components/AuthCard';
-import { Button } from '../../../components/Button';
-import { TextField } from '../../../components/TextField';
+import { AuthCard } from "../../../components/AuthCard";
+import { Button } from "../../../components/Button";
+import { TextField } from "../../../components/TextField";
 
-import styles from './page.module.css';
+import styles from "./page.module.css";
 
 export default function ForgotPasswordPage() {
   const [sent, setSent] = useState(false);
