@@ -11,7 +11,6 @@ export type SectionDoc = Document & {
   startTime: string;
   endTime: string;
   days: string[];
-  sessions: Types.ObjectId[];
 };
 
 // Definition of the Section schema
@@ -49,12 +48,6 @@ const sectionSchema = new mongoose.Schema(
     days: {
       type: [String],
       required: true, // Must provide an array of days
-    },
-    sessions: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "Session", // Reference to the Session model
-      required: false, // Not necessarily required at creation
-      default: [], // Default to an empty array if no sessions are created
     },
   },
   {
