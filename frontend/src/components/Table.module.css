@@ -1,0 +1,149 @@
+.tableWrapper {
+  margin-left: 40px;
+  background-color: white;
+  font-family: "Montserrat", sans-serif;
+  width: 100%;
+  display: flex;
+  flex-grow: 1;
+}
+
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--grey-200);
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table th,
+.table td {
+  border: none;
+  padding: 12px 16px;
+}
+
+.table td {
+  white-space: nowrap;
+  height: 80px;
+}
+
+.table thead th,
+.table tbody td {
+  border-bottom: 1px solid var(--grey-200);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.headerRow {
+  border-bottom: 1px solid var(--grey-200);
+  background-color: var(--grey-50);
+  color: var(--grey-600);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.itemRow {
+  border-bottom: 1px solid var(--grey-200);
+}
+
+/* Prevent double border on last row */
+.itemRow:last-child {
+  border-bottom: none;
+}
+
+/*
+Styling for name column
+*/
+.nameItem {
+  position: relative;
+}
+
+.hiddenButton {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 50%;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+
+  background: white;
+  border-radius: 6px;
+  z-index: 2;
+
+  font-size: 14px;
+}
+.hiddenButton::before {
+  content: "";
+  position: absolute;
+
+  /* extend left from the button */
+  right: calc(100% + 1px);
+  top: -6px;
+  bottom: -6px;
+  width: 40px;
+
+  pointer-events: none;
+
+  /* white → transparent fade */
+  background: linear-gradient(
+    to left,
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 255, 255, 0.7),
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0)
+  );
+
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.nameItem:hover .hiddenButton::before {
+  opacity: 1;
+}
+
+.nameItem:hover .hiddenButton {
+  opacity: 1;
+  pointer-events: auto;
+
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid var(--grey-300);
+}
+
+.hoverInner {
+  display: flex;
+  padding: 10px 12px;
+}
+/*
+column widths
+*/
+.headerItem {
+  text-align: left;
+}
+.nameCol {
+  width: 30%;
+}
+.emailCol {
+  width: 30%;
+}
+.programsCol {
+  width: 50%;
+}
+.notesCol {
+  width: 10%;
+}
+
+/* 
+Styling for sections column 
+*/
+.blockItems {
+  display: flex;
+  gap: 6px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  align-items: center;
+}
