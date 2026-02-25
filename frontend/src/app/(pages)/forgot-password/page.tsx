@@ -1,24 +1,48 @@
 "use client";
 
+import { sendPasswordResetEmail } from "firebase/auth";
 import Link from "next/link";
 import { useState } from "react";
 
 import { AuthCard } from "../../../components/AuthCard";
 import { Button } from "../../../components/Button";
+import { ErrorMessage } from "../../../components/ErrorMessage";
 import { TextField } from "../../../components/TextField";
+import { auth } from "../../../util/firebase";
 
 import styles from "./page.module.css";
 
 export default function ForgotPasswordPage() {
   const [sent, setSent] = useState(false);
+  const [email, setEmail] = useState("");
+  const [formErrors, setFormErrors] = useState({ email: "" });
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    // TODO: call your API to send reset email
-    // await requestPasswordReset(email)
+    if (!email.trim()) {
+      setFormErrors({ email: "This field is required" });
+      return;
+    }
 
-    setSent(true);
+    if (
+      email &&
+      !email.includes("@") &&
+      !email.includes(".") &&
+      email.indexOf("@") < email.indexOf(".")
+    ) {
+      setFormErrors({ email: "Please enter a valid email address" });
+      return;
+    }
+
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        setSent(true);
+      })
+      .catch((error) => {
+        setFormErrors({ email: "Failed to send reset instructions. Please try again." });
+        console.error("Error sending password reset email:", error);
+      });
   }
 
   return (
@@ -36,7 +60,11 @@ export default function ForgotPasswordPage() {
                 name="email"
                 placeholder="janedoe@gmail.com"
                 autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
+
+              {formErrors.email && <ErrorMessage message={formErrors.email} />}
             </div>
 
             <div className={styles.actions}>

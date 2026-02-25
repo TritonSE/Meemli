@@ -23,6 +23,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState<Errors>({});
+  const [showPassword, setShowPassword] = useState(false);
 
   const validateForm = (): boolean => {
     const errors: Errors = {};
@@ -110,7 +111,7 @@ export default function LoginPage() {
 
           {/* TextFieldProps omits "type", so we cast to allow password semantics */}
           <TextField
-            {...({ type: "password" } as any)}
+            {...({ type: showPassword ? "text" : "password" } as any)}
             label="Password"
             name="password"
             placeholder="Password"
@@ -119,10 +120,45 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <span className={styles.eye} aria-hidden="true">
-            {/* simple "eye-off" icon */}
-            {/* TODO: add password show/hide icon here */}
-          </span>
+          <button
+            className={styles.eye}
+            onClick={() => setShowPassword(!showPassword)}
+            type="button"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            aria-pressed={showPassword}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {showPassword ? (
+                // Open eye with iris and pupil
+                <>
+                  <path
+                    d="M2.01759 9.40442C2.57871 8.51617 3.80187 6.81808 5.6036 5.59587C6.81808 4.81858 8.23258 4.16667 10.0003 4.16667C14.2545 4.16667 17.0461 7.9207 17.9839 9.40567C18.0974 9.58542 18.1542 9.67525 18.1859 9.81392C18.2098 9.918 18.2097 10.0823 18.1859 10.1863C18.1541 10.3249 18.097 10.4154 17.9827 10.5963C17.0325 12.0793 14.2412 15.8333 10.0003 15.8333C8.23258 15.8333 6.81808 15.1814 5.6036 14.4041C3.80187 13.1819 2.57871 11.4838 2.01759 10.5956C1.90356 10.4146 1.84656 10.3247 1.81478 10.1862C1.79091 10.082 1.79091 9.91783 1.81476 9.81375C1.84652 9.67517 1.90327 9.58492 2.01677 9.40442C1.90356 9.58492 1.84656 9.67517 1.81478 9.81375L2.01759 9.40442Z"
+                    stroke="currentColor"
+                    strokeWidth="1.66667"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <circle cx="10" cy="10" r="2.5" fill="currentColor" />
+                </>
+              ) : (
+                // Eye with slash
+                <path
+                  d="M8.95241 4.2436C9.29116 4.19352 9.6405 4.16667 10.0003 4.16667C14.2545 4.16667 17.0461 7.9207 17.9839 9.40567C18.0974 9.58542 18.1542 9.67525 18.1859 9.81392C18.2098 9.918 18.2097 10.0823 18.1859 10.1863C18.1541 10.3249 18.097 10.4154 17.9827 10.5963C17.7327 10.9917 17.3518 11.5476 16.8471 12.1504M5.6036 5.59587C3.80187 6.81808 2.57871 8.51617 2.01759 9.40442C1.90356 9.58492 1.84656 9.67517 1.81478 9.81375C1.79091 9.91783 1.79091 10.082 1.81476 10.1862C1.84652 10.3247 1.90327 10.4146 2.01677 10.5943C2.95461 12.0793 5.74617 15.8333 10.0003 15.8333C11.7157 15.8333 13.1932 15.223 14.4073 14.3972M2.50035 2.5L17.5003 17.5M8.23258 8.23223C7.78016 8.68467 7.50035 9.30967 7.50035 10C7.50035 11.3807 8.61966 12.5 10.0003 12.5C10.6907 12.5 11.3157 12.2202 11.7681 11.7677"
+                  stroke="currentColor"
+                  strokeWidth="1.66667"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              )}
+            </svg>
+          </button>
+
           <ErrorMessage message={formErrors.password} />
         </div>
 
