@@ -78,6 +78,50 @@ const validateEndTime = body("endTime")
     return true;
   });
 
+const makeStartDateValidator = () =>
+  body("startDate")
+    .exists()
+    .withMessage("startDate is required")
+    .bail()
+    .isString()
+    .withMessage("startDate must be a string")
+    .bail()
+    .isISO8601()
+    .withMessage("startDate must be a valid ISO8601 date (e.g. 2026-01-14)");
+
+const makeEndDateValidator = () =>
+  body("endDate")
+    .optional()
+    .isString()
+    .withMessage("endDate must be a string")
+    .bail()
+    .isISO8601()
+    .withMessage("endDate must be a valid ISO8601 date (e.g. 2026-01-14)");
+
+// Cross-field rule: if endDate exists, it must be >= startDate
+const makeDateOrderValidator = () =>
+  body("endDate")
+    .optional()
+    .custom((endDate, { req }) => {
+      const { startDate } = req.body as { startDate?: string };
+
+      // if startDate missing, startDate validator will catch it (for create)
+      if (!startDate || !endDate) return true;
+      // if either is not a string, other validators will catch it
+      if (typeof endDate !== "string" || typeof startDate !== "string") {
+        return true;
+      }
+      const start = new Date(startDate).getTime();
+      const end = new Date(endDate).getTime();
+
+      if (Number.isNaN(start) || Number.isNaN(end)) return true; // ISO validators handle this
+      if (end < start) throw new Error("endDate must be the same as or after startDate");
+      return true;
+    });
+
+const makeArchivedValidator = () =>
+  body("archived").optional().isBoolean().withMessage("archived must be a boolean");
+
 export const createSectionValidator = [
   validateCode,
   validateDays,
@@ -85,6 +129,10 @@ export const createSectionValidator = [
   ...validateEnrolledStudents,
   validateProgram,
   validateStartTime,
+  makeStartDateValidator(),
+  makeEndDateValidator(),
+  makeDateOrderValidator(),
+  makeArchivedValidator(),
   ...validateTeachers,
 ];
 
@@ -95,5 +143,9 @@ export const updateSectionValidator = [
   ...validateEnrolledStudents.map((v) => v.optional()),
   validateProgram.optional(),
   validateStartTime.optional(),
+  makeStartDateValidator(),
+  makeEndDateValidator(),
+  makeDateOrderValidator(),
+  makeArchivedValidator(),
   ...validateTeachers.map((v) => v.optional()),
 ];
