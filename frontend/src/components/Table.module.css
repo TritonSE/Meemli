@@ -1,10 +1,10 @@
 .tableWrapper {
-  margin-left: 40px;
+  margin: 40px auto;
   background-color: white;
   font-family: "Montserrat", sans-serif;
-  width: 100%;
   display: flex;
-  flex-grow: 1;
+  flex: 1;
+  width: 85%;
 }
 
 .table {
@@ -14,6 +14,7 @@
   background-color: white;
   border-radius: 8px;
   overflow: hidden;
+  flex: 1;
 }
 
 .table th,
@@ -24,7 +25,7 @@
 
 .table td {
   white-space: nowrap;
-  height: 80px;
+  height: 90px;
 }
 
 .table thead th,
@@ -54,87 +55,90 @@
 }
 
 /*
-Styling for name column
-*/
-.nameItem {
-  position: relative;
-}
-
-.hiddenButton {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 50%;
-
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-
-  background: white;
-  border-radius: 6px;
-  z-index: 2;
-
-  font-size: 14px;
-}
-.hiddenButton::before {
-  content: "";
-  position: absolute;
-
-  /* extend left from the button */
-  right: calc(100% + 1px);
-  top: -6px;
-  bottom: -6px;
-  width: 40px;
-
-  pointer-events: none;
-
-  /* white → transparent fade */
-  background: linear-gradient(
-    to left,
-    rgba(255, 255, 255, 0.95),
-    rgba(255, 255, 255, 0.7),
-    rgba(255, 255, 255, 0.3),
-    rgba(255, 255, 255, 0)
-  );
-
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
-.nameItem:hover .hiddenButton::before {
-  opacity: 1;
-}
-
-.nameItem:hover .hiddenButton {
-  opacity: 1;
-  pointer-events: auto;
-
-  background-color: white;
-  border-radius: 8px;
-  border: 1px solid var(--grey-300);
-}
-
-.hoverInner {
-  display: flex;
-  padding: 10px 12px;
-}
-/*
-column widths
+column widths and properties
 */
 .headerItem {
   text-align: left;
 }
 .nameCol {
-  width: 30%;
+  width: 25%;
+  max-width: 400px;
+  flex: 1;
 }
 .emailCol {
-  width: 30%;
+  width: 20%;
 }
 .programsCol {
-  width: 50%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .notesCol {
-  width: 10%;
+  width: 20%;
+  max-width: 200px;
+}
+
+/*
+Styling for name column
+*/
+.nameItem {
+  position: relative;
+}
+.hoverWrap {
+  position: absolute;
+  right: 10%;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+}
+.hiddenButton {
+  position: relative;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  display: flex;
+  flex: 1;
+
+  background: white;
+  border-radius: 6px;
+  z-index: 2;
+
+  font-size: 16px;
+  transition: ease 0.2s;
+  border: 1px solid var(--grey-300);
+}
+.hiddenButton:hover {
+  background: var(--grey-50);
+}
+.hoverWrap::after {
+  content: "";
+  position: absolute;
+  inset: -18px;                 /* how far fade spreads */
+  pointer-events: none;
+  border-radius: 10px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+
+  background:
+    linear-gradient(to left,  rgba(255,255,255,0.95), rgba(255,255,255,0)) left / 18px 100% no-repeat,
+    linear-gradient(to right, rgba(255,255,255,0.95), rgba(255,255,255,0)) right  / 18px 100% no-repeat,
+    linear-gradient(to top,   rgba(255,255,255,0.95), rgba(255,255,255,0)) top / 18px 100% no-repeat,
+    linear-gradient(to bottom,rgba(255,255,255,0.95), rgba(255,255,255,0)) bottom  / 100% 18px no-repeat;
+}
+.nameItem:hover .hiddenButton {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.nameItem:hover .hoverWrap::after {
+  opacity: 1;
+}
+.hoverInner {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 12px;
+  color: var(--grey-700)
 }
 
 /* 
@@ -146,4 +150,31 @@ Styling for sections column
   flex-wrap: nowrap;
   overflow-x: auto;
   align-items: center;
+}
+.blockItem {
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+
+  width: auto;
+  padding: 10px;
+
+  border-radius: 8px;
+  align-items: center;
+  background-color: teal;
+  color: white;
+}
+.moreItem {
+  background: var(--grey-100);
+  color: var(--grey-700);
+}
+
+/*
+Styling for notes column
+*/
+.notesItem {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 400px;
 }

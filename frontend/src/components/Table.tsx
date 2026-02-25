@@ -1,7 +1,10 @@
+import Image from "next/image";
 import { useState } from "react";
 
-import styles from "./Table.module.css";
+import { StudentCard } from "../app/(ui)/_components/StudentCard/StudentCard";
 // import StudentCard from "./StudentCard";
+
+import styles from "./Table.module.css";
 
 import type { Section } from "../api/sections";
 import type { Student } from "../api/students";
@@ -10,8 +13,10 @@ import type { Student } from "../api/students";
 import type { Dispatch, SetStateAction } from "react";
 
 import { getAllStudents } from "@/src/api/students";
+import { StudentProfileModal } from "@/src/app/(ui)/_components/StudentProfileView/StudentProfileView";
 import { Modal } from "@/src/components/Modal";
 import { StudentForm } from "@/src/components/studentform/StudentForm";
+
 type Staff = {
   data: string;
 };
@@ -39,12 +44,10 @@ export function Table({
   const [isLoading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [formOpen, setFormOpen] = useState<boolean>(false);
+  const [viewOpen, setViewOpen] = useState<boolean>(false);
   const [formData, setFormData] = useState<Student | Staff | null>(null);
 
-  // tracks which row is currently being edited using the direct note editing feature
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [draftNote, setDraftNote] = useState<string>("");
-  const [savingId, setSavingId] = useState<string | null>(null);
+  const MAX_VISIBLE = 2;
 
   /**
    * Checks if an input is student or staff. Used to stop linter errors
@@ -79,19 +82,32 @@ export function Table({
         // TODO: Add pencil icon
         inside = (
           <div className={styles.hoverInner}>
-            <img className={styles.hoverIcon}></img>
+            <Image
+              className={styles.hoverIcon}
+              src="/icons/edit.svg"
+              alt="Edit"
+              width={20}
+              height={20}
+            />
             <p className={styles.hoverText}>{label}</p>
           </div>
         );
       } else {
         fxn = () => {
-          // TODO: add student display page
+          setFormData(input);
+          setViewOpen(true);
         };
         //TODO: Add eye icon
         inside = (
           <div className={styles.hoverInner}>
-            <img className={styles.hoverIcon}></img>
-            <label>{label}</label>
+            <Image
+              className={styles.hoverIcon}
+              src="/icons/show.svg"
+              alt="View"
+              width={20}
+              height={20}
+            />
+            <p className={styles.hoverText}>{label}</p>
           </div>
         );
       }
@@ -133,20 +149,32 @@ export function Table({
             </td>
           )}
           <td className={styles.nameItem}>
-            Name
-            {renderHoverBtn(input)}
+            <StudentCard data={input} variant="list" />
+            <div className={styles.hoverWrap}>{renderHoverBtn(input)}</div>
           </td>
           <td className={styles.textItem}>{input.parentContact.email}</td>
           <td className={styles.blockItems}>
-            {input.enrolledSections.map((cid, i) => {
-              const res = sections.find((obj) => obj._id === cid);
+            {(() => {
+              const visible = input.enrolledSections.slice(0, MAX_VISIBLE);
+              const remaining = input.enrolledSections.length - visible.length;
 
               return (
-                <div key={i} className={styles.sectionBox}>
-                  {res ? res.code : "Error: Bad id"}
-                </div>
+                <>
+                  {visible.map((cid) => {
+                    const res = sections.find((obj) => obj._id === cid);
+                    return (
+                      <div key={cid} className={styles.blockItem}>
+                        {res ? res.code : "Error"}
+                      </div>
+                    );
+                  })}
+
+                  {remaining > 0 && (
+                    <div className={`${styles.blockItem} ${styles.moreItem}`}>+{remaining}</div>
+                  )}
+                </>
               );
-            })}
+            })()}
           </td>
           <td className={styles.notesItem}>{input.comments}</td>
         </>
@@ -218,6 +246,16 @@ export function Table({
                 }}
                 onCancel={() => setFormOpen(false)}
               />
+            </>
+          }
+        />
+      )}
+      {isStudent(formData) && viewOpen && (
+        <Modal
+          onExit={() => setViewOpen(false)}
+          child={
+            <>
+              <StudentProfileModal student={formData} onClose={() => setViewOpen(false)} />
             </>
           }
         />
