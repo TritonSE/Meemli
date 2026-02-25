@@ -1,6 +1,12 @@
 import { sendPasswordResetEmail } from "firebase/auth";
+import Image from "next/image";
 import { useState } from "react";
-import Select from "react-select";
+import Select, {
+  components,
+  type MultiValueProps,
+  type OptionProps,
+  type SingleValueProps,
+} from "react-select";
 
 import { createUser } from "../../api/user";
 import { auth } from "../../util/firebase";
@@ -28,6 +34,104 @@ type FormErrors = {
 
 type Option = { value: string; label: string };
 
+const roleColorMap: Record<string, string> = {
+  STAFF: "#D8EFE8",
+  ADMINISTRATOR: "#FDE4D7",
+  OWNER: "#FAFBC6",
+};
+
+const RoleOption = (props: OptionProps<Option, false>) => {
+  const { data, isSelected, isFocused } = props;
+  const { label, value } = data;
+  const backgroundColor = roleColorMap[value] || "#f0f0f0";
+
+  return (
+    <components.Option {...props}>
+      <div
+        className={styles.optionContainer}
+        style={{
+          backgroundColor: isFocused || isSelected ? "#F7F6F6" : "transparent",
+        }}
+      >
+        <div
+          className={styles.optionBadge}
+          style={{
+            backgroundColor,
+          }}
+        >
+          {label}
+        </div>
+        {isSelected && <Image src="/icons/selected.svg" alt="Selected" width={20} height={20} />}
+      </div>
+    </components.Option>
+  );
+};
+
+const RoleSingleValue = (props: SingleValueProps<Option>) => {
+  const { data } = props;
+  const { label, value } = data;
+  const backgroundColor = roleColorMap[value] || "#f0f0f0";
+
+  return (
+    <components.SingleValue {...props}>
+      <div
+        className={styles.optionBadge}
+        style={{
+          backgroundColor,
+        }}
+      >
+        {label}
+      </div>
+    </components.SingleValue>
+  );
+};
+
+const programBadgeColor = "#D8EFE8";
+
+const ProgramOption = (props: OptionProps<Option, true>) => {
+  const { data, isSelected, isFocused } = props;
+  const { label } = data;
+
+  return (
+    <components.Option {...props}>
+      <div
+        className={styles.optionContainer}
+        style={{
+          backgroundColor: isFocused || isSelected ? "#F7F6F6" : "transparent",
+        }}
+      >
+        <div
+          className={styles.optionBadge}
+          style={{
+            backgroundColor: programBadgeColor,
+          }}
+        >
+          {label}
+        </div>
+        {isSelected && <Image src="/icons/selected.svg" alt="Selected" width={20} height={20} />}
+      </div>
+    </components.Option>
+  );
+};
+
+const ProgramSingleValue = (props: MultiValueProps<Option, true>) => {
+  const { data } = props;
+  const { label } = data;
+
+  return (
+    <components.MultiValue {...props}>
+      <div
+        className={styles.optionBadge}
+        style={{
+          backgroundColor: programBadgeColor,
+        }}
+      >
+        {label}
+      </div>
+    </components.MultiValue>
+  );
+};
+
 export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaffFormProps) {
   const [isLoading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState<FormErrors>({});
@@ -38,7 +142,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
   // TODO: replace these with API calls
   const roleOptions: Option[] = [
     { value: "STAFF", label: "Staff" },
-    { value: "ADMIN", label: "Admin" },
+    { value: "ADMINISTRATOR", label: "Administrator" },
     { value: "OWNER", label: "Owner" },
   ];
 
@@ -232,6 +336,25 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
           isClearable
           className={styles.select}
           classNamePrefix="select"
+          components={{
+            Option: RoleOption,
+            SingleValue: RoleSingleValue,
+          }}
+          styles={{
+            menuList: (base) => ({
+              ...base,
+              padding: "4px 0",
+            }),
+            option: (base) => ({
+              ...base,
+              backgroundColor: "transparent",
+              color: "#333",
+              padding: "4px 8px",
+              ":active": {
+                backgroundColor: "transparent",
+              },
+            }),
+          }}
         />
         <ErrorMessage message={formErrors.role} />
       </div>
@@ -247,6 +370,25 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
           closeMenuOnSelect={false}
           className={styles.select}
           classNamePrefix="select"
+          components={{
+            Option: ProgramOption,
+            MultiValue: ProgramSingleValue,
+          }}
+          styles={{
+            menuList: (base) => ({
+              ...base,
+              padding: "4px 0",
+            }),
+            option: (base) => ({
+              ...base,
+              backgroundColor: "transparent",
+              color: "#333",
+              padding: "4px 8px",
+              ":active": {
+                backgroundColor: "transparent",
+              },
+            }),
+          }}
         />
       </div>
 
@@ -257,7 +399,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
       <div className={styles.buttonRow}>
         <Button label="Cancel" kind="secondary" onClick={onExit} disabled={isLoading} />
         <Button
-          label={isLoading ? "Adding..." : "Add"}
+          label={isLoading ? "Sending..." : "Send Invitation Email to Meemli"}
           kind="primary"
           onClick={handleSubmit}
           disabled={isLoading}
