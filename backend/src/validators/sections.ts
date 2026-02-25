@@ -3,6 +3,7 @@ import { body } from "express-validator";
 import type { ValidationChain } from "express-validator";
 
 const TIME_24H_REGEX = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
+const COLOR_REGEX = /^#([0-9a-f]{3}){1,2}$/i; // #RGB or #RRGGBB
 
 const validateCode = body("code").notEmpty().withMessage("Code is required");
 
@@ -122,6 +123,12 @@ const makeDateOrderValidator = () =>
 const makeArchivedValidator = () =>
   body("archived").optional().isBoolean().withMessage("archived must be a boolean");
 
+const makeColorValidator = () =>
+  body("color")
+    .isString()
+    .matches(COLOR_REGEX)
+    .withMessage("color must be a string of hex format #RGB or #RGGBB");
+
 export const createSectionValidator = [
   validateCode,
   validateDays,
@@ -133,6 +140,7 @@ export const createSectionValidator = [
   makeEndDateValidator(),
   makeDateOrderValidator(),
   makeArchivedValidator(),
+  makeColorValidator(),
   ...validateTeachers,
 ];
 
@@ -147,5 +155,6 @@ export const updateSectionValidator = [
   makeEndDateValidator(),
   makeDateOrderValidator(),
   makeArchivedValidator(),
+  makeColorValidator(),
   ...validateTeachers.map((v) => v.optional()),
 ];

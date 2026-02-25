@@ -10,6 +10,10 @@ export type SectionDoc = Document & {
   enrolledStudents: Types.ObjectId[];
   startTime: string;
   endTime: string;
+  startDate: string;
+  endDate: string;
+  archived: boolean;
+  color: string;
   days: string[];
 };
 
@@ -44,6 +48,21 @@ const sectionSchema = new mongoose.Schema(
     endTime: {
       type: String,
       required: true, // End time must be provided
+    },
+    startDate: {
+      type: String,
+      required: true,
+    },
+    endDate: {
+      type: String,
+      required: true,
+    },
+    archived: {
+      type: Boolean,
+      default: false,
+    },
+    color: {
+      type: String,
     },
     days: {
       type: [String],
