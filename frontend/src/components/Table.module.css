@@ -2,9 +2,9 @@
   margin: 40px auto;
   background-color: white;
   font-family: "Montserrat", sans-serif;
-  display: flex;
-  flex: 1;
   width: 85%;
+  height: 70vh;
+  table-layout: fixed;
 }
 
 .table {
@@ -14,7 +14,9 @@
   background-color: white;
   border-radius: 8px;
   overflow: hidden;
-  flex: 1;
+  width: 100%;
+
+  --notes-width: 300px;
 }
 
 .table th,
@@ -60,22 +62,27 @@ column widths and properties
 .headerItem {
   text-align: left;
 }
+.checkboxContainer {
+  text-align: center;
+  width: 80px;
+}
+.checkbox {
+  margin: auto;
+  vertical-align: middle;
+  width: 16px;
+  height: 16px;
+}
 .nameCol {
-  width: 25%;
-  max-width: 400px;
-  flex: 1;
+  width: auto;
 }
 .emailCol {
-  width: 20%;
+  width: 300px;
 }
 .programsCol {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  width: 400px;
 }
 .notesCol {
-  width: 20%;
-  max-width: 200px;
+  width: var(--notes-width);
 }
 
 /*
@@ -113,17 +120,21 @@ Styling for name column
 .hoverWrap::after {
   content: "";
   position: absolute;
-  inset: -18px;                 /* how far fade spreads */
+  inset: -18px; /* how far fade spreads */
   pointer-events: none;
   border-radius: 10px;
   opacity: 0;
   transition: opacity 0.25s ease;
 
   background:
-    linear-gradient(to left,  rgba(255,255,255,0.95), rgba(255,255,255,0)) left / 18px 100% no-repeat,
-    linear-gradient(to right, rgba(255,255,255,0.95), rgba(255,255,255,0)) right  / 18px 100% no-repeat,
-    linear-gradient(to top,   rgba(255,255,255,0.95), rgba(255,255,255,0)) top / 18px 100% no-repeat,
-    linear-gradient(to bottom,rgba(255,255,255,0.95), rgba(255,255,255,0)) bottom  / 100% 18px no-repeat;
+    linear-gradient(to left, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0)) left / 18px 100%
+      no-repeat,
+    linear-gradient(to right, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0)) right / 18px 100%
+      no-repeat,
+    linear-gradient(to top, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0)) top / 18px 100%
+      no-repeat,
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0)) bottom / 100% 18px
+      no-repeat;
 }
 .nameItem:hover .hiddenButton {
   opacity: 1;
@@ -138,7 +149,7 @@ Styling for name column
   gap: 6px;
   align-items: center;
   padding: 6px 12px;
-  color: var(--grey-700)
+  color: var(--grey-700);
 }
 
 /* 
@@ -176,5 +187,41 @@ Styling for notes column
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 400px;
+  max-width: var(--notes-width);
+}
+
+.navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  font-size: 20px;
+  color: var(--grey-400);
+}
+
+.pageInput {
+  width: 32px;
+  height: 32px;
+  text-align: center;
+  border: 1px solid var(--grey-300);
+  border-radius: 4px;
+}
+.pageInput:active,
+.pageInput:focus {
+  border: 1px solid red;
+}
+.pageInput:hover {
+  transition: 0.2s ease;
+  background-color: var(--grey-50);
+}
+
+.leftArrow:hover,
+.rightArrow:hover {
+  transition: 0.3s ease;
+  filter: brightness(70%);
+}
+
+.rightArrow {
+  transform: rotate(180deg);
 }

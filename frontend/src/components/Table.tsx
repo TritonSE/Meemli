@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { StudentCard } from "../app/(ui)/_components/StudentCard/StudentCard";
 // import StudentCard from "./StudentCard";
@@ -9,7 +9,7 @@ import styles from "./Table.module.css";
 import type { Section } from "../api/sections";
 import type { Student } from "../api/students";
 // todo: fill api for staff
-// import type { Staff } from "../api/staff";
+// import type { User } from "../api/user";
 import type { Dispatch, SetStateAction } from "react";
 
 import { getAllStudents } from "@/src/api/students";
@@ -17,12 +17,13 @@ import { StudentProfileModal } from "@/src/app/(ui)/_components/StudentProfileVi
 import { Modal } from "@/src/components/Modal";
 import { StudentForm } from "@/src/components/studentform/StudentForm";
 
-type Staff = {
+type User = {
+  _id: string;
   data: string;
 };
 
 export type TableProps = {
-  data: Student[] | Staff[];
+  data: Student[] | User[];
   setData: Dispatch<SetStateAction<any>>;
   sections: Section[];
   type: "staff" | "student";
@@ -43,146 +44,224 @@ export function Table({
 }: TableProps) {
   const [isLoading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // State for modals
   const [formOpen, setFormOpen] = useState<boolean>(false);
   const [viewOpen, setViewOpen] = useState<boolean>(false);
-  const [formData, setFormData] = useState<Student | Staff | null>(null);
+  const [formData, setFormData] = useState<Student | User | null>(null);
 
-  const MAX_VISIBLE = 2;
+  // State for page navigation
+  const PAGE_SIZE = 7;
+  const totalRows = data.length;
+  const pageCount = Math.max(1, Math.ceil(totalRows / PAGE_SIZE));
+  const [page, setPage] = useState<number>(0);
+  const [pageInput, setPageInput] = useState<string>("1");
+
+  const MAX_VISIBLE_SECTIONS = 3;
 
   /**
    * Checks if an input is student or staff. Used to stop linter errors
    * @param input data to check
    * @returns boolean value
    */
-  function isStudent(input: Student | Staff | null) {
+  const isStudent = (input: Student | User | null) => {
     return typeof input === "object" && input !== null && "parentContact" in input;
-  }
-  // TODO: Fill in showInfo function (should just render the view page for a staff member/student)
-  function showInfo(input: Student | Staff) {
-    console.log(input);
-  }
+  };
 
+  const clampedSetPage = (next: number) => {
+    const clamped = Math.min(Math.max(next, 0), pageCount - 1);
+    setPage(clamped);
+    setPageInput(String(clamped + 1));
+  };
+
+  const back = () => clampedSetPage(page - 1);
+  const forward = () => clampedSetPage(page + 1);
+
+  const start = page * PAGE_SIZE;
+  const end = start + PAGE_SIZE;
+  const pageData = data.slice(start, end);
+
+  // ensures accurate page display on refetch
+  useEffect(() => {
+    if (page > pageCount - 1) clampedSetPage(pageCount - 1);
+  }, [pageCount]);
   /**
    * Creates the correct hover button depending on different states
    * the form can be in. For example, a student page in edit mode will
    * have the "Edit Info" button that spawns an edit student page.
    * @param input student or staff data
    */
-  function renderHoverBtn(input: Student | Staff) {
+  const renderHoverBtn = (input: Student | User) => {
     const label = isEdit ? "Edit Info" : "See Info";
 
-    let inside = <></>;
+    const children = [];
     let fxn = () => {};
+    if (isEdit) {
+      children.push(
+        <Image
+          key="0"
+          className={styles.hoverIcon}
+          src="/icons/edit.svg"
+          alt="Edit"
+          width={20}
+          height={20}
+        />,
+      );
+    } else {
+      children.push(
+        <Image
+          key="0"
+          className={styles.hoverIcon}
+          src="/icons/show.svg"
+          alt="View"
+          width={20}
+          height={20}
+        />,
+      );
+    }
     if (isStudent(input)) {
       if (isEdit) {
         fxn = () => {
           setFormData(input);
           setFormOpen(true);
         };
-        // TODO: Add pencil icon
-        inside = (
-          <div className={styles.hoverInner}>
-            <Image
-              className={styles.hoverIcon}
-              src="/icons/edit.svg"
-              alt="Edit"
-              width={20}
-              height={20}
-            />
-            <p className={styles.hoverText}>{label}</p>
-          </div>
-        );
       } else {
         fxn = () => {
           setFormData(input);
           setViewOpen(true);
         };
-        //TODO: Add eye icon
-        inside = (
-          <div className={styles.hoverInner}>
-            <Image
-              className={styles.hoverIcon}
-              src="/icons/show.svg"
-              alt="View"
-              width={20}
-              height={20}
-            />
-            <p className={styles.hoverText}>{label}</p>
-          </div>
-        );
       }
     }
+    children.push(
+      <p key="1" className={styles.hoverText}>
+        {label}
+      </p>,
+    );
+    const inside = <div className={styles.hoverInner}>{children}</div>;
     return (
       <button className={styles.hiddenButton} onClick={fxn}>
         {inside}
       </button>
     );
-  }
+  };
 
-  /**
-   * Renders one row of the table. Binds functionality of checkbox
-   * and the hover button to the row's data.
-   * @param input data for the row
-   * @returns React component
-   */
-  function renderRow(input: Student | Staff) {
+  const renderSections = (input: Student) => {
+    const visible = input.enrolledSections.slice(0, MAX_VISIBLE_SECTIONS);
+    const remaining = input.enrolledSections.length - visible.length;
+
+    return (
+      <>
+        {visible.map((cid) => {
+          const res = sections.find((obj) => obj._id === cid);
+          return (
+            <div key={cid} className={styles.blockItem}>
+              {res ? res.code : "Error"}
+            </div>
+          );
+        })}
+
+        {remaining > 0 && (
+          <div className={`${styles.blockItem} ${styles.moreItem}`}>+{remaining}</div>
+        )}
+      </>
+    );
+  };
+
+  const renderCheckbox = (input: Student | User) => {
+    const id = input._id;
+    const checked = selected.has(id);
+    return (
+      <>
+        {isEdit && (
+          <td className={styles.checkboxContainer}>
+            <input
+              className={styles.checkbox}
+              type="checkbox"
+              checked={checked}
+              onChange={() => {
+                setSelected((prev: Set<string>) => {
+                  const next = new Set(prev);
+                  if (next.has(id)) next.delete(id);
+                  else next.add(id);
+                  return next;
+                });
+              }}
+            />
+          </td>
+        )}
+      </>
+    );
+  };
+
+  const renderRow = (input: Student | User) => {
     // if parent email exists, its a student, otherwise its staff
     if (isStudent(input)) {
-      const id = input._id;
-      const checked = selected.has(id);
       return (
         <>
-          {isEdit && (
-            <td className={styles.checkbox}>
-              <input
-                type="checkbox"
-                checked={checked}
-                onChange={() => {
-                  setSelected((prev: Set<string>) => {
-                    const next = new Set(prev);
-                    if (next.has(id)) next.delete(id);
-                    else next.add(id);
-                    return next;
-                  });
-                }}
-              />
-            </td>
-          )}
+          {renderCheckbox(input)}
           <td className={styles.nameItem}>
             <StudentCard data={input} variant="list" />
             <div className={styles.hoverWrap}>{renderHoverBtn(input)}</div>
           </td>
           <td className={styles.textItem}>{input.parentContact.email}</td>
-          <td className={styles.blockItems}>
-            {(() => {
-              const visible = input.enrolledSections.slice(0, MAX_VISIBLE);
-              const remaining = input.enrolledSections.length - visible.length;
-
-              return (
-                <>
-                  {visible.map((cid) => {
-                    const res = sections.find((obj) => obj._id === cid);
-                    return (
-                      <div key={cid} className={styles.blockItem}>
-                        {res ? res.code : "Error"}
-                      </div>
-                    );
-                  })}
-
-                  {remaining > 0 && (
-                    <div className={`${styles.blockItem} ${styles.moreItem}`}>+{remaining}</div>
-                  )}
-                </>
-              );
-            })()}
-          </td>
+          <td className={styles.blockItems}>{renderSections(input)}</td>
           <td className={styles.notesItem}>{input.comments}</td>
         </>
       );
     } else {
       console.log("not students");
     }
-  }
+  };
+
+  const renderNavigation = () => {
+    return (
+      <div className={styles.navigation}>
+        <button onClick={back} disabled={page === 0}>
+          <Image
+            className={styles.leftArrow}
+            src="/icons/prev.svg"
+            alt="Back button"
+            width={32}
+            height={32}
+          />
+        </button>
+        <p>page</p>
+        <input
+          className={styles.pageInput}
+          value={pageInput}
+          inputMode="numeric"
+          onChange={(e) => setPageInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              const n = Number(pageInput);
+              if (!Number.isFinite(n)) return;
+              clampedSetPage(n - 1); // user enters 1-based
+            }
+          }}
+          onBlur={() => {
+            const n = Number(pageInput);
+            if (!Number.isFinite(n)) {
+              setPageInput(String(page + 1));
+              return;
+            }
+            clampedSetPage(n - 1);
+          }}
+          aria-label="Page number"
+        />
+        <p>of</p>
+        <p>{pageCount}</p>
+        <button onClick={forward} disabled={page >= pageCount - 1}>
+          <Image
+            className={styles.rightArrow}
+            src="/icons/prev.svg"
+            alt="Forward button"
+            width={32}
+            height={32}
+          />
+        </button>
+      </div>
+    );
+  };
 
   let titleBar;
   if (type === "student") {
@@ -217,7 +296,7 @@ export function Table({
             </tr>
           </thead>
           <tbody>
-            {data.map((x, rowIndex) => (
+            {pageData.map((x, rowIndex) => (
               <tr key={rowIndex} className={styles.itemRow}>
                 {renderRow(x)}
               </tr>
@@ -225,6 +304,7 @@ export function Table({
           </tbody>
         </table>
       </div>
+      {renderNavigation()}
       {isStudent(formData) && formOpen && (
         <Modal
           onExit={() => setFormOpen(false)}
