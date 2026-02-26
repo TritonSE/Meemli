@@ -1,0 +1,93 @@
+.cardWrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: white;
+  width: 100%;
+}
+
+.topBar {
+  height: 64px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 12px;
+  position: relative;
+}
+
+.menuButton {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 20px;
+  letter-spacing: 2px;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.menuButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dropdown {
+  position: absolute;
+  top: 44px;
+  right: 12px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  min-width: 130px;
+  overflow: hidden;
+}
+
+.dropdown button {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--grey-900);
+}
+
+.dropdown button:hover {
+  background: var(--grey-25);
+}
+
+.cardBody {
+  padding: 20px 20px 25px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cardBody h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--grey-900);
+}
+
+.cardBody p {
+  font-size: 14px;
+  color: var(--grey-500);
+  margin: 0;
+}
+
+.cardBody hr {
+  border: none;
+  border-top: 1px solid var(--grey-100);
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--grey-600);
+}

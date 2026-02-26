@@ -1,0 +1,91 @@
+.pageWrapper {
+  padding: 40px 48px;
+  background: white;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+.titleSection h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--grey-900);
+}
+
+.titleSection p {
+  font-size: 14px;
+  color: var(--grey-500);
+  margin: 0;
+}
+
+.createButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--primary-500);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.createButton:hover {
+  background-color: var(--primary-600);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tabButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--grey-100);
+  background: white;
+  color: var(--grey-600);
+}
+
+.tabButton:hover {
+  background: var(--grey-25);
+}
+
+.tabActive {
+  background-color: var(--primary-500);
+  color: white;
+  border-color: var(--primary-500);
+}
+
+.tabActive:hover {
+  background-color: var(--primary-600);
+  border-color: var(--primary-600);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
