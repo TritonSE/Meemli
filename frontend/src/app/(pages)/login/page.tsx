@@ -1,6 +1,7 @@
 "use client";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { getUser } from "../../../api/user";
 import { AuthCard } from "../../../components/AuthCard";
@@ -50,6 +51,18 @@ export default function LoginPage() {
     return Object.keys(errors).length === 0;
   };
 
+  const router = useRouter();
+
+  // show a simple full‑screen loading indicator while auth request is in progress
+  if (loading) {
+    return (
+      <div className={styles.loadingScreen} aria-label="Logging in">
+        <div className={styles.spinner} />
+        <p>Loading…</p>
+      </div>
+    );
+  }
+
   const handleSignIn = () => {
     if (!validateForm()) {
       return;
@@ -68,15 +81,20 @@ export default function LoginPage() {
             .then((result) => {
               if (result.success) {
                 const _userData = result.data;
+                // redirect after successful sign-in and user fetch
+                router.push("/");
               }
             })
             .catch((error) => {
-              console.error("Error fetching user data:", error);
+              console.log("Error fetching user data:", error);
             });
+        } else {
+          // no user returned
+          console.log("Sign-in succeeded but no user object returned");
         }
       })
       .catch((error) => {
-        console.error("Error signing in:", error);
+        console.log("Error signing in:", error);
       })
       .finally(() => {
         setLoading(false);
