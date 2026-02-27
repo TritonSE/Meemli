@@ -1,0 +1,102 @@
+.container {
+  display: flex;
+  box-sizing: border-box;
+}
+
+/* --- MODAL VARIANT STYLES --- */
+.studentProfileModal {
+  display: flex;
+  width: 900px;
+  height: 400px;
+  background-color: white;
+  border-radius: 10px;
+  padding: 2rem 0;
+  margin-top: 2rem;
+  flex-direction: column;
+
+  .studentInfoTag {
+    display: flex;
+    gap: 1rem;
+
+    .infoItems {
+      list-style: none;
+      padding: 0;
+
+      .name {
+        font-size: 1.5rem;
+        font-weight: 500;
+      }
+
+      .email {
+        font-style: normal;
+        color: var(--color-gray-700, #4a5568);
+
+        address {
+          font-style: normal;
+        }
+      }
+
+      .school {
+        & > span {
+          font-weight: 500;
+          margin-right: 0.5rem;
+        }
+      }
+
+      li {
+        margin-bottom: 0.5rem;
+        color: var(--color-gray-700, #4a5568);
+      }
+    }
+  }
+
+  .studentProfileContent {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+}
+
+/* --- LIST VARIANT STYLES --- */
+.listViewContainer {
+  .studentInfoTag {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+
+    .listView {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      .name {
+        font-size: 1rem;
+        font-weight: 500;
+      }
+
+      .email {
+        font-style: normal;
+        color: var(--color-gray-700, #4a5568);
+
+        address {
+          font-style: normal;
+        }
+      }
+
+      li {
+        color: var(--color-gray-700, #4a5568);
+      }
+    }
+  }
+}
+
+.modalContentOverride {
+  width: 100% !important; /* Let the Modal wrapper decide width */
+  height: auto !important; /* Let content determine height */
+  box-shadow: none !important; /* Remove double shadow */
+  border: none !important;
+  background: transparent !important;
+}

@@ -7,7 +7,8 @@
   align-items: center;
   justify-content: center;
 
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(0, 0, 0, 0.02);
+  backdrop-filter: blur(3px);
 }
 
 .wrapper {
@@ -15,7 +16,7 @@
   flex-direction: row;
 
   position: relative; /* sits inside overlay */
-  width: 60%;
+  width: 80%;
   max-width: 700px;
 
   background: white;
@@ -23,10 +24,11 @@
   border-radius: 12px;
   padding: 24px;
 
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 15px rgba(0, 0, 0, 0.25);
 
   /* if the form content gets tall */
-  max-height: 95vh;
-  overflow: visible;
+  max-height: 85vh;
+  overflow: scroll;
+  scrollbar-width: none;
   justify-content: center;
 }

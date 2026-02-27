@@ -1,0 +1,279 @@
+.mainContainer {
+  display: flex;
+  padding: 10px 14px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+
+  border-radius: 8px;
+  border: 1.5px solid var(--Gray-300, #cdcfd0);
+  background: var(--Base-White, #fff);
+
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+  transition: all 0.2s ease;
+}
+
+.mainContainer:hover {
+  border-color: #b0b2b3;
+}
+
+.mainContainer:focus-within {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+}
+
+.mainContainer:focus-within:hover {
+  border-color: #10b981;
+}
+
+.datePickerWrapper {
+  position: relative;
+  display: inline-flex;
+  width: fit-content;
+  height: 42px;
+}
+
+.datePickerWrapper:hover .visualLabel,
+.datePickerWrapper:hover .dateLabel {
+  border-color: #b0b2b3;
+}
+
+.visualLabel {
+  display: flex;
+  padding: 10px 14px;
+  white-space: nowrap;
+  width: auto;
+
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+
+  border-radius: 8px;
+  border: 1.5px solid var(--Gray-300, #cdcfd0);
+  background: var(--Base-White, #fff);
+
+  color: var(--Gray-700, #494445);
+
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+  transition: all 0.2s ease;
+}
+
+.dateLabel {
+  display: flex;
+  padding: 10px 14px;
+  white-space: nowrap;
+  width: auto;
+
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+
+  border-radius: 8px;
+  border: 1.5px solid var(--Gray-300, #cdcfd0);
+  background: var(--Base-White, #fff);
+
+  color: var(--Gray-700, #494445);
+
+  font-family: Montserrat;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.datePickerWrapper:focus-within .visualLabel,
+.datePickerWrapper:focus-within .dateLabel {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+}
+.datePickerWrapper.isOpen .visualLabel,
+.datePickerWrapper.isOpen .dateLabel {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+}
+
+.textElement {
+  flex-grow: 1; /* Pushes the arrow to the far right */
+}
+
+/* makes MM/DD/YYYY output hidden */
+.hiddenInput {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* Stretches the clickable calendar icon to cover the entire input */
+.hiddenInput::-webkit-calendar-picker-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.selectSession {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 10;
+  font-size: 20px;
+}
+
+.blankState {
+  width: 150px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px dashed #cdcfd0;
+}
+
+.MenuList {
+  display: flex;
+  width: 100%;
+  padding: 6px;
+  flex-direction: column;
+
+  border-radius: 8px;
+  border: 1px solid var(--Gray-200, #e3e2e2);
+  background: var(--Base-White, #fff);
+
+  box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.15);
+}
+
+.MenuItem {
+  display: flex;
+  align-items: center;
+  padding: 10px 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  background: #fff;
+  color: #494445;
+  justify-content: space-between;
+
+  font-family: "Montserrat";
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+  transition: background 0.2s ease;
+}
+
+.MenuItem:hover {
+  background: #f7f6f6;
+}
+
+.activeItem {
+  background-color: #eff6ff;
+  background: #f7f6f6;
+  font-weight: 600;
+}
+
+.itemText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- CALENDAR CONTAINER & ACTIONS --- */
+.calendarContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-family: "Montserrat", sans-serif;
+}
+
+.actionRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid #e3e2e2;
+  padding-top: 16px;
+}
+
+.cancelBtn,
+.applyBtn {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 8px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelBtn {
+  background: white;
+  border: 1px solid #cdcfd0;
+  color: #494445;
+}
+
+.cancelBtn:hover {
+  background: #f7f6f6;
+}
+
+.applyBtn {
+  background: #518d7c; /* Your specific green from the mockup */
+  border: 1px solid #518d7c;
+  color: white;
+}
+
+.applyBtn:hover {
+  background: #417264;
+}
+
+/* --- OVERRIDING REACT-DAY-PICKER DEFAULTS --- */
+.customCalendar {
+  margin: 0;
+  --rdp-cell-size: 40px; /* Size of the date squares */
+  --rdp-accent-color: #518d7c; /* The green circle background */
+  --rdp-background-color: #f0fdf4; /* Hover state background */
+}
+
+/* Ensure font family carries over */
+.customCalendar,
+.customCalendar button {
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Day hover state */
+.customCalendar .rdp-day:hover:not(.rdp-day_selected) {
+  background-color: var(--rdp-background-color);
+  border-radius: 50%;
+}
+
+/* Selected day */
+.customCalendar .rdp-day_selected,
+.customCalendar .rdp-day_selected:focus-visible,
+.customCalendar .rdp-day_selected:hover {
+  background-color: var(--rdp-accent-color);
+  color: white;
+  border-radius: 50%;
+}

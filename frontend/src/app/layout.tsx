@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { AuthProvider } from "../context/AuthContext";
 
-import { Navbar } from "./(ui)/_components/Navbar/Navbar";
+import { Navbar } from "@/src/components/Navbar/Navbar";
 
 const metadata = {
   title: "Meemli",

@@ -1,25 +1,161 @@
 "use client";
-import { Button } from "@tritonse/tse-constellation";
+import { useState } from "react";
 
-/* 
-All constellation components can be found here:
-https://tritonse.github.io/TSE-Constellation/?path=/docs/welcome--documentation
-*/
+import type { Student } from "@/src/api/students";
+
+// API & Types
+import { getStudent } from "@/src/api/students";
+// Components
+import { StudentCard } from "@/src/components/StudentCard/StudentCard";
+import { StudentProfileModal } from "@/src/components/StudentProfileView/StudentProfileView";
+import TestStudentForm from "@/src/pages/TestStudentForm";
+
 export default function Test() {
+  // --- FAKE DATA for testing student profile view ---
+  const FAKE_STUDENTS = [
+    {
+      _id: "1",
+      displayName: "Alice Johnson",
+      meemliEmail: "alice@test.com",
+      grade: 10,
+      schoolName: "Lincoln High",
+      city: "San Diego",
+      state: "CA",
+      parentContact: {
+        firstName: "Mrs",
+        lastName: "Johnson",
+        phoneNumber: "555-0101",
+        email: "mom@test.com",
+      },
+      preassessmentScore: 0,
+      postassessmentScore: 0,
+      enrolledSections: [],
+      comments: "",
+    },
+    {
+      _id: "2",
+      displayName: "Bob Smith",
+      meemliEmail: "bob@test.com",
+      grade: 11,
+      schoolName: "Washington High",
+      city: "Seattle",
+      state: "WA",
+      parentContact: {
+        firstName: "Mr",
+        lastName: "Smith",
+        phoneNumber: "555-0102",
+        email: "dad@test.com",
+      },
+      preassessmentScore: 0,
+      postassessmentScore: 0,
+      enrolledSections: [],
+      comments: "",
+    },
+    {
+      _id: "3",
+      displayName: "Charlie Davis",
+      meemliEmail: "charlie@test.com",
+      grade: 9,
+      schoolName: "Roosevelt High",
+      city: "Austin",
+      state: "TX",
+      parentContact: {
+        firstName: "Ms",
+        lastName: "Davis",
+        phoneNumber: "555-0103",
+        email: "mum@test.com",
+      },
+      preassessmentScore: 0,
+      postassessmentScore: 0,
+      enrolledSections: [],
+      comments: "",
+    },
+  ];
+
+  // --- 2. STATE ---
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+
+  // New state for handling the "Real ID" input
+  const [manualId, setManualId] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // --- 3. HANDLER FOR BACKEND CALL ---
+  const handleOpenRealStudent = async () => {
+    if (!manualId) return;
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const result = await getStudent(manualId);
+
+      if (result.success) {
+        // SUCCESS: populates the state and OPENS the modal automatically
+        setSelectedStudent(result.data);
+      } else {
+        setError("Student not found or API error");
+      }
+    } catch (err) {
+      setError("Network or Server Error");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
-      This Test Page is meant for developers and will be removed in the MVP.
-      <br />
-      <div style={{ display: "flex", gap: "8px" }}>
-        <Button> Button </Button>
-        <Button variant="secondary"> Secondary Button </Button>
-        <Button variant="tag"> Tag Variant Button </Button>
-        <Button leadingIcon="ic_upload"> Leading Icon Button</Button>
-        <Button trailingIcon="ic_upload"> Trailing Button</Button>
-        <Button disabled> Disabled Button </Button>
-        <Button small> Small Button </Button>
-        <Button destructive> Small Button </Button>
+      <div style={{ padding: "20px" }}>
+        <h1>Test Page</h1>
+
+        {/* --- TEST REAL ID --- */}
+        <div
+          style={{
+            marginBottom: "2rem",
+            padding: "1rem",
+            border: "1px dashed #ccc",
+            background: "#f9f9f9",
+          }}
+        >
+          <h3>Test Real Backend ID</h3>
+          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+            <input
+              type="text"
+              placeholder="Paste MongoDB ID here..."
+              value={manualId}
+              onChange={(e) => setManualId(e.target.value)}
+              style={{ padding: "8px", width: "300px" }}
+            />
+            <button
+              onClick={() => void handleOpenRealStudent()}
+              disabled={loading}
+              style={{ padding: "8px 16px", cursor: "pointer" }}
+            >
+              {loading ? "Fetching..." : "Open Real Modal"}
+            </button>
+          </div>
+          {error && <p style={{ color: "red", marginTop: "8px" }}>{error}</p>}
+        </div>
+
+        {/* --- EXISTING FAKE LIST --- */}
+        <h3>Fake Data List</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: "400px" }}>
+          {FAKE_STUDENTS.map((student: Student) => (
+            <div
+              key={student._id}
+              onClick={() => setSelectedStudent(student)}
+              style={{ cursor: "pointer" }}
+            >
+              <StudentCard variant="list" data={student} />
+            </div>
+          ))}
+        </div>
+
+        <StudentProfileModal student={selectedStudent} onClose={() => setSelectedStudent(null)} />
       </div>
+
+      <TestStudentForm />
     </div>
   );
 }

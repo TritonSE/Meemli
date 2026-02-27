@@ -1,0 +1,104 @@
+.attendance {
+  align-self: stretch;
+  color: var(--Gray-900, #231f20);
+
+  font-family: Montserrat;
+  font-size: 30px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 38px;
+  letter-spacing: -0.6px;
+  margin: 0;
+}
+
+.description {
+  margin-top: 4px;
+  color: var(--Gray-600, #6c6a6b);
+
+  font-family: Montserrat;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: -0.32px;
+  margin-bottom: 32px;
+}
+
+.dropdownSection {
+  margin-top: 48px;
+  display: flex;
+  gap: 16px;
+}
+
+.table {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 0;
+
+  border: none;
+  background: transparent;
+}
+
+.pageWrapper {
+  display: flex;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  padding-left: var(--nav-width);
+  box-sizing: border-box;
+  background-color: #fcfbfb;
+}
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  max-height: 100%;
+  padding: 64px 128px;
+  justify-content: space-between;
+  gap: 24px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.controlsSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.leftControls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.rightControls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
+@media (max-width: 768px) {
+  .controlsSection {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .leftControls,
+  .rightControls {
+    width: 100%;
+  }
+
+  .rightControls {
+    margin-left: 0;
+  }
+}

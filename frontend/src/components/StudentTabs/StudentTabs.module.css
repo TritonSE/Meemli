@@ -1,0 +1,146 @@
+/* =========================================
+   1. OUTER LAYOUT (The Skeleton)
+   ========================================= */
+
+.tabsContainer {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  min-height: 300px;
+  width: 100%;
+}
+
+/* Left Column: Navigation */
+.tabNav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 150px;
+  flex-shrink: 0;
+  padding-right: 1.5rem;
+  border-right: var(--grey-200) 1px solid;
+}
+
+.tabTile {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--grey-500);
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.tabTile:hover {
+  background-color: var(--grey-50);
+}
+
+.tabTile:hover .tabIcon {
+  filter: brightness(0.5);
+}
+
+/* Active State */
+.tabTile[data-active="true"] {
+  background-color: var(--primary-500);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tabTile[data-active="true"] .tabIcon {
+  filter: brightness(0) invert(1); /* Turns icon white */
+}
+
+/* Right Column: Content Area */
+.tabContent {
+  flex: 1;
+  width: 100%;
+  animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================
+   2. INTERNAL PANELS (The Generalization)
+   ========================================= */
+
+.panelContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+}
+
+.contentCard {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px dashed var(--grey-300);
+}
+
+/* Shared Header Styling for all panels */
+.sectionBlock h3,
+.panelContainer h3 {
+  font-size: 1rem;
+  font-weight: 450;
+  margin: 0 0 1rem 0;
+  color: var(--grey-700);
+  letter-spacing: 0.05em;
+  padding-bottom: 0.5rem;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.infoItem label {
+  font-size: 0.75rem;
+  color: var(--grey-700);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.infoItem p {
+  color: var(--grey-500);
+  word-break: break-word;
+}
+
+.notesBox {
+  background-color: var(--grey-25);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--grey-200);
+  min-height: 120px;
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--grey-500);
+}
+
+.emptyState {
+  color: var(--grey-400);
+  font-style: italic;
+  text-align: center;
+  padding: 2rem 0;
+}

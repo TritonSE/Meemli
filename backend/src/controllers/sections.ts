@@ -22,14 +22,7 @@ export const createSection: RequestHandler = async (req, res) => {
 // Only keep the fields clients can update
 export type UpdateSectionBody = Pick<
   SectionDoc,
-  | "code"
-  | "program"
-  | "teachers"
-  | "enrolledStudents"
-  | "startTime"
-  | "endTime"
-  | "days"
-  | "sessions"
+  "code" | "program" | "teachers" | "enrolledStudents" | "startTime" | "endTime" | "days"
 >;
 
 // ---------------------- UPDATE ----------------------
@@ -77,6 +70,19 @@ export const getSection: RequestHandler<{ id: string }, SectionDoc> = async (req
     }
 
     res.json(section);
+  } catch (error: unknown) {
+    handleError(res, error instanceof Error ? error.message : "Unknown error");
+  }
+};
+
+// ------------------ GET ALL ---------------------
+export const getAllSections: RequestHandler = async (req, res) => {
+  try {
+    const sections = await Section.find();
+    if (!sections) {
+      return handleError(res, "Sections not found", 404);
+    }
+    res.json(sections);
   } catch (error: unknown) {
     handleError(res, error instanceof Error ? error.message : "Unknown error");
   }

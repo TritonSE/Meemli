@@ -11,8 +11,10 @@ export const ProgressBar = function ProgressBar({
 }) {
   const progressPercentage = ((currentStep + 1) / totalSteps) * 100;
   return (
-    <div className={styles["progress-track"]}>
-      <div className={styles["progress-bar"]} style={{ width: `${progressPercentage}%` }}></div>;
+    <div className={styles.wrapper}>
+      <div className={styles["progress-track"]}>
+        <div className={styles["progress-bar"]} style={{ width: `${progressPercentage}%` }}></div>;
+      </div>
     </div>
   );
 };

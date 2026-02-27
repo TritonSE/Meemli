@@ -53,7 +53,7 @@ export function Navbar() {
         <div className="horizontalLine" />
 
         {navItems.map(({ href, icon, label }) => {
-          const isActive = pathname === href || pathname.startsWith(`${href}/`);
+          const isActive = pathname === href || pathname?.startsWith(`${href}/`);
 
           return (
             <Tooltip key={href} content={label}>
