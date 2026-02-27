@@ -5,11 +5,11 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { updateAttendanceBulk } from "../../api/attendance";
-
 import styles from "./attendanceList.module.css";
 
 import type { SortOption } from "./attendanceSortBy";
+
+import { updateAttendanceBulk } from "@/src/api/attendance";
 
 type AttendanceListProps = {
   initialAttendees: any[];
