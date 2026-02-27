@@ -5,6 +5,8 @@ import { Clock, Archive, Plus } from "lucide-react";
 import { SectionCard } from "@/src/components/SectionCard";
 import styles from "./page.module.css";
 
+// next steps : fetch data, render actual data, filter by active archived, search bar
+
 type Tab = "active" | "archived";
 
 export default function Programs() {
