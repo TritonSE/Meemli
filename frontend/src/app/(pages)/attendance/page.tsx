@@ -3,17 +3,18 @@
 import { useEffect, useState } from "react";
 
 import { getSessionById, getSessionsBySection } from "../../../api/attendance";
-import AttendanceList from "../../components/attendanceList";
-import styles from "../../components/attendancePage.module.css";
-import AttendanceSearch from "../../components/attendanceSearch";
-import AttendanceSortBy, { type SortOption } from "../../components/attendanceSortBy";
-import { DateSelect } from "../../components/dateSelect";
-import { SectionSelect } from "../../components/sectionSelect";
 
 import type { AttendanceSession } from "../../../api/attendance";
 import type { Section } from "@/src/api/sections";
 
 import { getAllSections } from "@/src/api/sections";
+
+import AttendanceList from "@/src/components/attendanceList";
+import styles from "@/src/components/attendancePage.module.css";
+import AttendanceSearch from "@/src/components/attendanceSearch";
+import AttendanceSortBy, { type SortOption } from "@/src/components/attendanceSortBy";
+import { DateSelect } from "@/src/components/dateSelect";
+import { SectionSelect } from "@/src/components/sectionSelect";
 
 export default function Attendance() {
   const getLocalDateString = () => {
