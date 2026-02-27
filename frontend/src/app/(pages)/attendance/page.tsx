@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { getAllSessions, getSessionById } from "../../../api/attendance";
+import { getSessionById, getSessionsBySection } from "../../../api/attendance";
 import AttendanceList from "../../components/attendanceList";
 import styles from "../../components/attendancePage.module.css";
 import AttendanceSearch from "../../components/attendanceSearch";
@@ -11,9 +11,11 @@ import { DateSelect } from "../../components/dateSelect";
 import { SectionSelect } from "../../components/sectionSelect";
 
 import type { AttendanceSession } from "../../../api/attendance";
+import type { Section } from "@/src/api/sections";
+
+import { getAllSections } from "@/src/api/sections";
 
 export default function Attendance() {
-  // Get today's date in YYYY-MM-DD format, to use as default value for date picker
   const getLocalDateString = () => {
     const now = new Date();
     const year = now.getFullYear();
@@ -22,12 +24,12 @@ export default function Attendance() {
     return `${year}-${month}-${day}`;
   };
 
+  const [sectionList, setSectionList] = useState<Section[]>([]);
   const [sessionList, setSessionList] = useState<AttendanceSession[]>([]);
   const [selectedSession, setSelectedSession] = useState<AttendanceSession | null>(null);
   const [activeSectionId, setActiveSectionId] = useState("");
   const [activeDate, setActiveDate] = useState(getLocalDateString());
 
-  // Search and Sort states
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState<SortOption>({
     field: "name",
@@ -35,41 +37,69 @@ export default function Attendance() {
     label: "Ascending",
   });
 
-  const isFilterSelected = Boolean(activeSectionId && activeDate);
-
+  // Load all sections once on mount
   useEffect(() => {
     const load = async () => {
-      const data = await getAllSessions();
-      setSessionList(data || []);
-      setSessionList(data);
-
-      // Set the first section as default if available
-      if (data && data.length > 0 && data[0].section?._id) {
-        setActiveSectionId(data[0].section._id);
+      const res = await getAllSections();
+      if (res.success && res.data.length > 0) {
+        setSectionList(res.data);
+        setActiveSectionId(res.data[0]._id);
       }
     };
     void load();
   }, []);
 
-  const handleFetchFull = async (id: string) => {
-    const data = await getSessionById(id);
-    setSelectedSession(data);
+  // Lazily fetch sessions whenever the selected section changes
+  useEffect(() => {
+    if (!activeSectionId) return;
+
+    const load = async () => {
+      setSessionList([]);
+      setSelectedSession(null);
+      const data = await getSessionsBySection(activeSectionId);
+      setSessionList(data || []);
+    };
+    void load();
+  }, [activeSectionId]);
+
+  // Derive available dates from the loaded sessions for this section
+  const availableDates = sessionList.map((s) => {
+    const d = new Date(s.sessionDate);
+    // Use UTC values to avoid timezone shift
+    const year = d.getUTCFullYear();
+    const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(d.getUTCDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  });
+
+  const handleSectionChange = (sectionId: string) => {
+    setActiveSectionId(sectionId);
+    setActiveDate(""); // reset date when section changes
   };
 
-  // Filter Logic when both dropdowns have a value, find the session
+  // Once we have sessions for the section, auto-select today if available, else first date
   useEffect(() => {
-    if (isFilterSelected) {
-      const match = sessionList.find((s) => {
-        // Normalize the date to YYYY-MM-DD for comparison
-        const sDate = new Date(s.sessionDate).toISOString().split("T")[0];
-        return s.section?._id === activeSectionId && sDate === activeDate;
-      });
+    if (sessionList.length === 0) return;
+    setActiveDate(getLocalDateString());
+  }, [sessionList]);
 
-      if (match) {
-        void handleFetchFull(match._id);
-      } else {
-        setSelectedSession(null);
-      }
+  // Match selected section + date to a session and fetch full details
+  useEffect(() => {
+    if (!activeSectionId || !activeDate) return;
+
+    const match = sessionList.find((s) => {
+      const sDate = new Date(s.sessionDate).toISOString().split("T")[0];
+      return sDate === activeDate;
+    });
+
+    if (match) {
+      const fetch = async () => {
+        const data = await getSessionById(match._id);
+        setSelectedSession(data);
+      };
+      void fetch();
+    } else {
+      setSelectedSession(null);
     }
   }, [activeSectionId, activeDate, sessionList]);
 
@@ -84,11 +114,15 @@ export default function Attendance() {
         <div className={styles.controlsSection}>
           <div className={styles.leftControls}>
             <SectionSelect
-              sessions={sessionList}
+              sections={sectionList}
               value={activeSectionId}
-              onChange={setActiveSectionId}
+              onChange={handleSectionChange}
             />
-            <DateSelect value={activeDate} onChange={setActiveDate} />
+            <DateSelect
+              value={activeDate}
+              onChange={setActiveDate}
+              availableDates={availableDates}
+            />
           </div>
 
           <div className={styles.rightControls}>
