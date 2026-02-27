@@ -19,6 +19,7 @@ const studentSchema = new Schema({
   postassessmentScore: { type: Number, required: false },
   enrolledSections: { type: [Schema.Types.ObjectId], required: true },
   comments: { type: String, required: false },
+  archived: { type: Boolean, required: true, default: false },
 });
 
 type Student = InferSchemaType<typeof studentSchema>;

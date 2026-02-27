@@ -106,6 +106,7 @@ export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormPr
         postassessmentScore: candidate.postassessmentScore,
         comments: candidate.comments,
         enrolledSections: candidate.enrolledSections,
+        archived: false,
       });
     } else {
       request = updateStudent({
@@ -126,6 +127,7 @@ export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormPr
         postassessmentScore: candidate.postassessmentScore,
         comments: candidate.comments,
         enrolledSections: candidate.enrolledSections,
+        archived: student!.archived,
       });
     }
     request

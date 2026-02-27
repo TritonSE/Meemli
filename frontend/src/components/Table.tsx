@@ -19,7 +19,13 @@ import { StudentForm } from "@/src/components/studentform/StudentForm";
 
 type User = {
   _id: string;
-  data: string;
+  firstName: string;
+  lastName: string;
+  personalEmail: string;
+  meemliEmail: string;
+  phoneNumber: string;
+  admin: boolean;
+  assignedsections: string[];
 };
 
 export type TableProps = {
@@ -96,6 +102,9 @@ export function Table({
 
     const children = [];
     let fxn = () => {};
+    const bool = isStudent(input);
+    if (!bool && !isEdit) return <></>;
+    // add edit icon no matter what if edit mode
     if (isEdit) {
       children.push(
         <Image
@@ -119,7 +128,8 @@ export function Table({
         />,
       );
     }
-    if (isStudent(input)) {
+
+    if (bool) {
       if (isEdit) {
         fxn = () => {
           setFormData(input);
@@ -131,6 +141,11 @@ export function Table({
           setViewOpen(true);
         };
       }
+    } else {
+      fxn = () => {
+        setFormData(input);
+        setFormOpen(true);
+      };
     }
     children.push(
       <p key="1" className={styles.hoverText}>
@@ -209,7 +224,12 @@ export function Table({
         </>
       );
     } else {
-      console.log("not students");
+      return (
+        <>
+          {renderCheckbox(input)}
+          <td className={styles.nameItem}></td>
+        </>
+      );
     }
   };
 

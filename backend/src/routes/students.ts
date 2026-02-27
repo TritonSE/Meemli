@@ -35,6 +35,9 @@ router.get("/:id", StudentsController.getStudentById);
 // Create Student
 router.post("/", StudentsValidator.validateCreateStudent, StudentsController.createStudent);
 
+// Update archived status for multiple students
+router.put("/archive", StudentsController.archiveStudentsByIds);
+
 // Edit Student by ID
 router.put("/:id", StudentsValidator.validateEditStudent, StudentsController.editStudentById);
 

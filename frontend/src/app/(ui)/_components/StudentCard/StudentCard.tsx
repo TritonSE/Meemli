@@ -6,9 +6,20 @@ import styles from "./StudentCard.module.css";
 
 import type { Student } from "@/src/api/students";
 
+type User = {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  personalEmail: string;
+  meemliEmail: string;
+  phoneNumber: string;
+  admin: boolean;
+  assignedsections: string[];
+};
+
 type StudentCardProps = {
   variant: "modal" | "list";
-  data?: Student | null; // Allow null for loading states
+  data?: Student | User | null; // Allow null for loading states
   className?: string;
 };
 
@@ -31,12 +42,19 @@ export const StudentCard: React.FC<StudentCardProps> = ({ variant, data, classNa
     );
   }
 
+  const isStudent = (input: Student | User | null) => {
+    return typeof input === "object" && input !== null && "parentContact" in input;
+  };
   // 2. Data Preparation
   // Since we only have 'Student', we access fields directly.
-  const location = `${data.city}, ${data.state}`;
+
+  let location;
+  if (isStudent(data)) {
+    location = `${data.city}, ${data.state}`;
+  }
 
   // --- RENDER: MODAL VIEW ---
-  if (variant === "modal") {
+  if (isStudent(data) && variant === "modal") {
     return (
       <div className={`${styles.studentProfileModal} ${className}`}>
         <div className={styles.studentProfileContent}>
@@ -60,18 +78,35 @@ export const StudentCard: React.FC<StudentCardProps> = ({ variant, data, classNa
   }
 
   // --- RENDER: LIST VIEW ---
-  return (
-    <div className={`${styles.listViewContainer} ${className}`}>
-      <div className={styles.studentInfoTag}>
-        <ProfilePicture size="small" letter={data.displayName} />
+  if (isStudent(data)) {
+    return (
+      <div className={`${styles.listViewContainer} ${className}`}>
+        <div className={styles.studentInfoTag}>
+          <ProfilePicture size="small" letter={data.displayName} />
 
-        <ul className={`${styles.infoItems} ${styles.listView}`}>
-          <li className={styles.name}>{data.displayName}</li>
-          <li className={styles.email}>
-            <address>{data.meemliEmail}</address>
-          </li>
-        </ul>
+          <ul className={`${styles.infoItems} ${styles.listView}`}>
+            <li className={styles.name}>{data.displayName}</li>
+            <li className={styles.email}>
+              <address>{data.meemliEmail}</address>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    return (
+      <div className={`${styles.listViewContainer} ${className}`}>
+        <div className={styles.studentInfoTag}>
+          <ProfilePicture size="small" letter={`${data.firstName} ${data.lastName}`} />
+
+          <ul className={`${styles.infoItems} ${styles.listView}`}>
+            <li className={styles.name}>{`${data.firstName} ${data.lastName}`}</li>
+            <li className={styles.email}>
+              <address>{data.meemliEmail}</address>
+            </li>
+          </ul>
+        </div>
+      </div>
+    );
+  }
 };

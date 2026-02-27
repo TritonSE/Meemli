@@ -65,6 +65,7 @@ export const createStudent: RequestHandler = async (req, res, next) => {
       postassessmentScore,
       enrolledSections: enrolledSectionsIds,
       comments,
+      archived: false,
     });
 
     const populatedStudent = await student.populate("enrolledSections");
@@ -125,6 +126,36 @@ export const editStudentById: RequestHandler = async (req, res, next) => {
       return res.status(404).json({ message: "Student not found" });
     }
     res.status(200).json(student);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// Mass edits so there arent a bunch of separate requests
+export const archiveStudentsByIds: RequestHandler = async (req, res, next) => {
+  const errors = validationResult(req);
+  try {
+    validationErrorParser(errors);
+  } catch (err) {
+    return next(err);
+  }
+
+  const { ids, flag } = req.body as { ids: string[]; flag: boolean };
+  const validIds = ids
+    .filter((id) => Types.ObjectId.isValid(id))
+    .map((id) => new Types.ObjectId(id));
+  if (validIds.length === 0) {
+    return res.status(400).json({ message: "No valid student IDs provided" });
+  }
+
+  try {
+    await StudentModel.updateMany({ _id: { $in: validIds } }, { $set: { archived: flag } });
+
+    // return the updated documents so the frontend can sync its state
+    const students = await StudentModel.find({ _id: { $in: validIds } }).populate(
+      "enrolledSections",
+    );
+    res.status(200).json(students);
   } catch (error) {
     return next(error);
   }
