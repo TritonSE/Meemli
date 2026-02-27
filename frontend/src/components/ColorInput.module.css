@@ -1,14 +1,22 @@
 .colorInputContainer {
   display: flex;
-  gap: 0.5em;
+  gap: 0.9em;
   margin: 0.5em;
 
   .radioInput {
     appearance: none;
-    width: 25px;
-    height: 25px;
+    width: 2em;
+    height: 2em;
     border-radius: 50%;
     cursor: pointer;
     position: relative;
+
+    &:checked {
+      border: 2px solid var(--grey-50);
+    }
+
+    &:checked::after {
+      content: "✓";
+    }
   }
 }

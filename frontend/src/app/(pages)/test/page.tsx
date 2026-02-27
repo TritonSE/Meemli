@@ -178,7 +178,7 @@ export default function Test() {
           Click to open section
         </button>
         <br/>
-        <ColorInput colors={["#D54525", "#17AAC4"]}/>
+        <ColorInput colors={["#17AAC4", "#25CA7D", "#416F7E", "#D54525", "#DA7A51", "#FFBE31", "#B6B8BA"]}/>
 
         <CreateSectionFlow active={sectionModalState === "active"} onClose={() => toggleSection()} />
         <StudentProfileModal student={selectedStudent} onClose={() => setSelectedStudent(null)} />
