@@ -1,0 +1,18 @@
+.formPage {
+  display: flex;
+  flex-direction: column;
+  margin: 2rem;
+  gap: 1rem;
+  width: 100%;
+  height: 30rem;
+
+  .buttonRow {
+    display: flex;
+    margin-top: auto;
+    justify-content: end;
+
+    & > button:first-of-type {
+      margin-right: 1rem;
+    }
+  }
+}

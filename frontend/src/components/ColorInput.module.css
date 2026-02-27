@@ -1,0 +1,14 @@
+.colorInputContainer {
+  display: flex;
+  gap: 0.5em;
+  margin: 0.5em;
+
+  .radioInput {
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+  }
+}

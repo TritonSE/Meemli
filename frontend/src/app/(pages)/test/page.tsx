@@ -10,7 +10,7 @@ import type { Student } from "@/src/api/students";
 
 // API & Types
 import { getStudent } from "@/src/api/students";
-import { Modal } from "@/src/components/Modal";
+import { ColorInput } from "@/src/components/ColorInput";
 import TestStudentForm from "@/src/pages/TestStudentForm";
 
 export default function Test() {
@@ -77,10 +77,15 @@ export default function Test() {
 
   // --- 2. STATE ---
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-  const [sectionModalState, setToggleSectionState] = useState<true | false>(false);
+  const [sectionModalState, setSectionState] = useState<"active" | null>(null);
 
   function toggleSection() {
-    setToggleSectionState(!sectionModalState);
+    if (sectionModalState == null) {
+      setSectionState("active");
+    }
+    else {
+      setSectionState(null);
+    }
   }
 
   // const [sectionModalOpen, ]
@@ -170,10 +175,12 @@ export default function Test() {
             toggleSection();
           }}
         >
-          {" "}
+          Click to open section
         </button>
-        <Modal onExit={() => {}} child={<CreateSectionFlow onClose={() => {}} />} />
+        <br/>
+        <ColorInput colors={["#D54525", "#17AAC4"]}/>
 
+        <CreateSectionFlow active={sectionModalState === "active"} onClose={() => toggleSection()} />
         <StudentProfileModal student={selectedStudent} onClose={() => setSelectedStudent(null)} />
       </div>
 

@@ -2,11 +2,10 @@ import React from "react";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
+import { Modal } from "../Modal";
 import { MultiStepForm } from "../MultiStep/MultiStepForm";
 import { MultiSelectDropdown } from "../studentform/MultiSelectDropdown";
 import { TextField } from "../TextField";
-
-import styles from "./SectionForm.module.css";
 
 // Define the validation schema using Zod as the single source of truth
 export const sectionSchema = z.object({
@@ -33,7 +32,7 @@ function StepOneName() {
   } = useFormContext<SectionDraft>();
 
   return (
-    <div className={styles.formRow}>
+    <div>
       <TextField label="Section Name" {...register("sectionName")} required />
       {/* Optional: Add error rendering if TextField supports it, or render a span below */}
 
@@ -50,7 +49,7 @@ function StepTwoStudents() {
   const enrolledStudents = watch("enrolledStudents");
 
   return (
-    <div className={styles.formRow}>
+    <div>
       <MultiSelectDropdown
         label="Enroll Students"
         value={enrolledStudents}
@@ -65,9 +64,19 @@ function StepTwoStudents() {
   );
 }
 
+type SectionFlowProps = {
+  active: boolean;
+  onClose: () => void;
+}
+
 // Main Component to be rendered inside a Modal or Page wrapper
-export function CreateSectionFlow({ onClose }: { onClose: () => void }) {
+export function CreateSectionFlow({ active, onClose }: SectionFlowProps) {
   // Map out the steps configuring title, validation fields, and UI component
+
+  if(!active){
+    return;
+  }
+
   const steps = [
     {
       id: "details",
@@ -84,19 +93,22 @@ export function CreateSectionFlow({ onClose }: { onClose: () => void }) {
   ];
 
   return (
-    <MultiStepForm<SectionDraft>
-      schema={sectionSchema}
-      defaultValues={INITIAL_SECTION_DATA}
-      steps={steps}
-      mode="create"
-      storageKey="section_draft_storage"
-      formTitle="Section"
-      onSubmit={(finalData) => {
-        // Implement API call logic here
-        console.log("Submitting Section to API:", finalData);
-        onClose();
-      }}
-      onCancel={onClose}
-    />
+    <Modal 
+    onExit={onClose}
+    child={
+      <MultiStepForm<SectionDraft>
+        schema={sectionSchema}
+        defaultValues={INITIAL_SECTION_DATA}
+        steps={steps}
+        mode="create"
+        storageKey="section_draft_storage"
+        formTitle="Section"
+        onSubmit={(finalData) => {
+          console.log("Submitting Section to API:", finalData);
+          onClose();
+        }}
+        onCancel={onClose}
+      />
+    }/>
   );
 }
