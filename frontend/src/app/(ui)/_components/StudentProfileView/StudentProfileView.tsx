@@ -34,17 +34,3 @@ export const StudentProfileModal = ({ student, onClose }: StudentProfileModalPro
     />
   );
 };
-
-// TODO
-/*
-STYLE
-make name tag go far to the let instead of kinad centered with tabs
-add line separating tabs and content.
-fix modal name tag contact list spacing
-
-LOGIC:
-implement notes area 
-
-SEMANTICS:
-make sure content div has proper semantics.
-*/

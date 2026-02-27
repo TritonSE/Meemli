@@ -2,6 +2,7 @@
 import { useState } from "react";
 
 // Components
+import { CreateSectionFlow } from "../../../components/SectionForm/SectionForm";
 import { StudentCard } from "../../(ui)/_components/StudentCard/StudentCard";
 import { StudentProfileModal } from "../../(ui)/_components/StudentProfileView/StudentProfileView";
 
@@ -9,6 +10,7 @@ import type { Student } from "@/src/api/students";
 
 // API & Types
 import { getStudent } from "@/src/api/students";
+import { Modal } from "@/src/components/Modal";
 import TestStudentForm from "@/src/pages/TestStudentForm";
 
 export default function Test() {
@@ -75,6 +77,13 @@ export default function Test() {
 
   // --- 2. STATE ---
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [sectionModalState, setToggleSectionState] = useState<true | false>(false);
+
+  function toggleSection() {
+    setToggleSectionState(!sectionModalState);
+  }
+
+  // const [sectionModalOpen, ]
 
   // New state for handling the "Real ID" input
   const [manualId, setManualId] = useState("");
@@ -108,7 +117,10 @@ export default function Test() {
   return (
     <div>
       <div style={{ padding: "20px" }}>
+        <h1> Create Class Form</h1>
+
         <h1>Test Page</h1>
+        {/* <SectionForm> */}
 
         {/* --- TEST REAL ID --- */}
         <div
@@ -152,6 +164,15 @@ export default function Test() {
             </div>
           ))}
         </div>
+
+        <button
+          onClick={() => {
+            toggleSection();
+          }}
+        >
+          {" "}
+        </button>
+        <Modal onExit={() => {}} child={<CreateSectionFlow onClose={() => {}} />} />
 
         <StudentProfileModal student={selectedStudent} onClose={() => setSelectedStudent(null)} />
       </div>

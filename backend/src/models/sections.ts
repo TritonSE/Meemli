@@ -14,6 +14,7 @@ export type SectionDoc = Document & {
   endDate: string;
   archived: boolean;
   color: string;
+  w;
   days: string[];
 };
 
