@@ -1,14 +1,13 @@
 "use client";
 import { useState } from "react";
 
-// Components
-import { StudentCard } from "../../(ui)/_components/StudentCard/StudentCard";
-import { StudentProfileModal } from "../../(ui)/_components/StudentProfileView/StudentProfileView";
-
 import type { Student } from "@/src/api/students";
 
 // API & Types
 import { getStudent } from "@/src/api/students";
+// Components
+import { StudentCard } from "@/src/components/StudentCard/StudentCard";
+import { StudentProfileModal } from "@/src/components/StudentProfileView/StudentProfileView";
 import TestStudentForm from "@/src/pages/TestStudentForm";
 
 export default function Test() {
