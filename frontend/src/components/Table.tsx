@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-import { StudentCard } from "../app/(ui)/_components/StudentCard/StudentCard";
-
+import { StudentCard } from "./StudentCard/StudentCard";
+import { StudentProfileModal } from "./StudentProfileView/StudentProfileView";
 import styles from "./Table.module.css";
 
 import type { Section } from "../api/sections";
@@ -15,7 +15,6 @@ import EditIcon from "@/public/icons/edit.svg";
 import PrevIcon from "@/public/icons/prev.svg";
 import ShowIcon from "@/public/icons/show.svg";
 import { getAllStudents } from "@/src/api/students";
-import { StudentProfileModal } from "@/src/app/(ui)/_components/StudentProfileView/StudentProfileView";
 import { Modal } from "@/src/components/Modal";
 import { StudentForm } from "@/src/components/studentform/StudentForm";
 
