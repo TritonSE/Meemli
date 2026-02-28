@@ -42,13 +42,13 @@
 @layer utilities {
   * {
     --grey-25: #fcfbfb;
-    --grey-50: #e7e7e7;
+    --grey-50: #f7f6f6;
     --grey-100: #d0d0d0;
-    --grey-200: #b3b3b3;
-    --grey-300: #999999;
-    --grey-400: #7d7d7d;
+    --grey-200: #e3e2e2;
+    --grey-300: #cdcfd0;
+    --grey-400: #b6b8ba;
     --grey-500: #666666;
-    --grey-600: #4d4d4d;
+    --grey-600: #6c6a6b;
     --grey-700: #3f3f3f;
     --grey-800: #2a2a2a;
     --grey-900: #1a1a1a;
@@ -66,12 +66,16 @@
     --primary-800: #254a43;
     --primary-900: #233e3a;
 
+    --error-500: #f04438;
+    --error-600: #df2917;
     --error-700: #b42318;
+
+    --success-700: #057747;
   }
 
   div[class="horizontalLine"] {
     height: 1px;
     width: 100%;
-    background-color: var(--grey-200);
+    background-color: var(--grey-100);
   }
 }

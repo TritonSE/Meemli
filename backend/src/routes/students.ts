@@ -41,6 +41,9 @@ router.put("/archive", StudentsController.archiveStudentsByIds);
 // Edit Student by ID
 router.put("/:id", StudentsValidator.validateEditStudent, StudentsController.editStudentById);
 
+// Batch delete Students by IDs
+router.delete("/delete", StudentsController.deleteStudentsByIds);
+
 // Delete Student by ID
 router.delete("/:id", StudentsController.deleteStudentById);
 

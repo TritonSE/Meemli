@@ -1,10 +1,12 @@
 .tableWrapper {
-  margin: 10px auto;
+  margin: 10px 0;
   background-color: white;
   font-family: "Montserrat", sans-serif;
-  width: 85%;
-  height: 70vh;
+  width: 100%;
+  height: 65vh;
   table-layout: fixed;
+  background-color: #fcfbfb;
+  flex: 1;
 }
 
 .table {
@@ -27,7 +29,7 @@
 
 .table td {
   white-space: nowrap;
-  height: 90px;
+  height: 85px;
 }
 
 .table thead th,
@@ -45,6 +47,8 @@
   color: var(--grey-600);
   font-weight: 600;
   font-size: 16px;
+  height: 50px;
+  max-height: 50px;
 }
 
 .itemRow {
@@ -61,16 +65,44 @@ column widths and properties
 */
 .headerItem {
   text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.checkboxContainer {
-  text-align: center;
-  width: 80px;
+.checkboxWrapper {
+  position: relative;
+  align-items: center;
+  cursor: pointer;
 }
-.checkbox {
-  margin: auto;
-  vertical-align: middle;
-  width: 16px;
-  height: 16px;
+
+/* Hide native checkbox */
+.checkboxWrapper input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Custom box */
+.customCheckbox {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--grey-300);
+  border-radius: 6px;
+  background: white;
+  transition: all 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Checked state */
+.checkboxWrapper input:checked + .customCheckbox {
+  background: var(--primary-600);
+  border-color: var(--primary-600);
+}
+
+.checkboxCol {
+  width: 60px;
 }
 .nameCol {
   width: auto;
@@ -85,9 +117,7 @@ column widths and properties
   width: var(--notes-width);
 }
 
-/*
-Styling for name column
-*/
+/* Styling for name column */
 .nameItem {
   position: relative;
 }
@@ -149,9 +179,11 @@ Styling for name column
   gap: 6px;
   align-items: center;
   padding: 6px 12px;
-  color: var(--grey-700);
+  color: var(--grey-600);
 }
-
+.hoverIcon {
+  color: var(--grey-600);
+}
 /* 
 Styling for sections column 
 */
@@ -195,8 +227,9 @@ Styling for notes column
   justify-content: center;
   align-items: center;
   gap: 12px;
-  margin-top: 16px;
+  margin: 10px auto 20px auto;
   font-size: 20px;
+  height: 32px;
   color: var(--grey-400);
 }
 
@@ -204,8 +237,10 @@ Styling for notes column
   width: 32px;
   height: 32px;
   text-align: center;
-  border: 1px solid var(--grey-300);
+  border: 1px solid var(--grey-400);
   border-radius: 4px;
+  background-color: white;
+  color: black;
 }
 .pageInput:active,
 .pageInput:focus {
@@ -219,7 +254,7 @@ Styling for notes column
 .leftArrow:hover,
 .rightArrow:hover {
   transition: 0.3s ease;
-  filter: brightness(70%);
+  color: black;
 }
 
 .rightArrow {

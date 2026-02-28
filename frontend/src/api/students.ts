@@ -1,4 +1,4 @@
-import { get, handleAPIError, post, put } from "./requests";
+import { del, get, handleAPIError, post, put } from "./requests";
 
 import type { APIResult } from "@/src/api/requests";
 
@@ -143,6 +143,18 @@ export async function archiveStudents(
   try {
     const response = await put(`${STUDENTS_ROUTE}/archive`, { ids, flag: archived });
     const json = (await response.json()) as StudentJSON[];
+    const students = json.map(parseStudent);
+    return { success: true, data: students };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+export async function deleteStudents(ids: string[]): Promise<APIResult<Student[]>> {
+  try {
+    const response = await del(`${STUDENTS_ROUTE}/delete`, {}, { ids });
+    const json = (await response.json()) as StudentJSON[];
+    console.log("json", json);
     const students = json.map(parseStudent);
     return { success: true, data: students };
   } catch (error) {

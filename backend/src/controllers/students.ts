@@ -178,3 +178,20 @@ export const deleteStudentById: RequestHandler = async (req, res, next) => {
     return next(error);
   }
 };
+
+export const deleteStudentsByIds: RequestHandler = async (req, res, next) => {
+  const { ids } = req.body as { ids: string[] };
+  const validIds = ids
+    .filter((id) => Types.ObjectId.isValid(id))
+    .map((id) => new Types.ObjectId(id));
+  if (validIds.length === 0) {
+    return res.status(400).json({ message: "No valid student IDs provided" });
+  }
+  try {
+    await StudentModel.deleteMany({ _id: { $in: validIds } });
+    const remainingStudents = await StudentModel.find({}).populate("enrolledSections");
+    res.status(200).json(remainingStudents);
+  } catch (error) {
+    return next(error);
+  }
+};

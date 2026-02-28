@@ -2,7 +2,6 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import { StudentCard } from "../app/(ui)/_components/StudentCard/StudentCard";
-// import StudentCard from "./StudentCard";
 
 import styles from "./Table.module.css";
 
@@ -12,6 +11,9 @@ import type { Student } from "../api/students";
 // import type { User } from "../api/user";
 import type { Dispatch, SetStateAction } from "react";
 
+import EditIcon from "@/public/icons/edit.svg";
+import PrevIcon from "@/public/icons/prev.svg";
+import ShowIcon from "@/public/icons/show.svg";
 import { getAllStudents } from "@/src/api/students";
 import { StudentProfileModal } from "@/src/app/(ui)/_components/StudentProfileView/StudentProfileView";
 import { Modal } from "@/src/components/Modal";
@@ -106,27 +108,9 @@ export function Table({
     if (!bool && !isEdit) return <></>;
     // add edit icon no matter what if edit mode
     if (isEdit) {
-      children.push(
-        <Image
-          key="0"
-          className={styles.hoverIcon}
-          src="/icons/edit.svg"
-          alt="Edit"
-          width={20}
-          height={20}
-        />,
-      );
+      children.push(<EditIcon key="0" className={styles.hoverIcon} />);
     } else {
-      children.push(
-        <Image
-          key="0"
-          className={styles.hoverIcon}
-          src="/icons/show.svg"
-          alt="View"
-          width={20}
-          height={20}
-        />,
-      );
+      children.push(<ShowIcon key="0" className={styles.hoverIcon} />);
     }
 
     if (bool) {
@@ -189,19 +173,23 @@ export function Table({
       <>
         {isEdit && (
           <td className={styles.checkboxContainer}>
-            <input
-              className={styles.checkbox}
-              type="checkbox"
-              checked={checked}
-              onChange={() => {
-                setSelected((prev: Set<string>) => {
-                  const next = new Set(prev);
-                  if (next.has(id)) next.delete(id);
-                  else next.add(id);
-                  return next;
-                });
-              }}
-            />
+            <label className={styles.checkboxWrapper}>
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={() => {
+                  setSelected((prev: Set<string>) => {
+                    const next = new Set(prev);
+                    if (next.has(id)) next.delete(id);
+                    else next.add(id);
+                    return next;
+                  });
+                }}
+              />
+              <span className={styles.customCheckbox}>
+                {checked && <Image height={12} width={12} src="/icons/check.svg" alt="check" />}
+              </span>
+            </label>
           </td>
         )}
       </>
@@ -237,13 +225,7 @@ export function Table({
     return (
       <div className={styles.navigation}>
         <button onClick={back} disabled={page === 0}>
-          <Image
-            className={styles.leftArrow}
-            src="/icons/prev.svg"
-            alt="Back button"
-            width={32}
-            height={32}
-          />
+          <PrevIcon className={`${styles.leftArrow}`} />
         </button>
         <p>page</p>
         <input
@@ -271,13 +253,7 @@ export function Table({
         <p>of</p>
         <p>{pageCount}</p>
         <button onClick={forward} disabled={page >= pageCount - 1}>
-          <Image
-            className={styles.rightArrow}
-            src="/icons/prev.svg"
-            alt="Forward button"
-            width={32}
-            height={32}
-          />
+          <PrevIcon className={`${styles.rightArrow}`} />
         </button>
       </div>
     );
@@ -311,7 +287,7 @@ export function Table({
         <table className={styles.table}>
           <thead>
             <tr className={styles.headerRow}>
-              {isEdit && <th className={styles.checkboxHeader}></th>}
+              {isEdit && <th className={styles.checkboxCol}></th>}
               {titleBar}
             </tr>
           </thead>
