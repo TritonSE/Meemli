@@ -1,9 +1,12 @@
-import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from "../util/firebase";
-import { User as APIUser, getUser, createUser } from "../api/user";
+import { createContext, useContext, useEffect, useState } from "react";
 
-interface AuthContextType {
+import { getUser } from "../api/user";
+import { auth } from "../util/firebase";
+
+import type { User as APIUser } from "../api/user";
+
+type AuthContextType = {
   user: APIUser | null;
   loading: boolean;
   /**
@@ -11,7 +14,7 @@ interface AuthContextType {
    * Components can call this when the user clicks a logout button.
    */
   logout: () => Promise<void>;
-}
+};
 
 const AuthContext = createContext<AuthContextType>({
   user: null,

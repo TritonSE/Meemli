@@ -6,12 +6,8 @@
 }
 
 .field {
-  margin-top: 16px;
+  margin-top: 8px;
   position: relative;
-}
-
-.actions {
-  margin-top: 6px;
 }
 
 .primaryBtn {
@@ -28,7 +24,7 @@
 
 /* bottom link */
 .footerLinkRow {
-  margin-top: 6px;
+  margin-top: 16px;
 }
 
 .link {

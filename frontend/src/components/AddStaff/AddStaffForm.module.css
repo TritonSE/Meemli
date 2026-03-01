@@ -19,6 +19,8 @@
 .pageTitle {
   font-size: 30px;
   font-weight: 600;
+  margin: 0;
+  margin-bottom: 48px;
 }
 
 .formPage {
@@ -33,7 +35,7 @@
   flex-direction: row;
   width: 100%;
   gap: 2vw;
-  margin: 10px 0;
+  margin-bottom: 24px;
 }
 
 .formField {
@@ -47,7 +49,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin: 10px 0;
+  margin-bottom: 24px;
 }
 
 .halfField {
@@ -112,7 +114,7 @@ This format is needed to style the default react components correctly
   display: flex;
   flex-direction: row;
   margin-left: auto;
-  margin-top: 48px;
+  margin-top: 24px;
   gap: 24px;
 }
 

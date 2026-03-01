@@ -27,7 +27,7 @@
   box-shadow: 0 1px 15px rgba(0, 0, 0, 0.25);
 
   /* if the form content gets tall */
-  max-height: 85vh;
+  max-height: 95vh;
   overflow: scroll;
   scrollbar-width: none;
   justify-content: center;

@@ -119,7 +119,7 @@ const ProgramSingleValue = (props: MultiValueProps<Option, true>) => {
   const { label } = data;
 
   return (
-    <components.MultiValue {...props}>
+    <components.SingleValue {...props}>
       <div
         className={styles.optionBadge}
         style={{
@@ -128,7 +128,7 @@ const ProgramSingleValue = (props: MultiValueProps<Option, true>) => {
       >
         {label}
       </div>
-    </components.MultiValue>
+    </components.SingleValue>
   );
 };
 
@@ -274,6 +274,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
         <div className={styles.formField}>
           <TextField
             label="First Name"
+            placeholder="ex. John"
             required
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
@@ -283,6 +284,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
         <div className={styles.formField}>
           <TextField
             label="Last Name"
+            placeholder="ex. Smith"
             required
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
@@ -294,6 +296,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
         <div className={styles.formField}>
           <TextField
             label="Personal Email"
+            placeholder="ex. xyz@abcd.com"
             required
             value={personalEmail}
             onChange={(e) => setPersonalEmail(e.target.value)}
@@ -305,6 +308,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
         <div className={styles.formField}>
           <TextField
             label="Meemli Email"
+            placeholder="ex. xyz@meemli.org"
             required
             value={meemliEmail}
             onChange={(e) => setMeemliEmail(e.target.value)}
@@ -316,6 +320,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
         <div className={styles.formField}>
           <TextField
             label="Phone Number"
+            placeholder="ex. (123)-456-7890"
             required
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
@@ -334,6 +339,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
           onChange={(opt) => setRole(opt as Option | null)}
           placeholder="Select"
           isClearable
+          isSearchable={false}
           className={styles.select}
           classNamePrefix="select"
           components={{
@@ -368,6 +374,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
           placeholder="Select"
           isMulti
           closeMenuOnSelect={false}
+          menuPortalTarget={typeof document !== "undefined" ? document.body : undefined}
           className={styles.select}
           classNamePrefix="select"
           components={{
@@ -375,6 +382,10 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
             MultiValue: ProgramSingleValue,
           }}
           styles={{
+            menuPortal: (base) => ({
+              ...base,
+              zIndex: 9999,
+            }),
             menuList: (base) => ({
               ...base,
               padding: "4px 0",

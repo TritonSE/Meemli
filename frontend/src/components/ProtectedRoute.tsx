@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 import { useAuth } from "../context/AuthContext";
 
-const PUBLIC_PATHS = ["/login", "/login/", "/activate", "/activate/", "/forgot-password", "/forgot-password/"];
+const PUBLIC_PATHS = [
+  "/login",
+  "/login/",
+  "/activate",
+  "/activate/",
+  "/forgot-password",
+  "/forgot-password/",
+];
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();

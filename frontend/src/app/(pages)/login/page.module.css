@@ -53,16 +53,12 @@
   display: block;
 }
 
-.actions {
-  margin-top: 6px;
-}
-
 .signInBtn {
   width: 360px;
   height: 40px;
   border-radius: 10px;
   transition: ease-in-out 0.2s;
-  margin-top: 8px;
+  margin-top: 16px;
 }
 
 .signInBtn:hover {

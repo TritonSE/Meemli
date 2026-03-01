@@ -4,8 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
+import { useAuth } from "../../context/AuthContext";
 import { Tooltip } from "../Tooltip/Tooltip";
-import { useAuth } from "../../../../context/AuthContext";
 
 import style from "./Navbar.module.css";
 
@@ -28,13 +28,14 @@ export function Navbar() {
   const router = useRouter();
   const { logout } = useAuth();
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      router.push("/login");
-    } catch (e) {
-      console.error("Failed to log out", e);
-    }
+  const handleLogout = () => {
+    logout()
+      .then(() => {
+        router.push("/login");
+      })
+      .catch((e) => {
+        console.error("Failed to log out", e);
+      });
   };
 
   return (
