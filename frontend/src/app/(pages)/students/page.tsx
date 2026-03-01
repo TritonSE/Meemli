@@ -10,8 +10,6 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import styles from "./page.module.css";
-
 import type { Section } from "@/src/api/sections";
 import type { Student } from "@/src/api/students";
 
@@ -21,6 +19,7 @@ import { getAllSections } from "@/src/api/sections";
 import { archiveStudents, deleteStudents, getAllStudents } from "@/src/api/students";
 import { Modal } from "@/src/components/Modal";
 import { StudentForm } from "@/src/components/studentform/StudentForm";
+import styles from "@/src/components/studentPage.module.css";
 import { Table } from "@/src/components/Table";
 
 type BannerState = {

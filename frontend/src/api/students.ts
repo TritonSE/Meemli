@@ -154,7 +154,6 @@ export async function deleteStudents(ids: string[]): Promise<APIResult<Student[]
   try {
     const response = await del(`${STUDENTS_ROUTE}/delete`, {}, { ids });
     const json = (await response.json()) as StudentJSON[];
-    console.log("json", json);
     const students = json.map(parseStudent);
     return { success: true, data: students };
   } catch (error) {
