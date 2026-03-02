@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { AuthCard } from "../../../components/AuthCard";
@@ -13,6 +13,7 @@ import styles from "./page.module.css";
 type Step = "invited" | "form" | "success";
 
 export default function ActivatePage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   // Example: /activate?email=janedoe@gmail.com&inviter=Usha%20Sekar
@@ -89,13 +90,13 @@ export default function ActivatePage() {
               {/* TODO: make component for password field and use it here + in login */}
               <div className={styles.inputWithIcon}>
                 <TextField
-                  {...({ type: showPw ? "text" : "password" } as any)}
+                  type={showPw ? "text" : "password"}
                   label=""
                   name="password"
                   placeholder="Password"
                   autoComplete="new-password"
                   value={password}
-                  onChange={(e: any) => setPassword(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                 />
 
                 <button
@@ -148,13 +149,13 @@ export default function ActivatePage() {
 
               <div className={styles.inputWithIcon}>
                 <TextField
-                  {...({ type: showConfirm ? "text" : "password" } as any)}
+                  type={showConfirm ? "text" : "password"}
                   label=""
                   name="confirm"
                   placeholder="Password"
                   autoComplete="new-password"
                   value={confirm}
-                  onChange={(e: any) => setConfirm(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirm(e.target.value)}
                 />
 
                 <button
@@ -233,8 +234,7 @@ export default function ActivatePage() {
               type="button"
               className={styles.primaryBtn}
               onClick={() => {
-                // TODO: route to dashboard
-                // router.push('/dashboard')
+                router.push("/");
               }}
             />
           </div>

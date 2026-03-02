@@ -44,7 +44,7 @@ async function fetchRequest(
     }
   } catch (e) {
     // swallow token errors; requests can still proceed unauthenticated
-    console.debug("failed to fetch id token", e);
+    console.warn("Failed to fetch ID token", e);
   }
 
   const response = await fetch(url, {

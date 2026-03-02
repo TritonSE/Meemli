@@ -86,15 +86,15 @@ export default function LoginPage() {
               }
             })
             .catch((error) => {
-              console.log("Error fetching user data:", error);
+              console.error("Error fetching user data:", error);
             });
         } else {
           // no user returned
-          console.log("Sign-in succeeded but no user object returned");
+          console.warn("Sign-in succeeded but no user object returned");
         }
       })
       .catch((error) => {
-        console.log("Error signing in:", error);
+        console.error("Error signing in:", error);
       })
       .finally(() => {
         setLoading(false);
@@ -109,7 +109,6 @@ export default function LoginPage() {
       aria-label="Sign in"
     >
       <div className={styles.form}>
-        {/* TODO: fix styling of labels in the textfields */}
         <div className={styles.field}>
           <TextField
             label="Email"
@@ -127,9 +126,8 @@ export default function LoginPage() {
             Forgot Password?
           </a>
 
-          {/* TextFieldProps omits "type", so we cast to allow password semantics */}
           <TextField
-            {...({ type: showPassword ? "text" : "password" } as any)}
+            type={showPassword ? "text" : "password"}
             label="Password"
             name="password"
             placeholder="Password"

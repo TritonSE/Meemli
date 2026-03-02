@@ -37,29 +37,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setLoading(true); // Ensure we show loading when state starts changing
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      void (async () => {
+        setLoading(true); // Ensure we show loading when state starts changing
 
-      try {
-        if (firebaseUser) {
-          const result = await getUser(firebaseUser.uid);
+        try {
+          if (firebaseUser) {
+            const result = await getUser(firebaseUser.uid);
 
-          if (result.success) {
-            setUser(result.data);
-          } else if (result.error?.toLowerCase().includes("404")) {
-            // TODO: construct payload from firebaseUser or prompt user to finish
-            // const createRes = await createUser(payload);
-            // if (createRes.success) setUser(createRes.data);
+            if (result.success) {
+              setUser(result.data);
+            } else if (result.error?.toLowerCase().includes("404")) {
+              // TODO: construct payload from firebaseUser or prompt user to finish
+              // const createRes = await createUser(payload);
+              // if (createRes.success) setUser(createRes.data);
+            }
+          } else {
+            setUser(null);
           }
-        } else {
+        } catch (e) {
+          console.error("Auth initialization error:", e);
           setUser(null);
+        } finally {
+          setLoading(false);
         }
-      } catch (e) {
-        console.error("Auth initialization error:", e);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
+      })();
     });
 
     return () => unsubscribe();

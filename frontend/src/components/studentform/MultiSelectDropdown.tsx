@@ -254,7 +254,7 @@ export function MultiSelectDropdown({
                         >
                           {text}
                         </button>
-                        <img alt="check icon" className={styles.selectedIcon} />
+                        <span aria-hidden className={styles.selectedIcon} />
                       </div>
                     );
                   })}
