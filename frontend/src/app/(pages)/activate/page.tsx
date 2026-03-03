@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 
 import { AuthCard } from "../../../components/AuthCard";
 import { Button } from "../../../components/Button";
@@ -13,12 +13,20 @@ import styles from "./page.module.css";
 type Step = "invited" | "form" | "success";
 
 export default function ActivatePage() {
+  return (
+    <Suspense fallback={null}>
+      <ActivatePageContent />
+    </Suspense>
+  );
+}
+
+function ActivatePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // Example: /activate?email=janedoe@gmail.com&inviter=Usha%20Sekar
-  const email = useMemo(() => searchParams.get("email") ?? "janedoe@gmail.com", [searchParams]);
-  const inviter = useMemo(() => searchParams.get("inviter") ?? "Usha Sekar", [searchParams]);
+  const email = useMemo(() => searchParams?.get("email") ?? "janedoe@gmail.com", [searchParams]);
+  const inviter = useMemo(() => searchParams?.get("inviter") ?? "Usha Sekar", [searchParams]);
 
   const [step, setStep] = useState<Step>("invited");
 
