@@ -1,14 +1,49 @@
 import { Popover } from "@mui/material";
-import { format, isValid, parse } from "date-fns";
 import { useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 
 import styles from "./select.module.css";
 
+const longDateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+});
+
+function parseISODate(input: string): Date | undefined {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(input);
+  if (!match) {
+    return undefined;
+  }
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const candidate = new Date(year, month - 1, day);
+
+  if (
+    Number.isNaN(candidate.getTime()) ||
+    candidate.getFullYear() !== year ||
+    candidate.getMonth() !== month - 1 ||
+    candidate.getDate() !== day
+  ) {
+    return undefined;
+  }
+
+  return candidate;
+}
+
+function formatISODate(date: Date): string {
+  const year = date.getFullYear().toString().padStart(4, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export function DateSelect({ value, onChange }: { value: string; onChange: (d: string) => void }) {
-  const parsedValue = value ? parse(value, "yyyy-MM-dd", new Date()) : new Date();
-  const validValue = isValid(parsedValue) ? parsedValue : new Date();
+  const parsedValue = value ? parseISODate(value) : new Date();
+  const validValue = parsedValue ?? new Date();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [tempDate, setTempDate] = useState<Date | undefined>(undefined);
@@ -26,7 +61,7 @@ export function DateSelect({ value, onChange }: { value: string; onChange: (d: s
 
   const handleApply = () => {
     if (tempDate) {
-      onChange(format(tempDate, "yyyy-MM-dd"));
+      onChange(formatISODate(tempDate));
     }
     handleClose();
   };
@@ -38,7 +73,7 @@ export function DateSelect({ value, onChange }: { value: string; onChange: (d: s
       dateToFormat.getMonth() === today.getMonth() &&
       dateToFormat.getFullYear() === today.getFullYear();
 
-    const formatted = format(dateToFormat, "MMMM d, yyyy");
+    const formatted = longDateFormatter.format(dateToFormat);
     return isToday ? `(Today) ${formatted}` : formatted;
   };
 
@@ -104,7 +139,11 @@ export function DateSelect({ value, onChange }: { value: string; onChange: (d: s
           <DayPicker
             mode="single"
             selected={tempDate}
-            onSelect={setTempDate}
+            onSelect={(date: unknown) => {
+              if (date === undefined || date instanceof Date) {
+                setTempDate(date);
+              }
+            }}
             month={currentMonth}
             onMonthChange={setCurrentMonth}
             className={styles.customCalendar}
