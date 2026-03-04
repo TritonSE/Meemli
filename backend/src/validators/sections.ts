@@ -6,11 +6,10 @@ const TIME_24H_REGEX = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
 
 const validateCode = body("code").notEmpty().withMessage("Code is required");
 
-const validateProgram = body("program")
-  .notEmpty()
-  .withMessage("Program is required")
-  .isMongoId()
-  .withMessage("Program must be a valid MongoDB ObjectID");
+const validateStartDate = body("startDate").notEmpty().withMessage("Start date is required");
+const validateEndDate = body("endDate").notEmpty().withMessage("End date is required");
+const validateColor = body("color").notEmpty().withMessage("Color is required");
+const validateArchived = body("archived").optional().isBoolean().withMessage("Archived must be a boolean");
 
 export const validateTeachers: ValidationChain[] = [
   body("teachers").isArray().withMessage("Teachers must be an array"),
@@ -81,19 +80,25 @@ const validateEndTime = body("endTime")
 export const createSectionValidator = [
   validateCode,
   validateDays,
-  validateEndTime,
-  ...validateEnrolledStudents,
-  validateProgram,
   validateStartTime,
+  validateEndTime,
+  validateStartDate,
+  validateEndDate,
+  validateColor,
+  validateArchived,
+  ...validateEnrolledStudents,
   ...validateTeachers,
 ];
 
 export const updateSectionValidator = [
   validateCode.optional(),
   validateDays.optional(),
-  validateEndTime.optional(),
-  ...validateEnrolledStudents.map((v) => v.optional()),
-  validateProgram.optional(),
   validateStartTime.optional(),
+  validateEndTime.optional(),
+  validateStartDate.optional(),
+  validateEndDate.optional(),
+  validateColor.optional(),
+  validateArchived.optional(),
+  ...validateEnrolledStudents.map((v) => v.optional()),
   ...validateTeachers.map((v) => v.optional()),
 ];
