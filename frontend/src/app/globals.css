@@ -37,6 +37,11 @@
     margin: revert;
     padding: revert;
   }
+
+  .required {
+    margin-left: 4px;
+    color: var(--error-700);
+  }
 }
 
 @layer utilities {

@@ -1,0 +1,21 @@
+.dateTimeForm {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  input,
+  select {
+    border: 1px solid var(--grey-100);
+    width: fit-content;
+    margin: 0 0.5rem;
+  }
+
+  .formElement {
+    display: flex;
+    flex-direction: column;
+
+    label {
+      margin-bottom: 0.25rem;
+    }
+  }
+}

@@ -4,42 +4,47 @@ import { z } from "zod";
 
 import { Modal } from "../Modal";
 import { MultiStepForm } from "../MultiStep/MultiStepForm";
-import { MultiSelectDropdown } from "../studentform/MultiSelectDropdown";
-import { TextField } from "../TextField";
+import { MultiSelectDropdown } from "../Studentform/MultiSelectDropdown";
 
-// Define the validation schema using Zod as the single source of truth
+// Section Form Modal 'Steps'
+import { StepOneClassDetails } from "./SectionFormSteps/StepOneClassDetails";
+import { StepThreeEnrolled } from "./SectionFormSteps/StepThreeEnrolled";
+import { StepTwoMeetingTimes } from "./SectionFormSteps/StepTwoMeetingTimes";
+
+// define regex to match backend requirements
+const COLOR_REGEX = /^#(?:[0-9a-f]{3}){1,2}$/i;
+
+// updated zod schema for step 1
 export const sectionSchema = z.object({
-  sectionName: z.string().min(3, "Section name must be at least 3 characters"),
+  // 'code' in backend maps to 'Class Name' in UI
+  code: z.string().min(1, "Class name is required").max(100, "Class name is too long"), // assuming a reasonable max
+
+  color: z.string().regex(COLOR_REGEX, "Please select a valid color"),
+
+  // these are needed for final submission but optional for step 1 validation
   teacherId: z.string().optional(),
-  enrolledStudents: z.array(z.string()).min(1, "Must enroll at least one student"),
+  enrolledStudents: z.array(z.string()).optional(),
 });
 
-// Infer the TypeScript type directly from the Zod schema to keep types in sync
 export type SectionDraft = z.infer<typeof sectionSchema>;
 
-// Define the initial default values for form hydration
-const INITIAL_SECTION_DATA: SectionDraft = {
-  sectionName: "",
+// default schema data
+export const INITIAL_SECTION_DATA: SectionDraft = {
+  code: "",
+  color: "#e0e0e0", // default to the first color in your list
   teacherId: "",
   enrolledStudents: [],
 };
 
-// Step 1 Component: Leverages react-hook-form's register for standard inputs
-function StepOneName() {
-  const {
-    register,
-    formState: { errors },
-  } = useFormContext<SectionDraft>();
-
-  return (
-    <div>
-      <TextField label="Section Name" {...register("sectionName")} required />
-      {/* Optional: Add error rendering if TextField supports it, or render a span below */}
-
-      <TextField label="Teacher ID" {...register("teacherId")} />
-    </div>
-  );
-}
+export const CLASS_COLORS = [
+  "#e0e0e0",
+  "#d84315",
+  "#ffca28",
+  "#00acc1",
+  "#d87a56",
+  "#455a64",
+  "#26a69a",
+];
 
 // Step 2 Component: Uses watch and setValue for complex/custom controlled inputs
 function StepTwoStudents() {
@@ -67,48 +72,55 @@ function StepTwoStudents() {
 type SectionFlowProps = {
   active: boolean;
   onClose: () => void;
-}
+};
 
 // Main Component to be rendered inside a Modal or Page wrapper
 export function CreateSectionFlow({ active, onClose }: SectionFlowProps) {
   // Map out the steps configuring title, validation fields, and UI component
 
-  if(!active){
+  if (!active) {
     return;
   }
 
   const steps = [
     {
       id: "details",
-      title: "Section Details",
-      fields: ["sectionName", "teacherId"] as const,
-      component: <StepOneName />,
+      title: "Fill out class name and chose color",
+      fields: ["code", "color"] as const,
+      component: <StepOneClassDetails />,
+    },
+    {
+      id: "meeting-times",
+      title: "Fill out class meeting times and duration",
+      fields: [""] as const,
+      component: <StepTwoMeetingTimes />,
     },
     {
       id: "enrollment",
-      title: "Enroll Students",
-      fields: ["enrolledStudents"] as const,
-      component: <StepTwoStudents />,
+      title: "Enroll teachers and student in the class",
+      fields: ["teacherId", "enrolledStudents"] as const,
+      component: <StepThreeEnrolled />,
     },
   ];
 
   return (
-    <Modal 
-    onExit={onClose}
-    child={
-      <MultiStepForm<SectionDraft>
-        schema={sectionSchema}
-        defaultValues={INITIAL_SECTION_DATA}
-        steps={steps}
-        mode="create"
-        storageKey="section_draft_storage"
-        formTitle="Section"
-        onSubmit={(finalData) => {
-          console.log("Submitting Section to API:", finalData);
-          onClose();
-        }}
-        onCancel={onClose}
-      />
-    }/>
+    <Modal
+      onExit={onClose}
+      child={
+        <MultiStepForm<SectionDraft>
+          schema={sectionSchema}
+          defaultValues={INITIAL_SECTION_DATA}
+          steps={steps}
+          mode="create"
+          storageKey="section_draft_storage"
+          formTitle="Class"
+          onSubmit={(finalData) => {
+            console.log("Submitting Section to API:", finalData);
+            onClose();
+          }}
+          onCancel={onClose}
+        />
+      }
+    />
   );
 }

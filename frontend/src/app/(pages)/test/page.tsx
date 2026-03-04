@@ -1,16 +1,14 @@
 "use client";
 import { useState } from "react";
 
-// Components
-import { CreateSectionFlow } from "../../../components/SectionForm/SectionForm";
-import { StudentCard } from "../../(ui)/_components/StudentCard/StudentCard";
-import { StudentProfileModal } from "../../(ui)/_components/StudentProfileView/StudentProfileView";
-
 import type { Student } from "@/src/api/students";
 
 // API & Types
 import { getStudent } from "@/src/api/students";
-import { ColorInput } from "@/src/components/ColorInput";
+import { CreateSectionFlow } from "@/src/components/SectionForm/SectionForm";
+// Components
+import { StudentCard } from "@/src/components/StudentCard/StudentCard";
+import { StudentProfileModal } from "@/src/components/StudentProfileView/StudentProfileView";
 import TestStudentForm from "@/src/pages/TestStudentForm";
 
 export default function Test() {
@@ -82,8 +80,7 @@ export default function Test() {
   function toggleSection() {
     if (sectionModalState == null) {
       setSectionState("active");
-    }
-    else {
+    } else {
       setSectionState(null);
     }
   }
@@ -177,10 +174,12 @@ export default function Test() {
         >
           Click to open section
         </button>
-        <br/>
-        <ColorInput colors={["#17AAC4", "#25CA7D", "#416F7E", "#D54525", "#DA7A51", "#FFBE31", "#B6B8BA"]}/>
+        <br />
 
-        <CreateSectionFlow active={sectionModalState === "active"} onClose={() => toggleSection()} />
+        <CreateSectionFlow
+          active={sectionModalState === "active"}
+          onClose={() => toggleSection()}
+        />
         <StudentProfileModal student={selectedStudent} onClose={() => setSelectedStudent(null)} />
       </div>
 

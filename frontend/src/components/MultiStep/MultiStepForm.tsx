@@ -130,7 +130,7 @@ export function MultiStepForm<T extends FieldValues>({
           {mode === "create" && <ProgressBar currentStep={currentStep} totalSteps={steps.length} />}
           <div className={styles.headerSegment}>
             <h1 className={styles.pageTitle}>
-              {mode === "create" ? `Add ${formTitle}` : `Edit ${formTitle}`}
+              {mode === "create" ? `Create ${formTitle}` : `Edit ${formTitle}`}
             </h1>
             {mode === "create" && curStepMeta.description && (
               <p className={styles.description}>{curStepMeta.description}</p>

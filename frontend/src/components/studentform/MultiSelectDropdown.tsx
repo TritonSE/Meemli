@@ -1,12 +1,3 @@
-/**
- * Multiselect dropdown component for the Student Create/Edit forms.
- * Fetches all sections from database and populates a multiselect dropdown bar
- * and updates important states automatically.
- *
- * // TODO: Convert program IDs to colors and show colored backgrounds for buttons
- * // TODO: Add checkmark icon for selected items
- */
-
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { getAllSections } from "../../api/sections";
@@ -25,9 +16,7 @@ type SectionLike = {
 
 type MultiSelectDropdownProps = {
   label?: string;
-  /** Selected section ids */
   value: string[];
-  /** Called with next selected ids */
   onChange: (next: string[]) => void;
 
   required?: boolean;
@@ -82,7 +71,6 @@ export function MultiSelectDropdown({
   const [error, setError] = useState<string | null>(null);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
-  // will recalculate every time a check is ticked or unticked
   const selectedSet = useMemo(() => new Set(value), [value]);
 
   const sectionIdToProgramId = useMemo(() => {

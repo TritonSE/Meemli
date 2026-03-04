@@ -4,7 +4,7 @@ import "./globals.css";
 import { defaultTheme, ThemeProvider } from "@tritonse/tse-constellation";
 import Head from "next/head";
 
-import { Navbar } from "./(ui)/_components/Navbar/Navbar";
+import { Navbar } from "@/src/components/Navbar/Navbar";
 
 const metadata = {
   title: "Meemli",

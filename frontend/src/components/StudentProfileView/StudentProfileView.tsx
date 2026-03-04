@@ -1,7 +1,6 @@
 import Image from "next/image";
 import React from "react";
 
-import { Modal } from "../../../../components/Modal";
 import { StudentCard } from "../StudentCard/StudentCard";
 import override from "../StudentCard/StudentCard.module.css";
 import { StudentTabs } from "../StudentTabs/StudentTabs";
@@ -9,6 +8,8 @@ import { StudentTabs } from "../StudentTabs/StudentTabs";
 import styles from "./StudentProfileView.module.css";
 
 import type { Student } from "@/src/api/students";
+
+import { Modal } from "@/src/components/Modal";
 
 type StudentProfileModalProps = {
   student: Student | null;
