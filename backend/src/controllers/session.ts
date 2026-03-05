@@ -103,6 +103,21 @@ export const getSession: RequestHandler = async (req, res, next) => {
   }
 };
 
+// Returns all Sessions under a specific Section ID
+export const getSessionsBySectionId: RequestHandler = async (req, res, next) => {
+  const { sectionId } = req.params;
+
+  try {
+    const sessions = await SessionModel.find({ section: sectionId });
+
+    // No population of attendance records needed
+
+    res.status(200).json(sessions);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getAllSessions: RequestHandler = async (req, res, next) => {
   try {
     const sessions = await SessionModel.find().populate("section");
