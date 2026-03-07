@@ -12,14 +12,6 @@ import styles from "./page.module.css";
 
 type Step = "invited" | "form" | "success";
 
-export default function ActivatePage() {
-  return (
-    <Suspense fallback={null}>
-      <ActivatePageContent />
-    </Suspense>
-  );
-}
-
 function ActivatePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -249,5 +241,13 @@ function ActivatePageContent() {
         </AuthCard>
       )}
     </>
+  );
+}
+
+export default function ActivatePage() {
+  return (
+    <Suspense fallback={null}>
+      <ActivatePageContent />
+    </Suspense>
   );
 }
