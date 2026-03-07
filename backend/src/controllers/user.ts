@@ -1,5 +1,6 @@
 import { validationResult } from "express-validator";
 import { FirebaseAuthError } from "firebase-admin/auth";
+import { Types } from "mongoose";
 
 import UserModel from "../models/user";
 import { firebaseAdminAuth } from "../util/firebase";
@@ -13,13 +14,16 @@ type CreateUserBody = {
   lastName: string;
   personalEmail: string;
   meemliEmail: string;
+  phoneNumber: string;
   admin: boolean;
+  assignedSections?: string[];
 };
 
 export const createUser: RequestHandler = async (req, res, next) => {
   const errors = validationResult(req);
 
-  const { firstName, lastName, personalEmail, meemliEmail, admin } = req.body as CreateUserBody;
+  const { firstName, lastName, personalEmail, meemliEmail, phoneNumber, admin, assignedSections } =
+    req.body as CreateUserBody;
 
   try {
     validationErrorParser(errors);
@@ -32,13 +36,17 @@ export const createUser: RequestHandler = async (req, res, next) => {
         return userRecord;
       });
 
+    const assignedSectionsIds = assignedSections?.map((section) => new Types.ObjectId(section));
+
     const user = await UserModel.create({
       _id: userFirebase.uid,
       firstName,
       lastName,
       personalEmail,
       meemliEmail,
+      phoneNumber,
       admin,
+      assignedSections: assignedSectionsIds,
     });
 
     res.status(201).json(user);

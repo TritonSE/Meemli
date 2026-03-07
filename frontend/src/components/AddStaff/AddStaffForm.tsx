@@ -8,6 +8,7 @@ import Select, {
   type SingleValueProps,
 } from "react-select";
 
+import { getAllSections } from "../../api/sections";
 import { createUser } from "../../api/user";
 import { auth } from "../../util/firebase";
 import { Button } from "../Button";
@@ -138,6 +139,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
 
   const [role, setRole] = useState<Option | null>(null);
   const [programs, setPrograms] = useState<Option[]>([]);
+  const [programOptions, setProgramOptions] = useState<Option[]>([]);
 
   // TODO: replace these with API calls
   const roleOptions: Option[] = [
@@ -146,11 +148,28 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
     { value: "OWNER", label: "Owner" },
   ];
 
-  const programOptions: Option[] = [
-    { value: "CSE11", label: "CSE 11" },
-    { value: "CSE12", label: "CSE 12" },
-    { value: "CSE100", label: "CSE 100" },
-  ];
+  const fetchSections = () => {
+    getAllSections()
+      .then((result) => {
+        if (result.success) {
+          const sections = result.data;
+          setProgramOptions(
+            sections.map((section) => ({
+              value: section._id,
+              label: section.code,
+            })),
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching sections:", error);
+      });
+  };
+
+  // Fetch sections on component mount
+  useState(() => {
+    fetchSections();
+  });
 
   // Form state
   const [firstName, setFirstName] = useState("");
@@ -217,7 +236,9 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
       lastName: lastName.trim(),
       personalEmail: personalEmail.trim(),
       meemliEmail: meemliEmail.trim(),
+      phoneNumber: phoneNumber.trim(),
       admin: isAdmin,
+      assignedSections: programs.map((program) => program.value),
     })
       .then((result) => {
         if (result.success) {

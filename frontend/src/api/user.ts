@@ -10,7 +10,9 @@ export type User = {
   lastName: string;
   personalEmail: string;
   meemliEmail: string;
+  phoneNumber: string;
   admin: boolean;
+  assignedSections: string[];
 };
 
 export type UserJSON = {
@@ -20,7 +22,9 @@ export type UserJSON = {
   lastName: string;
   personalEmail: string;
   meemliEmail: string;
+  phoneNumber: string;
   admin: boolean;
+  assignedSections: string[];
 };
 
 const USER_ROUTE = "/user";
@@ -34,7 +38,9 @@ function parseUser(user: UserJSON): User {
     lastName: user.lastName,
     personalEmail: user.personalEmail,
     meemliEmail: user.meemliEmail,
+    phoneNumber: user.phoneNumber,
     admin: user.admin,
+    assignedSections: user.assignedSections,
   };
 }
 
