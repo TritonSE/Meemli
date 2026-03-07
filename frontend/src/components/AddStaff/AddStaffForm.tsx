@@ -8,7 +8,7 @@ import Select, {
   type SingleValueProps,
 } from "react-select";
 
-import { getAllSections } from "../../api/sections";
+import { getAllSections, getSectionById, updateSection } from "../../api/sections";
 import { createUser } from "../../api/user";
 import { auth } from "../../util/firebase";
 import { Button } from "../Button";
@@ -251,6 +251,30 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
               console.error("Error sending password reset email:", error);
             });
 
+          const userId = result.data._id;
+          console.log("Created user with ID:", userId);
+
+          for (const sectionId of programs.map((program) => program.value)) {
+            getSectionById(sectionId)
+              .then((sectionResult) => {
+                if (sectionResult.success) {
+                  const section = sectionResult.data;
+                  console.log(`Fetched section ${sectionId}:`, section);
+                  const updatedTeachers = [...section.teachers, userId];
+                  console.log(`Updated teachers for section ${sectionId}:`, updatedTeachers);
+                  const updatedSection = { ...section, teachers: updatedTeachers };
+                  console.log(`Updating section ${sectionId} with:`, updatedSection);
+                  updateSection(updatedSection).catch((error) => {
+                    console.error(`Error updating section ${sectionId}:`, error);
+                  });
+                } else {
+                  console.error(`Error fetching section ${sectionId}:`, sectionResult.error);
+                }
+              })
+              .catch((error) => {
+                console.error(`Error fetching section ${sectionId}:`, error);
+              });
+          }
           // Reset form
           setFirstName("");
           setLastName("");

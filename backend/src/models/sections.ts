@@ -26,8 +26,7 @@ const sectionSchema = new mongoose.Schema(
       required: true, // Must be associated with a program
     },
     teachers: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "User", // Reference to the User model
+      type: [String],
       required: true, // Must contain at least one teacher
       default: [], // Default to an empty array if no teachers are added
     },

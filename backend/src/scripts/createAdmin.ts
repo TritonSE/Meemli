@@ -20,6 +20,7 @@ async function createAdmin() {
     lastName: "User",
     personalEmail: "<test@gmail.com>",
     meemliEmail: "<test@gmail.com>",
+    phoneNumber: "1234567890",
     admin: true,
   });
 

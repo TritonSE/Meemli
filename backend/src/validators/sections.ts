@@ -14,7 +14,7 @@ const validateProgram = body("program")
 
 export const validateTeachers: ValidationChain[] = [
   body("teachers").isArray().withMessage("Teachers must be an array"),
-  body("teachers.*").isMongoId().withMessage("Each teacher must be a valid MongoDB ObjectID"),
+  body("teachers.*").isString().withMessage("Each teacher must be a string").bail(),
 ];
 
 export const validateEnrolledStudents: ValidationChain[] = [
