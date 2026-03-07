@@ -191,20 +191,17 @@ Styling for sections column
   display: flex;
   gap: 6px;
   flex-wrap: nowrap;
-  overflow-x: auto;
+  overflow: hidden;
   align-items: center;
 }
 .blockItem {
   display: flex;
   flex-direction: row;
   flex-shrink: 0;
-
   width: auto;
   padding: 10px;
-
   border-radius: 8px;
   align-items: center;
-  background-color: teal;
   color: white;
 }
 .moreItem {

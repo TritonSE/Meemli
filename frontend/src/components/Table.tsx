@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { StudentCard } from "./StudentCard/StudentCard";
 import { StudentProfileModal } from "./StudentProfileView/StudentProfileView";
@@ -17,6 +17,67 @@ import ShowIcon from "@/public/icons/show.svg";
 import { getAllStudents } from "@/src/api/students";
 import { Modal } from "@/src/components/Modal";
 import { StudentForm } from "@/src/components/studentform/StudentForm";
+
+/**
+ * Component for dynamically rendering items based on available container space
+ * @param labels - Array of strings to display as labels
+ * @param colors - Array of colors (hex or CSS color names) corresponding to each label
+ */
+function DynamicBlockDisplay({ labels, colors }: { labels: string[]; colors: string[] }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [visibleCount, setVisibleCount] = useState<number>(3);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const updateVisibleCount = () => {
+      const container = containerRef.current;
+      if (!container || container.children.length === 0) return;
+
+      const containerWidth = container.clientWidth;
+      const firstChild = container.children[0] as HTMLElement;
+      const itemWidth = firstChild.offsetWidth;
+      const gap = 6;
+      const overflowItemEstimate = 45;
+
+      let count = Math.floor((containerWidth - overflowItemEstimate - gap) / (itemWidth + gap));
+      count = Math.max(0, Math.min(count, labels.length));
+
+      setVisibleCount(count);
+    };
+
+    // Use ResizeObserver to handle dynamic width changes
+    const resizeObserver = new ResizeObserver(updateVisibleCount);
+    resizeObserver.observe(containerRef.current);
+    const timer = setTimeout(updateVisibleCount, 0);
+
+    return () => {
+      resizeObserver.disconnect();
+      clearTimeout(timer);
+    };
+  }, [labels.length]);
+
+  const visible = labels.slice(0, visibleCount);
+  const remaining = labels.length - visible.length;
+
+  // TODO: update to section color
+  return (
+    <div ref={containerRef} className={styles.blockItems}>
+      {visible.map((label, index) => (
+        <div
+          key={index}
+          className={styles.blockItem}
+          style={{ backgroundColor: colors[index] ?? "#008080" }}
+        >
+          {label}
+        </div>
+      ))}
+      {remaining > 0 && (
+        <div className={`${styles.blockItem} ${styles.moreItem}`}>+{remaining}</div>
+      )}
+    </div>
+  );
+}
 
 type User = {
   _id: string;
@@ -63,8 +124,6 @@ export function Table({
   const pageCount = Math.max(1, Math.ceil(totalRows / PAGE_SIZE));
   const [page, setPage] = useState<number>(0);
   const [pageInput, setPageInput] = useState<string>("1");
-
-  const MAX_VISIBLE_SECTIONS = 3;
 
   /**
    * Checks if an input is student or staff. Used to stop linter errors
@@ -143,28 +202,6 @@ export function Table({
     );
   };
 
-  const renderSections = (input: Student) => {
-    const visible = input.enrolledSections.slice(0, MAX_VISIBLE_SECTIONS);
-    const remaining = input.enrolledSections.length - visible.length;
-
-    return (
-      <>
-        {visible.map((cid) => {
-          const res = sections.find((obj) => obj._id === cid);
-          return (
-            <div key={cid} className={styles.blockItem}>
-              {res ? res.code : "Error"}
-            </div>
-          );
-        })}
-
-        {remaining > 0 && (
-          <div className={`${styles.blockItem} ${styles.moreItem}`}>+{remaining}</div>
-        )}
-      </>
-    );
-  };
-
   const renderCheckbox = (input: Student | User) => {
     const id = input._id;
     const checked = selected.has(id);
@@ -198,6 +235,13 @@ export function Table({
   const renderRow = (input: Student | User) => {
     // if parent email exists, its a student, otherwise its staff
     if (isStudent(input)) {
+      const sectionLabels = input.enrolledSections.map((cid) => {
+        const res = sections.find((obj) => obj._id === cid);
+        return res ? res.code : "Error";
+      });
+      // TODO: replace with section color
+      const sectionColors = input.enrolledSections.map(() => "teal");
+
       return (
         <>
           {renderCheckbox(input)}
@@ -206,7 +250,9 @@ export function Table({
             <div className={styles.hoverWrap}>{renderHoverBtn(input)}</div>
           </td>
           <td className={styles.textItem}>{input.parentContact.email}</td>
-          <td className={styles.blockItems}>{renderSections(input)}</td>
+          <td>
+            <DynamicBlockDisplay labels={sectionLabels} colors={sectionColors} />
+          </td>
           <td className={styles.notesItem}>{input.comments}</td>
         </>
       );

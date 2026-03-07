@@ -19,7 +19,7 @@ import { getAllSections } from "@/src/api/sections";
 import { archiveStudents, deleteStudents, getAllStudents } from "@/src/api/students";
 import { Modal } from "@/src/components/Modal";
 import { StudentForm } from "@/src/components/studentform/StudentForm";
-import styles from "@/src/components/studentPage.module.css";
+import styles from "@/src/components/studentStaffPage.module.css";
 import { Table } from "@/src/components/Table";
 
 type BannerState = {
@@ -456,15 +456,26 @@ export default function Students() {
           child={
             <StudentForm
               mode="create"
-              onSubmit={() => {
+              onSubmit={(new_stud: Student) => {
                 setAddOpen(false);
                 getAllStudents()
                   .then((result) => {
                     if (result.success) setStudents(result.data);
+                    const message = `Student ${new_stud.displayName} was added successfully`;
+                    setBanner({
+                      type: "success",
+                      message,
+                      timestamp: Date.now(),
+                    });
                   })
-                  .catch((error) =>
-                    setErrorMessage(error instanceof Error ? error.message : String(error)),
-                  )
+                  .catch((error) => {
+                    setErrorMessage(error instanceof Error ? error.message : String(error));
+                    setBanner({
+                      type: "success",
+                      message: "Error: Could not add student",
+                      timestamp: Date.now(),
+                    });
+                  })
                   .finally(() => setLoading(false));
               }}
               onCancel={() => setAddOpen(false)}
