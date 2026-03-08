@@ -92,7 +92,7 @@ export default function Attendance() {
       const month = String(d.getMonth() + 1).padStart(2, "0");
       const day = String(d.getDate()).padStart(2, "0");
       const localSessionDate = `${year}-${month}-${day}`;
-      
+
       return localSessionDate === activeDate;
     });
 
