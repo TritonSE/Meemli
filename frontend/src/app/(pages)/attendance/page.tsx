@@ -62,13 +62,12 @@ export default function Attendance() {
     void load();
   }, [activeSectionId]);
 
-  // Derive available dates from the loaded sessions for this section
+  // Derive available dates using local time
   const availableDates = sessionList.map((s) => {
     const d = new Date(s.sessionDate);
-    // Use UTC values to avoid timezone shift
-    const year = d.getUTCFullYear();
-    const month = String(d.getUTCMonth() + 1).padStart(2, "0");
-    const day = String(d.getUTCDate()).padStart(2, "0");
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   });
 
@@ -88,8 +87,13 @@ export default function Attendance() {
     if (!activeSectionId || !activeDate) return;
 
     const match = sessionList.find((s) => {
-      const sDate = new Date(s.sessionDate).toISOString().split("T")[0];
-      return sDate === activeDate;
+      const d = new Date(s.sessionDate);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      const localSessionDate = `${year}-${month}-${day}`;
+      
+      return localSessionDate === activeDate;
     });
 
     if (match) {
