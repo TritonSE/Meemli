@@ -252,18 +252,14 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
             });
 
           const userId = result.data._id;
-          console.log("Created user with ID:", userId);
 
           for (const sectionId of programs.map((program) => program.value)) {
             getSectionById(sectionId)
               .then((sectionResult) => {
                 if (sectionResult.success) {
                   const section = sectionResult.data;
-                  console.log(`Fetched section ${sectionId}:`, section);
                   const updatedTeachers = [...section.teachers, userId];
-                  console.log(`Updated teachers for section ${sectionId}:`, updatedTeachers);
                   const updatedSection = { ...section, teachers: updatedTeachers };
-                  console.log(`Updating section ${sectionId} with:`, updatedSection);
                   updateSection(updatedSection).catch((error) => {
                     console.error(`Error updating section ${sectionId}:`, error);
                   });

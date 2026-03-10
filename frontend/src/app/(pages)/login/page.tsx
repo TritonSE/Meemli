@@ -94,6 +94,7 @@ export default function LoginPage() {
         }
       })
       .catch((error) => {
+        setFormErrors({ invalidEmailOrPassword: "Invalid email or password" });
         console.error("Error signing in:", error);
       })
       .finally(() => {
@@ -176,6 +177,7 @@ export default function LoginPage() {
           </button>
 
           <ErrorMessage message={formErrors.password} />
+          <ErrorMessage message={formErrors.invalidEmailOrPassword} />
         </div>
 
         <div className={styles.actions}>
