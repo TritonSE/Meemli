@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Modal } from "../Modal";
 import { MultiStepForm } from "../MultiStep/MultiStepForm";
 import { MultiSelectDropdown } from "../Studentform/MultiSelectDropdown";
+import { spawnSuccessDialog } from "../SuccessPopup/SuccessPopup";
 
 // Section Form Modal 'Steps'
 import { StepOneClassDetails } from "./SectionFormSteps/StepOneClassDetails";
@@ -140,8 +141,11 @@ export function CreateSectionFlow({ active, onClose }: SectionFlowProps) {
 
       if (response.success) {
         // Clear local storage
+
+        const successMessage = `${response.data.code} Successfully Created`;
         localStorage.removeItem(storageKey);
 
+        spawnSuccessDialog(successMessage);
         // Close the modal and redirect ONLY on success
         onClose();
       }
@@ -156,23 +160,25 @@ export function CreateSectionFlow({ active, onClose }: SectionFlowProps) {
   }
 
   return (
-    <Modal
-      onExit={onClose}
-      child={
-        <MultiStepForm<SectionDraft>
-          schema={sectionDraftSchema}
-          defaultValues={INITIAL_SECTION_DATA}
-          steps={classFormSteps}
-          mode="create"
-          storageKey="section_draft_storage"
-          formTitle="Class"
-          // 2. Wire up the onSubmit prop to your internal function
-          onSubmit={(finalData) => {
-            void onFinalSubmit(finalData, "section_draft_storage");
-          }}
-          onCancel={onClose}
-        />
-      }
-    />
+    <>
+      <Modal
+        onExit={onClose}
+        child={
+          <MultiStepForm<SectionDraft>
+            schema={sectionDraftSchema}
+            defaultValues={INITIAL_SECTION_DATA}
+            steps={classFormSteps}
+            mode="create"
+            storageKey="section_draft_storage"
+            formTitle="Class"
+            // 2. Wire up the onSubmit prop to your internal function
+            onSubmit={(finalData) => {
+              void onFinalSubmit(finalData, "section_draft_storage");
+            }}
+            onCancel={onClose}
+          />
+        }
+      />
+    </>
   );
 }

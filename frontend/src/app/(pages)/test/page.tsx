@@ -10,6 +10,7 @@ import { CreateSectionFlow } from "@/src/components/SectionForm/SectionForm";
 // Components
 import { StudentCard } from "@/src/components/StudentCard/StudentCard";
 import { StudentProfileModal } from "@/src/components/StudentProfileView/StudentProfileView";
+import { spawnSuccessDialog } from "@/src/components/SuccessPopup/SuccessPopup";
 import TestStudentForm from "@/src/pages/TestStudentForm";
 
 export default function Test() {
@@ -199,6 +200,9 @@ export default function Test() {
           {" "}
           fetch all sections{" "}
         </button>
+
+        <br></br>
+        <button onClick={() => spawnSuccessDialog("success")}> SPAWN SUCESS SDIALOG </button>
 
         <CreateSectionFlow
           active={sectionModalState === "active"}

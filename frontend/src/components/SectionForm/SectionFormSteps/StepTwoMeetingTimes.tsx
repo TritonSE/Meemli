@@ -1,6 +1,7 @@
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
+import { DateSelect } from "../../dateSelect";
 import { MultiSelect } from "../../MultiSelect/MultiSelect";
 
 import styles from "./StepTwoMeetingTimes.module.css";
@@ -41,7 +42,6 @@ const WEEKDAYS = [
 
 export function StepTwoMeetingTimes() {
   const {
-    register,
     control,
     formState: { errors },
   } = useFormContext<SectionDraft>();
@@ -50,19 +50,28 @@ export function StepTwoMeetingTimes() {
     <div className={`${styles.stepContent} ${styles.dateTimeForm}`}>
       <div className={styles.formElement}>
         <label> Date Duration </label>
-        <div>
-          {/* We can use standard register here since they are native HTML inputs */}
-          <input type="date" {...register("startDate")} className={styles.startInput} />
-          to
-          <input type="date" {...register("endDate")} className={styles.startInput} />
+
+        {/* Replaced native date inputs with Controller + DateSelect */}
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <Controller
+            name="startDate"
+            control={control}
+            render={({ field }) => <DateSelect value={field.value} onChange={field.onChange} />}
+          />
+          <span>to</span>
+          <Controller
+            name="endDate"
+            control={control}
+            render={({ field }) => <DateSelect value={field.value} onChange={field.onChange} />}
+          />
         </div>
+
         {(errors.startDate || errors.endDate) && (
           <span style={{ color: "red" }}>Please select valid dates.</span>
         )}
       </div>
 
       <div className={styles.dateTimeGroup}>
-        {/* Using Controller to bridge react-hook-form with your custom MultiSelect */}
         <Controller
           name="days"
           control={control}
@@ -71,8 +80,8 @@ export function StepTwoMeetingTimes() {
               options={WEEKDAYS}
               label="Meeting Time"
               placeholder="Days"
-              value={field.value} // The current selected array of IDs
-              onChange={field.onChange} // Updates the form state
+              value={field.value}
+              onChange={field.onChange}
               required={true}
               fitContent={true}
             />
@@ -87,8 +96,8 @@ export function StepTwoMeetingTimes() {
             <MultiSelect
               options={TIME_INTERVALS}
               placeholder="Start Time"
-              value={field.value ? [field.value] : []} // Assuming MultiSelect expects an array
-              onChange={(val) => field.onChange(val[0] || "")} // Extract single value if needed
+              value={field.value ? [field.value] : []}
+              onChange={(val) => field.onChange(val[0] || "")}
               required={true}
               fitContent={true}
             />
