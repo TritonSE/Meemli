@@ -3,39 +3,36 @@ import { useEffect, useState } from "react";
 
 import styles from "./select.module.css";
 
-import type { AttendanceSession } from "@/src/api/attendance";
+import type { Section } from "@/src/api/sections";
 
 export function SectionSelect({
-  sessions,
+  sections,
   value,
   onChange,
 }: {
-  sessions: AttendanceSession[];
+  sections: Section[];
   value: string;
   onChange: (id: string) => void;
 }) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const uniqueSections = Array.from(
-    new Map(sessions.map((s) => [s.section?._id, s.section])).values(),
-  ).filter(Boolean);
   useEffect(() => {
-    if (!value && uniqueSections.length > 0) {
-      onChange(uniqueSections[0]?._id || "");
+    if (!value && sections.length > 0) {
+      onChange(sections[0]._id);
     }
-  }, [uniqueSections, value, onChange]);
+  }, [sections, value, onChange]);
 
-  const selectedSection = uniqueSections.find((sec) => sec?._id === value);
+  const selectedSection = sections.find((sec) => sec._id === value);
 
-  const hasSessions = uniqueSections.length > 0;
-  const displayText = hasSessions
+  const hasSections = sections.length > 0;
+  const displayText = hasSections
     ? selectedSection
       ? selectedSection.code
       : "Select Section"
-    : ""; // Blank if no sessions
+    : "";
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
-    if (hasSessions) setAnchorEl(event.currentTarget);
+    if (hasSections) setAnchorEl(event.currentTarget);
   };
   const handleClose = () => setAnchorEl(null);
 
@@ -43,16 +40,16 @@ export function SectionSelect({
     <div
       className={`
     ${styles.datePickerWrapper} 
-    ${!hasSessions ? styles.blankState : ""} 
+    ${!hasSections ? styles.blankState : ""} 
     ${anchorEl ? styles.isOpen : ""}
   `}
     >
       <div
         className={styles.visualLabel}
         onClick={handleOpen}
-        style={{ cursor: hasSessions ? "pointer" : "default" }}
+        style={{ cursor: hasSections ? "pointer" : "default" }}
       >
-        {hasSessions && (
+        {hasSections && (
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -109,17 +106,17 @@ export function SectionSelect({
         }}
       >
         <div className={styles.MenuList}>
-          {uniqueSections.map((sec) => (
+          {sections.map((sec) => (
             <div
-              key={sec?._id}
-              className={`${styles.MenuItem} ${value === sec?._id ? styles.activeItem : ""}`}
+              key={sec._id}
+              className={`${styles.MenuItem} ${value === sec._id ? styles.activeItem : ""}`}
               onClick={() => {
-                onChange(sec?._id || "");
+                onChange(sec._id);
                 handleClose();
               }}
             >
-              <span className={styles.itemText}>{sec?.code}</span>
-              {value === sec?._id && (
+              <span className={styles.itemText}>{sec.code}</span>
+              {value === sec._id && (
                 <div className={styles.checkPlaceholder}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

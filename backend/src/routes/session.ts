@@ -6,6 +6,7 @@ import * as SessionValidator from "../validators/session";
 const router = express.Router();
 
 router.get("/", SessionController.getAllSessions);
+router.get("/section/:sectionId", SessionController.getSessionsBySectionId);
 router.get("/:id", SessionController.getSession);
 
 router.post("/", SessionValidator.createSession, SessionController.createSession);

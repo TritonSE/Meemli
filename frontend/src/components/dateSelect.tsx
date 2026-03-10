@@ -6,13 +6,28 @@ import "react-day-picker/dist/style.css";
 
 import styles from "./select.module.css";
 
-export function DateSelect({ value, onChange }: { value: string; onChange: (d: string) => void }) {
+export function DateSelect({
+  value,
+  onChange,
+  availableDates,
+}: {
+  value: string;
+  onChange: (d: string) => void;
+  availableDates: string[];
+}) {
   const parsedValue = value ? parse(value, "yyyy-MM-dd", new Date()) : new Date();
   const validValue = isValid(parsedValue) ? parsedValue : new Date();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [tempDate, setTempDate] = useState<Date | undefined>(undefined);
-  const [currentMonth, setCurrentMonth] = useState<Date>(validValue); // Now it knows what validValue is!
+  const [currentMonth, setCurrentMonth] = useState<Date>(validValue);
+
+  // Disable any day that isn't in the availableDates list
+  const isDisabled = (date: Date) => {
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    const todayStr = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(new Date().getDate()).padStart(2, "0")}`;
+    return dateStr !== todayStr && !availableDates.includes(dateStr);
+  };
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setTempDate(validValue);
@@ -107,6 +122,7 @@ export function DateSelect({ value, onChange }: { value: string; onChange: (d: s
             onSelect={setTempDate}
             month={currentMonth}
             onMonthChange={setCurrentMonth}
+            disabled={isDisabled}
             className={styles.customCalendar}
           />
 
