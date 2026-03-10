@@ -7,15 +7,9 @@ const COLOR_REGEX = /^#([0-9a-f]{3}){1,2}$/i; // #RGB or #RRGGBB
 
 const validateCode = body("code").notEmpty().withMessage("Code is required");
 
-const validateProgram = body("program")
-  .notEmpty()
-  .withMessage("Program is required")
-  .isMongoId()
-  .withMessage("Program must be a valid MongoDB ObjectID");
-
 export const validateTeachers: ValidationChain[] = [
   body("teachers").isArray().withMessage("Teachers must be an array"),
-  body("teachers.*").isMongoId().withMessage("Each teacher must be a valid MongoDB ObjectID"),
+  body("teachers.*").isString().withMessage("Each teacher must be a string"),
 ];
 
 export const validateEnrolledStudents: ValidationChain[] = [
@@ -134,7 +128,6 @@ export const createSectionValidator = [
   validateDays,
   validateEndTime,
   ...validateEnrolledStudents,
-  validateProgram,
   validateStartTime,
   makeStartDateValidator(),
   makeEndDateValidator(),
@@ -149,7 +142,6 @@ export const updateSectionValidator = [
   validateDays.optional(),
   validateEndTime.optional(),
   ...validateEnrolledStudents.map((v) => v.optional()),
-  validateProgram.optional(),
   validateStartTime.optional(),
   makeStartDateValidator(),
   makeEndDateValidator(),

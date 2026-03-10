@@ -9,25 +9,38 @@ type Option = {
 
 export const MultiSelect: React.FC<{
   options: Option[];
-  label: string;
+  value?: string[];
+  onChange?: (value: string[]) => void;
+  label?: string;
+  withChips?: boolean;
   required?: boolean;
-  placeholder?: string; // Added placeholder prop
+  fitContent?: boolean;
+  placeholder?: string;
 }> = ({
   options,
+  value = [], // Default to empty array
+  onChange,
   label,
   required,
-  placeholder = "Select...", // Destructured with default value
+  withChips = false,
+  fitContent = false,
+  placeholder = "Select...",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState<Option[]>([]);
   const [search, setSearch] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Derive the full option objects based on the selected IDs passed via `value`
+  const selectedOptions = useMemo(() => {
+    return options.filter((opt) => value.includes(opt.id));
+  }, [options, value]);
 
   // filter options based on search string
   const filteredOptions = useMemo(() => {
     return options.filter((opt) => opt.label.toLowerCase().includes(search.toLowerCase()));
   }, [options, search]);
 
+  // click outside to close
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (!containerRef.current?.contains(e.target as Node)) setIsOpen(false);
@@ -42,32 +55,48 @@ export const MultiSelect: React.FC<{
   }, [isOpen]);
 
   const toggleOption = (option: Option) => {
-    setSelected((prev) =>
-      prev.find((o) => o.id === option.id)
-        ? prev.filter((o) => o.id !== option.id)
-        : [...prev, option],
-    );
+    if (!onChange) return; // Safety check
+
+    const isCurrentlySelected = value.includes(option.id);
+
+    if (isCurrentlySelected) {
+      // Remove the ID if it's already selected
+      onChange(value.filter((id) => id !== option.id));
+    } else {
+      // Add the ID if it's not selected
+      onChange([...value, option.id]);
+    }
   };
 
   return (
     <div className={styles.container} ref={containerRef}>
-      <label className={styles.label}>
-        {label} {required && <span className={styles.required}>*</span>}
-      </label>
+      {label && (
+        <label className={styles.label}>
+          {label} {required && <span className={styles.required}>*</span>}
+        </label>
+      )}
 
       <div
-        className={styles.control}
+        className={`${styles.control} ${fitContent ? styles.fitContent : ""}`}
         role="combobox"
         aria-expanded={isOpen}
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className={styles.values}>
-          {selected.length > 0 ? (
-            selected.map((s) => (
-              <span key={s.id} className={styles.chip}>
-                {s.label}
+          {selectedOptions.length > 0 ? (
+            withChips ? (
+              // Render as chips
+              selectedOptions.map((s) => (
+                <span key={s.id} className={styles.chip}>
+                  {s.label}
+                </span>
+              ))
+            ) : (
+              // Render as comma-separated string
+              <span className={styles.selectedText}>
+                {selectedOptions.map((s) => s.label).join(", ")}
               </span>
-            ))
+            )
           ) : (
             <span className={styles.placeholder}>{placeholder}</span>
           )}
@@ -93,7 +122,7 @@ export const MultiSelect: React.FC<{
           <div className={styles.listContainer}>
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => {
-                const isSelected = selected.some((s) => s.id === option.id);
+                const isSelected = value.includes(option.id);
                 return (
                   <div
                     key={option.id}
@@ -103,7 +132,9 @@ export const MultiSelect: React.FC<{
                       toggleOption(option);
                     }}
                   >
-                    <span className={styles.chip}>{option.label}</span>
+                    <span className={withChips ? styles.chip : styles.optionLabel}>
+                      {option.label}
+                    </span>
                     {isSelected && <span className={styles.checkIcon}>✓</span>}
                   </div>
                 );

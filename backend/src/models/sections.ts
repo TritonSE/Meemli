@@ -5,14 +5,14 @@ import type { Document, Types } from "mongoose";
 // Type definition for Section documents
 export type SectionDoc = Document & {
   code: string;
-  teachers: Types.ObjectId[];
+  teachers: string[];
   enrolledStudents: Types.ObjectId[];
   startTime: string;
   endTime: string;
   startDate: string;
   endDate: string;
   archived: boolean;
-  color: string
+  color: string;
   days: string[];
 };
 
@@ -24,7 +24,7 @@ const sectionSchema = new mongoose.Schema(
       required: true, // Code must be provided
     },
     teachers: {
-      type: [mongoose.Schema.Types.ObjectId],
+      type: [String],
       ref: "User", // Reference to the User model
       required: true, // Must contain at least one teacher
       default: [], // Default to an empty array if no teachers are added

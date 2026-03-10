@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import type { Student } from "@/src/api/students";
 
+import { getAllSections } from "@/src/api/sections";
 // API & Types
 import { getStudent } from "@/src/api/students";
 import { CreateSectionFlow } from "@/src/components/SectionForm/SectionForm";
@@ -171,10 +172,33 @@ export default function Test() {
           onClick={() => {
             toggleSection();
           }}
+          style={{
+            border: "1px solid var(--grey-200)",
+            padding: "0.5rem 0.9rem",
+            borderRadius: "8px",
+            marginTop: "20px",
+            cursor: "pointer",
+          }}
         >
           Click to open section
         </button>
         <br />
+
+        <button
+          onClick={() => {
+            void (async () => {
+              const result = await getAllSections();
+              if (result.success) {
+                console.info("Sections List:", result.data);
+              } else {
+                console.error("Failed to fetch sections:", result.error);
+              }
+            })();
+          }}
+        >
+          {" "}
+          fetch all sections{" "}
+        </button>
 
         <CreateSectionFlow
           active={sectionModalState === "active"}

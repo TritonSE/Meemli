@@ -1,41 +1,146 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 
 import { MultiSelect } from "../../MultiSelect/MultiSelect";
 
 import styles from "./StepThreeEnrolled.module.css";
 
-export function StepThreeEnrolled() {
-  const STUDENT_DATA = [
-    { id: "1", label: "Joe Mama" },
-    { id: "2", label: "Jill Mama" },
-    { id: "3", label: "John Smith" },
-    { id: "4", label: "Jane Doe" },
-    { id: "5", label: "Billy Jean" },
-  ];
+// TODO: Update this import path to where your schema is defined
+import type { SectionDraft } from "../SectionForm";
+import type { Student } from "@/src/api/students";
+import type { User } from "@/src/api/users";
 
-  const TEACHER_DATA = [
-    { id: "1", label: "Mr. Anderson" },
-    { id: "2", label: "Ms. Johnson" },
-  ];
+import { getAllStudents } from "@/src/api/students";
+import { getAllTeachers } from "@/src/api/users";
+
+// Moved outside so it isn't redefined on every render
+export type DropdownOption = {
+  id: string;
+  label: string;
+};
+
+export function StepThreeEnrolled() {
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext<SectionDraft>();
+
+  const [studentOptions, setStudentOptions] = useState<DropdownOption[]>([]);
+  const [teacherOptions, setTeacherOptions] = useState<DropdownOption[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDropdownData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        // Fetch both at the exact same time
+        const [studentsResponse, teachersResponse] = await Promise.all([
+          getAllStudents(),
+          getAllTeachers(),
+        ]);
+
+        // Process Students
+        if (studentsResponse.success && Array.isArray(studentsResponse.data)) {
+          const formattedOptions = studentsResponse.data.map((student: Student) => ({
+            id: String(student._id || ""),
+            label: String(student.displayName || "Unknown Student"),
+          }));
+
+          setStudentOptions(formattedOptions);
+        } else {
+          setStudentOptions([]);
+        }
+
+        // Process Teachers
+        if (teachersResponse.success && Array.isArray(teachersResponse.data)) {
+          // Filter out admins just as a safety net
+          const onlyTeachers = teachersResponse.data.filter((user: User) => !user.admin);
+
+          const formattedTeacherOptions = onlyTeachers.map((user: User) => ({
+            id: String(user._id || ""),
+            label: `${user.firstName} ${user.lastName}`.trim() || "Unknown Teacher",
+          }));
+
+          console.log(formattedTeacherOptions);
+          setTeacherOptions(formattedTeacherOptions);
+        } else {
+          setTeacherOptions([]);
+        }
+      } catch (err) {
+        console.error("Error fetching dropdown data:", err);
+        setError("Failed to load students and teachers.");
+        setStudentOptions([]);
+        setTeacherOptions([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void fetchDropdownData();
+  }, []);
+
+  // Basic Loading UI
+  if (isLoading) {
+    return (
+      <div className={`${styles.stepContent} ${styles.studentTeacherForm}`}>
+        <p>Loading dropdowns...</p>
+      </div>
+    );
+  }
+
+  // Basic Error UI
+  if (error) {
+    return (
+      <div className={`${styles.stepContent} ${styles.studentTeacherForm}`}>
+        <p style={{ color: "red" }}>{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className={`${styles.stepContent} ${styles.studentTeacherForm}`}>
       <div className={styles.formElement}>
-        <MultiSelect
-          options={STUDENT_DATA}
-          label="Students"
-          placeholder="Search or select student name"
-          required={true}
+        <Controller
+          name="enrolledStudents"
+          control={control}
+          render={({ field }) => (
+            <MultiSelect
+              options={studentOptions}
+              label="Students"
+              placeholder="Search or select student name"
+              value={field.value} // Array of student ObjectIDs
+              onChange={field.onChange}
+              withChips={true}
+              fitContent={false}
+              required={false}
+            />
+          )}
         />
+        {errors.enrolledStudents && (
+          <span style={{ color: "red" }}>{errors.enrolledStudents.message}</span>
+        )}
       </div>
 
       <div className={styles.formElement}>
-        <MultiSelect
-          options={TEACHER_DATA}
-          label="Teachers"
-          placeholder="Search or select teacher name"
-          required={true}
+        <Controller
+          name="teachers"
+          control={control}
+          render={({ field }) => (
+            <MultiSelect
+              options={teacherOptions}
+              label="Teachers"
+              placeholder="Search or select teacher name"
+              value={field.value} // Array of teacher ObjectIDs
+              onChange={field.onChange}
+              withChips={true}
+              required={true}
+            />
+          )}
         />
+        {errors.teachers && <span style={{ color: "red" }}>{errors.teachers.message}</span>}
       </div>
     </div>
   );

@@ -1,9 +1,10 @@
 .container {
   display: flex;
   flex-direction: column;
+  position: relative;
   gap: 8px;
   font-family: "Inter", sans-serif;
-  width: 100%;
+  width: fit-content;
   max-width: 400px;
 
   .label {
@@ -18,14 +19,12 @@
   }
 
   .control {
-    anchor-name: --select-anchor;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 8px 12px;
     border: 1px solid var(--grey-300);
     border-radius: 8px;
-    background: white;
     cursor: pointer;
     min-height: 48px;
     transition: border-color 0.2s;
@@ -58,9 +57,9 @@
   .popover {
     position: absolute;
     position-anchor: --select-anchor;
-    top: anchor(bottom);
-    left: anchor(left);
-    right: anchor(right);
+    top: calc(100% + 4px);
+    left: 0;
+    width: 100%;
     margin-top: 4px;
     background: white;
     border-radius: 12px;
@@ -147,4 +146,9 @@
   font-weight: 600;
   color: var(--primary-700);
   white-space: nowrap;
+}
+
+.fitContent {
+  min-width: 7rem;
+  width: fit-content;
 }
