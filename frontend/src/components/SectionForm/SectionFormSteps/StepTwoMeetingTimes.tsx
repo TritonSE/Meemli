@@ -49,7 +49,11 @@ export function StepTwoMeetingTimes() {
   return (
     <div className={`${styles.stepContent} ${styles.dateTimeForm}`}>
       <div className={styles.formElement}>
+        <div>
         <label> Date Duration </label>
+        <span className={styles.required}>*</span>
+        </div>
+
 
         {/* Replaced native date inputs with Controller + DateSelect */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>

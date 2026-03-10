@@ -118,6 +118,7 @@ export const MultiSelect: React.FC<{
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onClick={(e) => e.stopPropagation()} // prevent closing on click
+            tabIndex={0}
           />
           <div className={styles.listContainer}>
             {filteredOptions.length > 0 ? (

@@ -202,7 +202,7 @@ export default function Test() {
         </button>
 
         <br></br>
-        <button onClick={() => spawnSuccessDialog("success")}> SPAWN SUCESS SDIALOG </button>
+        <button onClick={() => spawnSuccessDialog("success")}> SPAWN SUCESSS DIALOG </button>
 
         <CreateSectionFlow
           active={sectionModalState === "active"}

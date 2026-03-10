@@ -102,28 +102,7 @@ export function StepThreeEnrolled() {
 
   return (
     <div className={`${styles.stepContent} ${styles.studentTeacherForm}`}>
-      <div className={styles.formElement}>
-        <Controller
-          name="enrolledStudents"
-          control={control}
-          render={({ field }) => (
-            <MultiSelect
-              options={studentOptions}
-              label="Students"
-              placeholder="Search or select student name"
-              value={field.value} // Array of student ObjectIDs
-              onChange={field.onChange}
-              withChips={true}
-              fitContent={false}
-              required={false}
-            />
-          )}
-        />
-        {errors.enrolledStudents && (
-          <span style={{ color: "red" }}>{errors.enrolledStudents.message}</span>
-        )}
-      </div>
-
+      
       <div className={styles.formElement}>
         <Controller
           name="teachers"
@@ -141,6 +120,27 @@ export function StepThreeEnrolled() {
           )}
         />
         {errors.teachers && <span style={{ color: "red" }}>{errors.teachers.message}</span>}
+      </div>
+      <div className={styles.formElement}>
+        <Controller
+          name="enrolledStudents"
+          control={control}
+          render={({ field }) => (
+            <MultiSelect
+              options={studentOptions}
+              label="Students"
+              placeholder="Search or select student name"
+              value={field.value} // Array of student ObjectIDs
+              onChange={field.onChange}
+              withChips={true}
+              fitContent={false}
+              required={true}
+            />
+          )}
+        />
+        {errors.enrolledStudents && (
+          <span style={{ color: "red" }}>{errors.enrolledStudents.message}</span>
+        )}
       </div>
     </div>
   );

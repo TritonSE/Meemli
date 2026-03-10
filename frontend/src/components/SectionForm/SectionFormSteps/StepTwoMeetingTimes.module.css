@@ -23,7 +23,16 @@
     flex-direction: column;
 
     label {
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.5rem;
     }
+  }
+
+  .required {
+    color: var(--error-700);
+  }
+
+  .label {
+    margin-bottom: 0.5rem;
+    color: var(--grey-700);
   }
 }

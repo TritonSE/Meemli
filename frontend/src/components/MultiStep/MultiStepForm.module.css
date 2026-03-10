@@ -16,6 +16,12 @@
     color: var(--grey-700);
   }
 
+  .editTabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
   .buttonRow {
     display: flex;
     margin-top: auto;
@@ -23,6 +29,31 @@
 
     & > button:first-of-type {
       margin-right: 1rem;
+    }
+  }
+
+  .modalContent {
+    h3 {
+      font-weight: 500;
+    }
+
+    p {
+      margin-bottom: 1rem;
+    }
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+  }
+
+  .closeButton {
+    position: absolute;
+    inset-inline-end: 20px;
+    inset-block-start: 20px;
+    border-radius: 50%;
+
+    &:hover {
+      cursor: pointer;
+      background-color: var(--color-gray-200);
     }
   }
 }

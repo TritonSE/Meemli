@@ -14,6 +14,7 @@ import { StepThreeEnrolled } from "./SectionFormSteps/StepThreeEnrolled";
 import { StepTwoMeetingTimes } from "./SectionFormSteps/StepTwoMeetingTimes";
 
 import { createSection } from "@/src/api/sections";
+import { updateSection } from "@/src/api/sections";
 
 // define regex to match backend requirements
 const COLOR_REGEX = /^#(?:[0-9a-f]{3}){1,2}$/i;
@@ -41,7 +42,7 @@ export type SectionDraft = z.infer<typeof sectionDraftSchema>;
 // default schema data
 export const INITIAL_SECTION_DATA: SectionDraft = {
   code: "",
-  color: "#e0e0e0", // default to the first color in your list
+  color: "", // default to the first color in your list
   startDate: "",
   endDate: "",
   days: [],
@@ -52,13 +53,13 @@ export const INITIAL_SECTION_DATA: SectionDraft = {
 };
 
 export const CLASS_COLORS = [
-  "#e0e0e0",
-  "#d84315",
-  "#ffca28",
-  "#00acc1",
-  "#d87a56",
-  "#455a64",
-  "#26a69a",
+  "#b6b8ba",
+  "#17aac4",
+  "#25ca7d",
+  "#416f7e",
+  "#d54525",
+  "#da7a51",
+  "#ffbe31",
 ];
 
 // 2. The Steps Configuration for MultiStepForm
@@ -66,19 +67,22 @@ export const CLASS_COLORS = [
 export const classFormSteps = [
   {
     id: "step-1",
-    title: "Class Details",
+    title: "General",
+    description: "Fill out class name and choose color",
     fields: ["code", "color"],
     component: <StepOneClassDetails />,
   },
   {
     id: "step-2",
-    title: "Meeting Times",
+    title: "Times",
+    description: "Fill out class meeting times and duration",
     fields: ["startDate", "endDate", "days", "startTime", "endTime"] as const,
     component: <StepTwoMeetingTimes />,
   },
   {
     id: "step-3",
-    title: "Enrolled",
+    title: "People",
+    description: "Fill out class teachers and students",
     fields: ["teachers", "enrolledStudents"] as const,
     component: <StepThreeEnrolled />,
   },
@@ -168,7 +172,7 @@ export function CreateSectionFlow({ active, onClose }: SectionFlowProps) {
             schema={sectionDraftSchema}
             defaultValues={INITIAL_SECTION_DATA}
             steps={classFormSteps}
-            mode="create"
+            mode="edit"
             storageKey="section_draft_storage"
             formTitle="Class"
             // 2. Wire up the onSubmit prop to your internal function

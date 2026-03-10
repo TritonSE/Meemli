@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   type FieldValues,
   FormProvider,
@@ -18,6 +18,8 @@ import { ProgressBar } from "../ProgressBar";
 import styles from "./MultiStepForm.module.css";
 
 import type { ZodType } from "zod";
+
+import Image from "next/image";
 
 export type StepDef<T extends FieldValues> = {
   id: string;
@@ -52,18 +54,25 @@ export function MultiStepForm<T extends FieldValues>({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // FIX 1: Safe handling of null searchParams
   const currentStep = Number.parseInt(searchParams?.get("step") || "0", 10);
   const [showCancelModal, setShowCancelModal] = useState(false);
 
   const methods = useForm<T>({
-    // FIX 2: Explicit casting for the resolver
     resolver: zodResolver(schema as unknown as ZodType<T>),
     defaultValues,
     mode: "onTouched",
   });
 
   const { trigger, reset, watch, handleSubmit } = methods;
+
+  // NEW: Helper to safely clear the step from the URL without adding to history
+  const clearUrlStep = useCallback(() => {
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
+    if (params.has("step")) {
+      params.delete("step");
+      router.replace(`${pathname}?${params.toString()}`);
+    }
+  }, [searchParams, pathname, router]);
 
   // Hydrate from LocalStorage
   useEffect(() => {
@@ -75,10 +84,15 @@ export function MultiStepForm<T extends FieldValues>({
           reset(data);
         } catch (e) {
           console.error("Failed to hydrate form draft:", e);
+          // NEW: Reset URL if hydration fails and we are past step 0
+          if (currentStep > 0) clearUrlStep();
         }
+      } else if (currentStep > 0) {
+        // NEW: If there's no draft but the URL says we're on a later step, bump back to 0
+        clearUrlStep();
       }
     }
-  }, [mode, reset, storageKey]);
+  }, [mode, reset, storageKey, currentStep, clearUrlStep]);
 
   // Save to LocalStorage
   useEffect(() => {
@@ -91,7 +105,6 @@ export function MultiStepForm<T extends FieldValues>({
   }, [watch, mode, storageKey]);
 
   const updateUrlStep = (newStep: number) => {
-    // FIX 1 again: Safe handling here
     const params = new URLSearchParams(searchParams?.toString() ?? "");
     params.set("step", newStep.toString());
     router.push(`${pathname}?${params.toString()}`);
@@ -112,12 +125,14 @@ export function MultiStepForm<T extends FieldValues>({
 
   const onFinalSubmit = async (data: T) => {
     localStorage.removeItem(storageKey);
+    clearUrlStep(); // NEW: Clear the step param on submit
     onSubmit(data);
   };
 
   const confirmCancel = () => {
     localStorage.removeItem(storageKey);
     setShowCancelModal(false);
+    clearUrlStep(); // NEW: Clear the step param on cancel
     onCancel();
   };
 
@@ -126,6 +141,9 @@ export function MultiStepForm<T extends FieldValues>({
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onFinalSubmit)} className={styles.formPage}>
+        <button className={styles.closeButton} onClick={() => setShowCancelModal(true)} aria-label="Close modal">
+          <Image src="/icons/x.svg" alt="Close" width={24} height={24} />
+        </button>
         <div className={styles.reused}>
           {mode === "create" && <ProgressBar currentStep={currentStep} totalSteps={steps.length} />}
           <div className={styles.headerSegment}>
