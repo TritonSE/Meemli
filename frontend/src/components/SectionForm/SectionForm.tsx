@@ -165,8 +165,8 @@ export function CreateSectionFlow({ active, onClose, sectionId }: SectionFlowPro
       if (response.success) {
         const successMessage = `${response.data.code} Successfully ${sectionId ? "Updated" : "Created"}`;
         localStorage.removeItem(storageKey);
-        spawnSuccessDialog(successMessage);
         onClose();
+        spawnSuccessDialog(successMessage);
         router.refresh(); // Optional: trigger a Next.js server component refresh to show new data
       }
     } catch (error) {

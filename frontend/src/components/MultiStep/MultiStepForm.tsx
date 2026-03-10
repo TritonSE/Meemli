@@ -147,6 +147,7 @@ export function MultiStepForm<T extends FieldValues>({
         className={styles.formPage}
       >
         <button
+          type="button"
           className={styles.closeButton}
           onClick={() => setShowCancelModal(true)}
           aria-label="Close modal"
