@@ -21,6 +21,7 @@
 
   .control {
     display: flex;
+    min-width: 9rem;
     align-items: center;
     justify-content: space-between;
     padding: 8px 12px;
@@ -56,16 +57,22 @@
   }
 
   .popover {
+    /* Required native resets for popover elements */
+    margin: 0;
+    border: none;
+    inset: auto;
+
+    /* Anchor Positioning Magic */
     position: absolute;
-    position-anchor: --select-anchor;
-    top: calc(100% + 4px);
-    left: 0;
-    width: 100%;
-    margin-top: 4px;
+    top: calc(anchor(bottom) + 4px);
+    left: anchor(left);
+    width: anchor-size(width);
+
+    /* Your existing styling */
     background: white;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    z-index: 100;
+    z-index: 9999;
     padding: 8px;
 
     .searchInput {

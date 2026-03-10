@@ -2,7 +2,6 @@
 import { useState } from "react";
 
 import type { Student } from "@/src/api/students";
-import type { Section } from "@/src/api/sections"
 
 import { getAllSections } from "@/src/api/sections";
 // API & Types
@@ -14,7 +13,7 @@ import { StudentProfileModal } from "@/src/components/StudentProfileView/Student
 import { spawnSuccessDialog } from "@/src/components/SuccessPopup/SuccessPopup";
 import TestStudentForm from "@/src/pages/TestStudentForm";
 
-const EDIT_SECTION_ID_EXAMPLE = "69afa73190beaafad01125f3"
+const EDIT_SECTION_ID_EXAMPLE = "69afa73190beaafad01125f3";
 
 export default function Test() {
   // --- FAKE DATA for testing student profile view ---
@@ -80,11 +79,9 @@ export default function Test() {
 
   // --- 2. STATE ---
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-  const [selectedSection, setSelectedSection] = useState<Section | null>(null);
 
   const [sectionModalState, setSectionState] = useState<"active" | null>(null);
   const [editSectionModalState, setEditSectionState] = useState<"active" | null>(null);
-
 
   function toggleSection() {
     if (sectionModalState == null) {
@@ -101,8 +98,6 @@ export default function Test() {
       setEditSectionState(null);
     }
   }
-  
-
 
   // New state for handling the "Real ID" input
   const [manualId, setManualId] = useState("");
@@ -199,7 +194,6 @@ export default function Test() {
           Click to open section
         </button>
 
-        
         <button
           onClick={() => {
             toggleEditSection();
@@ -215,7 +209,6 @@ export default function Test() {
           Click to open EDIT section {EDIT_SECTION_ID_EXAMPLE}
         </button>
 
-        
         <button
           onClick={() => {
             void (async () => {
@@ -235,7 +228,6 @@ export default function Test() {
         <br></br>
         <button onClick={() => spawnSuccessDialog("success")}> SPAWN SUCESSS DIALOG </button>
 
-        
         <CreateSectionFlow
           active={sectionModalState === "active"}
           onClose={() => toggleSection()}
@@ -245,7 +237,6 @@ export default function Test() {
           onClose={() => toggleEditSection()}
           sectionId={EDIT_SECTION_ID_EXAMPLE}
         />
-
 
         <StudentProfileModal student={selectedStudent} onClose={() => setSelectedStudent(null)} />
       </div>

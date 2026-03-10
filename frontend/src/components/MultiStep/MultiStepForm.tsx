@@ -1,8 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   type FieldValues,
   FormProvider,
@@ -18,8 +19,6 @@ import { ProgressBar } from "../ProgressBar";
 import styles from "./MultiStepForm.module.css";
 
 import type { ZodType } from "zod";
-
-import Image from "next/image";
 
 export type StepDef<T extends FieldValues> = {
   id: string;
@@ -58,7 +57,7 @@ export function MultiStepForm<T extends FieldValues>({
   const [showCancelModal, setShowCancelModal] = useState(false);
 
   const methods = useForm<T>({
-    resolver: zodResolver(schema as unknown as ZodType<T>),
+    resolver: zodResolver(schema as ZodType<T, any, any>),
     defaultValues,
     mode: "onTouched",
   });
@@ -123,7 +122,7 @@ export function MultiStepForm<T extends FieldValues>({
     if (currentStep > 0) updateUrlStep(currentStep - 1);
   };
 
-  const onFinalSubmit = async (data: T) => {
+  const onFinalSubmit = (data: T) => {
     localStorage.removeItem(storageKey);
     clearUrlStep(); // NEW: Clear the step param on submit
     onSubmit(data);
@@ -140,8 +139,18 @@ export function MultiStepForm<T extends FieldValues>({
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onFinalSubmit)} className={styles.formPage}>
-        <button className={styles.closeButton} onClick={() => setShowCancelModal(true)} aria-label="Close modal">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          void handleSubmit(onFinalSubmit)();
+        }}
+        className={styles.formPage}
+      >
+        <button
+          className={styles.closeButton}
+          onClick={() => setShowCancelModal(true)}
+          aria-label="Close modal"
+        >
           <Image src="/icons/x.svg" alt="Close" width={24} height={24} />
         </button>
         <div className={styles.reused}>
@@ -194,13 +203,14 @@ export function MultiStepForm<T extends FieldValues>({
               type="submit"
             />
           ) : (
-            <Button onClick={handleNext} kind="primary" label="Next" type="button" />
+            <Button onClick={() => void handleNext()} kind="primary" label="Next" type="button" />
           )}
         </div>
 
         {showCancelModal && (
           <Modal
             onExit={() => setShowCancelModal(false)}
+            fitContent={true}
             child={
               <div className={styles.modalContent}>
                 <h3>Are you sure you want to cancel?</h3>

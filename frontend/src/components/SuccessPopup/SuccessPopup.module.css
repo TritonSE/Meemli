@@ -1,10 +1,7 @@
 .popup {
-  all: unset;
-
   border: none;
   margin: 0;
   display: flex;
-  align-items: center;
 
   position: fixed;
   bottom: 2rem;
@@ -31,10 +28,21 @@
 
   animation: slideIn 0.3s ease-out;
 
-  span::before {
-    content: "";
-    background-image: url("/icons/check-circle.svg");
-    width: 1rem;
+  span {
+    display: inline-flex; /* Changed to inline-flex */
+    align-items: center;
+    gap: 1rem;
+
+    &::before {
+      content: ""; /* Change this to empty string */
+      background-image: url("/icons/check-circle.svg");
+      background-size: contain;
+      background-repeat: no-repeat;
+      width: 1rem;
+
+      width: 1.25rem;
+      height: 1.25rem;
+    }
   }
 }
 

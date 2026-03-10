@@ -51,8 +51,6 @@ export async function updateSection(section: UpdateSectionRequest): Promise<APIR
 
 export async function createSection(student: CreateSectionRequest): Promise<APIResult<Section>> {
   try {
-    console.log(student);
-
     const response = await post(`/sections`, student);
     const json = (await response.json()) as Section;
 

@@ -64,7 +64,6 @@ export function StepThreeEnrolled() {
             label: `${user.firstName} ${user.lastName}`.trim() || "Unknown Teacher",
           }));
 
-          console.log(formattedTeacherOptions);
           setTeacherOptions(formattedTeacherOptions);
         } else {
           setTeacherOptions([]);
@@ -102,7 +101,6 @@ export function StepThreeEnrolled() {
 
   return (
     <div className={`${styles.stepContent} ${styles.studentTeacherForm}`}>
-      
       <div className={styles.formElement}>
         <Controller
           name="teachers"

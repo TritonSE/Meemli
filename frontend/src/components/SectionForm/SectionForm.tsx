@@ -1,11 +1,9 @@
 import { useRouter } from "next/dist/client/components/navigation";
 import React, { useEffect, useState } from "react";
-import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 
 import { Modal } from "../Modal";
 import { MultiStepForm } from "../MultiStep/MultiStepForm";
-import { MultiSelectDropdown } from "../Studentform/MultiSelectDropdown";
 import { spawnSuccessDialog } from "../SuccessPopup/SuccessPopup";
 
 // Section Form Modal 'Steps'
@@ -13,8 +11,10 @@ import { StepOneClassDetails } from "./SectionFormSteps/StepOneClassDetails";
 import { StepThreeEnrolled } from "./SectionFormSteps/StepThreeEnrolled";
 import { StepTwoMeetingTimes } from "./SectionFormSteps/StepTwoMeetingTimes";
 
+import type { Path } from "react-hook-form"; // Import this if available, otherwise use keyof T
+
 // Make sure to import getSectionById and updateSection
-import { createSection, getSectionById, updateSection } from "@/src/api/sections"; 
+import { createSection, getSectionById, updateSection } from "@/src/api/sections";
 
 const COLOR_REGEX = /^#(?:[0-9a-f]{3}){1,2}$/i;
 
@@ -59,55 +59,35 @@ export const classFormSteps = [
     id: "step-1",
     title: "General",
     description: "Fill out class name and choose color",
-    fields: ["code", "color"],
+    fields: ["code", "color"] as Path<SectionDraft>[],
     component: <StepOneClassDetails />,
   },
   {
     id: "step-2",
     title: "Times",
     description: "Fill out class meeting times and duration",
-    fields: ["startDate", "endDate", "days", "startTime", "endTime"] as const,
+    fields: ["startDate", "endDate", "days", "startTime", "endTime"] as Path<SectionDraft>[],
     component: <StepTwoMeetingTimes />,
   },
   {
     id: "step-3",
     title: "People",
     description: "Fill out class teachers and students",
-    fields: ["teachers", "enrolledStudents"] as const,
+    fields: ["teachers", "enrolledStudents"] as Path<SectionDraft>[],
     component: <StepThreeEnrolled />,
   },
 ];
-
-function StepTwoStudents() {
-  const { setValue, watch } = useFormContext<SectionDraft>();
-  const enrolledStudents = watch("enrolledStudents");
-
-  return (
-    <div>
-      <MultiSelectDropdown
-        label="Enroll Students"
-        value={enrolledStudents}
-        onChange={(students) =>
-          setValue("enrolledStudents", students, {
-            shouldValidate: true,
-            shouldDirty: true,
-          })
-        }
-      />
-    </div>
-  );
-}
 
 // 1. Added optional sectionId prop
 type SectionFlowProps = {
   active: boolean;
   onClose: () => void;
-  sectionId?: string; 
+  sectionId?: string;
 };
 
 export function CreateSectionFlow({ active, onClose, sectionId }: SectionFlowProps) {
   const router = useRouter();
-  
+
   // 2. Added state to handle fetching and default values
   const [defaultValues, setDefaultValues] = useState<SectionDraft>(INITIAL_SECTION_DATA);
   const [isLoading, setIsLoading] = useState(false);
@@ -116,16 +96,20 @@ export function CreateSectionFlow({ active, onClose, sectionId }: SectionFlowPro
   useEffect(() => {
     async function fetchSectionData() {
       if (!sectionId || !active) return;
-      
+
       setIsLoading(true);
       const response = await getSectionById(sectionId);
-      
+
       if (response.success && response.data) {
         const { data } = response;
-        
+
         // Extract YYYY-MM-DD from the ISO strings for the date inputs
-        const formattedFormStartDate = data.startDate ? new Date(data.startDate).toISOString().split('T')[0] : "";
-        const formattedFormEndDate = data.endDate ? new Date(data.endDate).toISOString().split('T')[0] : "";
+        const formattedFormStartDate = data.startDate
+          ? new Date(data.startDate).toISOString().split("T")[0]
+          : "";
+        const formattedFormEndDate = data.endDate
+          ? new Date(data.endDate).toISOString().split("T")[0]
+          : "";
 
         setDefaultValues({
           code: data.code || "",
@@ -198,9 +182,9 @@ export function CreateSectionFlow({ active, onClose, sectionId }: SectionFlowPro
   if (sectionId && isLoading) {
     // You can replace this with your app's actual loading spinner component
     return (
-      <Modal 
-        onExit={onClose} 
-        child={<div className="p-8 text-center">Loading section data...</div>} 
+      <Modal
+        onExit={onClose}
+        child={<div className="p-8 text-center">Loading section data...</div>}
       />
     );
   }
@@ -213,13 +197,16 @@ export function CreateSectionFlow({ active, onClose, sectionId }: SectionFlowPro
           <MultiStepForm<SectionDraft>
             schema={sectionDraftSchema}
             // Pass the dynamic default values here
-            defaultValues={defaultValues} 
+            defaultValues={defaultValues}
             steps={classFormSteps}
-            mode={sectionId ? "edit" : "create"} 
+            mode={sectionId ? "edit" : "create"}
             storageKey={sectionId ? `section_draft_${sectionId}` : "section_draft_storage"}
             formTitle={"Class"}
             onSubmit={(finalData) => {
-              void onFinalSubmit(finalData, sectionId ? `section_draft_${sectionId}` : "section_draft_storage");
+              void onFinalSubmit(
+                finalData,
+                sectionId ? `section_draft_${sectionId}` : "section_draft_storage",
+              );
             }}
             onCancel={onClose}
           />
