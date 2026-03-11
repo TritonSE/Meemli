@@ -1,14 +1,10 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
-import { StudentCard } from "./StudentCard/StudentCard";
-import { StudentProfileModal } from "./StudentProfileView/StudentProfileView";
 import styles from "./Table.module.css";
 
-import type { Section } from "../api/sections";
-import type { Student } from "../api/students";
-// todo: fill api for staff
-// import type { User } from "../api/user";
+import type { Section } from "@/src/api/sections";
+import type { Student } from "@/src/api/students";
 import type { Dispatch, SetStateAction } from "react";
 
 import EditIcon from "@/public/icons/edit.svg";
@@ -16,10 +12,12 @@ import PrevIcon from "@/public/icons/prev.svg";
 import ShowIcon from "@/public/icons/show.svg";
 import { getAllStudents } from "@/src/api/students";
 import { Modal } from "@/src/components/Modal";
+import { StudentCard } from "@/src/components/StudentCard/StudentCard";
 import { StudentForm } from "@/src/components/studentform/StudentForm";
+import { StudentProfileModal } from "@/src/components/StudentProfileView/StudentProfileView";
 
 /**
- * Component for dynamically rendering items based on available container space
+ * Component for dynamically rendering block-like items based on available container space
  * @param labels - Array of strings to display as labels
  * @param colors - Array of colors (hex or CSS color names) corresponding to each label
  */

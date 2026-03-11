@@ -70,8 +70,12 @@ export function Dropdown({ items, placeholder }: DropdownProps) {
   );
 
   return (
-    <div className={`${styles.dropdownMenu} ${styles.secondary}`} ref={menuRef}>
-      <button onClick={() => setOpen((v) => !v)}>{selectedItem.content}</button>
+    <div
+      className={`${styles.dropdownMenu} ${styles.secondary}`}
+      ref={menuRef}
+      onClick={() => setOpen((v) => !v)}
+    >
+      {selectedItem.content}
       {open && (
         <div className={styles.dropdownPanel}>
           {dropdownItems.map(({ item, originalIndex }, index) => (

@@ -1,32 +1,23 @@
 "use client";
-import {
-  ArchiveIcon,
-  ArrowUpDown,
-  InfoIcon,
-  PlusIcon,
-  Search,
-  Trash2,
-  TriangleAlert,
-  XCircle,
-} from "lucide-react";
+import { ArchiveIcon, ArrowUpDown, PlusIcon, Search, Trash2, TriangleAlert } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 
 import type { Section } from "@/src/api/sections";
 import type { Student } from "@/src/api/students";
 import type { DropdownItem } from "@/src/components/StudentStaffTable/Dropdown";
 
-import CheckCircleIcon from "@/public/icons/check-circle.svg";
 import EditIcon from "@/public/icons/edit.svg";
 import { getAllSections } from "@/src/api/sections";
 import { archiveStudents, deleteStudents, getAllStudents } from "@/src/api/students";
 import { Modal } from "@/src/components/Modal";
 import { StudentForm } from "@/src/components/studentform/StudentForm";
-import styles from "@/src/components/studentStaffPage.module.css";
 import { Dropdown } from "@/src/components/StudentStaffTable/Dropdown";
 import { ProgramSelect } from "@/src/components/StudentStaffTable/ProgramSelect";
-import { Table } from "@/src/components/Table";
+import styles from "@/src/components/StudentStaffTable/studentStaffPage.module.css";
+import { Table } from "@/src/components/StudentStaffTable/Table";
+import { Toast } from "@/src/components/Toast/Toast";
 
-export type BannerState = {
+export type ToastState = {
   type: "success" | "error" | "neutral";
   message: string;
   timestamp: number;
@@ -50,11 +41,9 @@ export default function Students() {
   const [asc, setAsc] = useState<boolean>(true);
   const [sortBy, setSortBy] = useState<string[]>([]);
 
-  const [banner, setBanner] = useState<BannerState | null>(null);
-  const [bannerOpen, setBannerOpen] = useState(false);
+  const [toast, setToast] = useState<ToastState | null>(null);
   const [addOpen, setAddOpen] = useState<boolean>(false);
   const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
-  const BANNER_LENGTH = 5000;
 
   useEffect(() => {
     setLoading(true);
@@ -80,19 +69,6 @@ export default function Students() {
       .catch((error) => setErrorMessage(error instanceof Error ? error.message : String(error)))
       .finally(() => setLoading(false));
   }, []);
-
-  // displays banner for 5 seconds
-  useEffect(() => {
-    if (!banner) return;
-
-    setBannerOpen(true);
-
-    const timer = setTimeout(() => {
-      setBannerOpen(false);
-    }, BANNER_LENGTH);
-
-    return () => clearTimeout(timer);
-  }, [banner]);
 
   const data = useMemo(() => {
     const showArchived = !activeView;
@@ -129,7 +105,7 @@ export default function Students() {
   const deleteEntries = () => {
     const ids = Array.from(selected);
     if (ids.length === 0) {
-      setBanner({
+      setToast({
         type: "error",
         message: "No students selected.",
         timestamp: Date.now(),
@@ -144,11 +120,11 @@ export default function Students() {
             const updated = new Map(result.data.map((s) => [s._id, s]));
             return prev.map((s) => updated.get(s._id) ?? s);
           });
-          // create banner message on successful request
+          // create toast message on successful request
           const multi = ids.length > 1;
           const message = `${ids.length} student
           ${multi ? "s were" : " was"} successfuly deleted.`;
-          setBanner({
+          setToast({
             type: "success",
             message,
             timestamp: Date.now(),
@@ -158,7 +134,7 @@ export default function Students() {
         } else {
           setErrorMessage(result.error);
           const message = `Error: Unable to delete student(s). ${result.error}`;
-          setBanner({
+          setToast({
             type: "error",
             message,
             timestamp: Date.now(),
@@ -172,7 +148,7 @@ export default function Students() {
   const archive = () => {
     const ids = Array.from(selected);
     if (ids.length === 0) {
-      setBanner({
+      setToast({
         type: "error",
         message: "No students selected.",
         timestamp: Date.now(),
@@ -187,13 +163,13 @@ export default function Students() {
             const updated = new Map(result.data.map((s) => [s._id, s]));
             return prev.map((s) => updated.get(s._id) ?? s);
           });
-          // create banner message on successful request
+          // create toast message on successful request
           const multi = ids.length > 1;
           const message = `
             Student${multi ? "s" : ""} 
             ${result.data[0].displayName} 
             ${multi ? ` + ${result.data.length - 1} more were` : "was"} archived.`;
-          setBanner({
+          setToast({
             type: "neutral",
             message,
             timestamp: Date.now(),
@@ -203,7 +179,7 @@ export default function Students() {
         } else {
           setErrorMessage(result.error);
           const message = `Error: Unable to unarchive student(s). ${result.error}`;
-          setBanner({
+          setToast({
             type: "error",
             message,
             timestamp: Date.now(),
@@ -227,7 +203,7 @@ export default function Students() {
           });
           const multi = ids.length > 1;
           const message = `Archive undone for ${result.data[0].displayName}${multi ? ` + ${ids.length - 1} more` : ""}.`;
-          setBanner({
+          setToast({
             type: "neutral",
             message,
             timestamp: Date.now(),
@@ -235,7 +211,7 @@ export default function Students() {
           setSelected(new Set());
         } else {
           const message = `Error: Unable to undo archive. ${result.error}`;
-          setBanner({
+          setToast({
             type: "error",
             message,
             timestamp: Date.now(),
@@ -245,7 +221,7 @@ export default function Students() {
       .catch((error) => {
         const message = error instanceof Error ? error.message : String(error);
         setErrorMessage(message);
-        setBanner({
+        setToast({
           type: "error",
           message: `Error: Unable to undo archive. ${message}`,
           timestamp: Date.now(),
@@ -267,7 +243,7 @@ export default function Students() {
           });
           const multi = ids.length > 1;
           const message = `Unarchive undone for ${result.data[0].displayName}${multi ? ` + ${ids.length - 1} more` : ""}.`;
-          setBanner({
+          setToast({
             type: "neutral",
             message,
             timestamp: Date.now(),
@@ -275,7 +251,7 @@ export default function Students() {
           setSelected(new Set());
         } else {
           const message = `Error: Unable to undo unarchive. ${result.error}`;
-          setBanner({
+          setToast({
             type: "error",
             message,
             timestamp: Date.now(),
@@ -285,7 +261,7 @@ export default function Students() {
       .catch((error) => {
         const message = error instanceof Error ? error.message : String(error);
         setErrorMessage(message);
-        setBanner({
+        setToast({
           type: "error",
           message: `Error: Unable to undo unarchive. ${message}`,
           timestamp: Date.now(),
@@ -297,7 +273,7 @@ export default function Students() {
   const unarchive = () => {
     const ids = Array.from(selected);
     if (ids.length === 0) {
-      setBanner({
+      setToast({
         type: "error",
         message: "No students selected.",
         timestamp: Date.now(),
@@ -317,7 +293,7 @@ export default function Students() {
             Student${multi ? "s" : ""} 
             ${result.data[0].displayName} 
             ${multi ? ` + ${result.data.length - 1} more were` : "was"} unarchived.`;
-          setBanner({
+          setToast({
             type: "neutral",
             message,
             timestamp: Date.now(),
@@ -327,7 +303,7 @@ export default function Students() {
         } else {
           setErrorMessage(result.error);
           const message = `Error: Unable to unarchive student(s). ${result.error}`;
-          setBanner({
+          setToast({
             type: "error",
             message,
             timestamp: Date.now(),
@@ -340,7 +316,7 @@ export default function Students() {
 
   const deleteSubmit = () => {
     if (selected.size === 0) {
-      setBanner({
+      setToast({
         type: "error",
         message: "No students selected.",
         timestamp: Date.now(),
@@ -459,47 +435,33 @@ export default function Students() {
     );
   };
 
-  const renderBanner = () => {
-    if (!banner || !bannerOpen) return <></>;
-    let icon = <></>;
-    let styling;
-    switch (banner.type) {
-      case "success":
-        icon = <CheckCircleIcon />;
-        styling = styles.bannerSuccess;
-        break;
-      case "neutral":
-        icon = <InfoIcon />;
-        styling = styles.bannerNeutral;
-        break;
-      case "error":
-        icon = <XCircle />;
-        styling = styles.bannerError;
-        break;
-    }
+  const renderToast = () => {
+    if (!toast) return <></>;
+
+    const action =
+      toast.undoArchiveIds && toast.undoArchiveIds.length > 0
+        ? {
+            label: "Undo",
+            onAction: (...args: unknown[]) => undoArchive((args[0] as string[]) ?? []),
+            actionArgs: [toast.undoArchiveIds],
+          }
+        : toast.undoUnarchiveIds && toast.undoUnarchiveIds.length > 0
+          ? {
+              label: "Undo",
+              onAction: (...args: unknown[]) => undoUnarchive((args[0] as string[]) ?? []),
+              actionArgs: [toast.undoUnarchiveIds],
+            }
+          : undefined;
+
     return (
-      <div className={`${styles.banner} ${styling}`}>
-        {icon}
-        {banner.message}
-        {banner.undoArchiveIds && banner.undoArchiveIds.length > 0 && (
-          <button
-            className={styles.bannerUndoButton}
-            onClick={() => undoArchive(banner.undoArchiveIds ?? [])}
-            type="button"
-          >
-            Undo
-          </button>
-        )}
-        {banner.undoUnarchiveIds && banner.undoUnarchiveIds.length > 0 && (
-          <button
-            className={styles.bannerUndoButton}
-            onClick={() => undoUnarchive(banner.undoUnarchiveIds ?? [])}
-            type="button"
-          >
-            Undo
-          </button>
-        )}
-      </div>
+      <Toast
+        type={toast.type}
+        message={toast.message}
+        trigger={toast.timestamp}
+        durationMs={5000}
+        onClose={() => setToast(null)}
+        action={action}
+      />
     );
   };
 
@@ -551,7 +513,7 @@ export default function Students() {
 
   return (
     <div className={styles.container}>
-      {renderBanner()}
+      {renderToast()}
       {renderHeader()}
       {renderOptions()}
       <Table
@@ -563,7 +525,7 @@ export default function Students() {
         selected={selected}
         setSelected={setSelected}
         onEdit={() => {
-          setBanner({
+          setToast({
             type: "success",
             message: "Edits saved successfully.",
             timestamp: Date.now(),
@@ -582,7 +544,7 @@ export default function Students() {
                   .then((result) => {
                     if (result.success) setStudents(result.data);
                     const message = `Student ${new_stud.displayName} was added successfully`;
-                    setBanner({
+                    setToast({
                       type: "success",
                       message,
                       timestamp: Date.now(),
@@ -590,7 +552,7 @@ export default function Students() {
                   })
                   .catch((error) => {
                     setErrorMessage(error instanceof Error ? error.message : String(error));
-                    setBanner({
+                    setToast({
                       type: "success",
                       message: "Error: Could not add student",
                       timestamp: Date.now(),

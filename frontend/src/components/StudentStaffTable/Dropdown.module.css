@@ -20,9 +20,7 @@
 }
 
 /* Button fills container width */
-.dropdownMenu > button {
-  width: 100%;
-  height: 100%;
+.dropdownMenu {
   border-radius: 8px;
   display: flex;
   align-items: center;

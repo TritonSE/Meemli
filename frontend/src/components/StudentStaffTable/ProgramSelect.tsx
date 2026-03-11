@@ -1,9 +1,10 @@
-import { BookOpen, Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import type { Section } from "@/src/api/sections";
 import type { Dispatch, SetStateAction } from "react";
 
+import BookOpen from "@/public/icons/program.svg";
 import styles from "@/src/components/StudentStaffTable/ProgramSelect.module.css";
 
 export type ProgramSelectProps = {
