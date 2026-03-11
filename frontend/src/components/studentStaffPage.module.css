@@ -20,7 +20,7 @@
   align-items: center;
   gap: 8px;
 
-  padding: 12px 20px;
+  padding: 8px 12px;
   border-radius: 10px;
 
   color: white;
@@ -40,6 +40,23 @@
 
 .bannerError {
   color: var(--error-500);
+}
+
+.bannerNeutral {
+  color: var(--grey-700);
+}
+
+.bannerUndoButton {
+  border-radius: 6px;
+  background-color: white;
+  color: var(--primary-500);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 10px;
+}
+
+.bannerUndoButton:hover {
+  background-color: var(--grey-50);
 }
 
 @keyframes slideDownFade {
@@ -84,6 +101,7 @@
   color: var(--grey-700);
   border: 1px solid var(--grey-300);
   border-radius: 8px;
+  background-color: white;
 }
 
 .secondary:hover {
@@ -94,6 +112,7 @@
   color: white;
   background-color: var(--primary-500);
   border-radius: 8px;
+  border: 1px solid var(--primary-500);
 }
 
 .primary:hover {
@@ -115,7 +134,7 @@
 }
 .archive:hover {
   transition: 0.2s ease;
-  background-color: var(--grey-50);
+  background-color: var(--error-25);
 }
 
 .delete {
@@ -133,6 +152,9 @@
   transform: scale(90%);
   color: var(--grey-600);
 }
+.programIcon {
+  transform: scale(180%);
+}
 .searchIcon {
   transform: scale(90%);
   color: var(--grey-600);
@@ -140,29 +162,22 @@
 .trashIcon {
   color: white;
 }
-.checkCircleIcon {
-  color: var(--success-700);
-}
-.xCircleIcon {
-  color: var(--error-500);
+.searchWrapper {
+  position: relative;
+  display: inline-block;
+  width: 250px;
+  height: 50px;
 }
 .searchBar {
   display: flex;
   align-items: center;
   padding: var(--button-padding);
   font-size: 20px;
-  height: 40px;
-}
-
-.searchWrapper {
-  position: relative;
-  display: inline-block;
-  width: 250px; /* or 100% */
-  height: 42px;
 }
 
 .searchInput {
   width: 100%;
+  height: 100%;
   padding: 10px 12px 10px 36px; /* left padding for icon */
   background: white;
   font-size: 16px;
@@ -181,70 +196,10 @@
 .searchIcon {
   position: absolute;
   left: 10px;
-  top: 47%;
+  top: 50%;
   transform: translateY(-50%);
   opacity: 0.6;
   pointer-events: none; /* important */
-}
-
-.sortMenu {
-  position: relative;
-  display: inline-block;
-  width: 130px; /* or 100% if inside a flex/grid container */
-  border-radius: 8px;
-  height: 40px;
-}
-
-/* Button fills container width */
-.sortMenu > button {
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-/* Dropdown container */
-.sortMenuDropdown {
-  position: absolute;
-  top: calc(100% + 6px); /* slight gap */
-  left: 0;
-  width: 100%; /* MATCH BUTTON WIDTH */
-
-  background: white;
-  border-radius: 10px;
-  border: 1px solid var(--grey-200);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-
-  max-height: 220px;
-  overflow-y: auto;
-
-  padding: 4px 0;
-  z-index: 1000;
-}
-
-/* Individual option */
-.sortMenuItem {
-  padding: 10px 14px;
-  background: white;
-  cursor: pointer;
-}
-
-/* Hover state */
-.sortMenuItem:hover {
-  background: var(--grey-50);
-}
-.sortMenuDropdown::-webkit-scrollbar {
-  width: 8px;
-}
-.sortMenuDropdown::-webkit-scrollbar-thumb {
-  background: var(--grey-200);
-  border-radius: 6px;
-}
-.sortMenuDropdown::-webkit-scrollbar-thumb:hover {
-  background: var(--grey-300);
 }
 
 /**

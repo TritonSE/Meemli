@@ -96,6 +96,7 @@ export type TableProps = {
   sections: Section[];
   type: "staff" | "student";
   isEdit: boolean;
+  onEdit?: () => void;
   selected: Set<string>;
   setSelected: Dispatch<SetStateAction<any>>;
   onSelect?: () => void;
@@ -107,6 +108,7 @@ export function Table({
   type,
   sections,
   isEdit,
+  onEdit,
   selected,
   setSelected,
 }: TableProps) {
@@ -239,6 +241,11 @@ export function Table({
         const res = sections.find((obj) => obj._id === cid);
         return res ? res.code : "Error";
       });
+      const sortedLabels = sectionLabels.sort((a, b) =>
+        (a ?? "").localeCompare(b ?? "", undefined, {
+          sensitivity: "base",
+        }),
+      );
       // TODO: replace with section color
       const sectionColors = input.enrolledSections.map(() => "teal");
 
@@ -251,7 +258,7 @@ export function Table({
           </td>
           <td className={styles.textItem}>{input.parentContact.email}</td>
           <td>
-            <DynamicBlockDisplay labels={sectionLabels} colors={sectionColors} />
+            <DynamicBlockDisplay labels={sortedLabels} colors={sectionColors} />
           </td>
           <td className={styles.notesItem}>{input.comments}</td>
         </>
@@ -358,7 +365,12 @@ export function Table({
                   setFormOpen(false);
                   getAllStudents()
                     .then((result) => {
-                      if (result.success) setData(result.data);
+                      if (result.success) {
+                        setData(result.data);
+                        if (onEdit) {
+                          onEdit();
+                        }
+                      }
                     })
                     .catch((error) =>
                       setErrorMessage(error instanceof Error ? error.message : String(error)),

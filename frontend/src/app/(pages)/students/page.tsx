@@ -2,16 +2,18 @@
 import {
   ArchiveIcon,
   ArrowUpDown,
+  InfoIcon,
   PlusIcon,
   Search,
   Trash2,
   TriangleAlert,
   XCircle,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import type { Section } from "@/src/api/sections";
 import type { Student } from "@/src/api/students";
+import type { DropdownItem } from "@/src/components/StudentStaffTable/Dropdown";
 
 import CheckCircleIcon from "@/public/icons/check-circle.svg";
 import EditIcon from "@/public/icons/edit.svg";
@@ -20,12 +22,16 @@ import { archiveStudents, deleteStudents, getAllStudents } from "@/src/api/stude
 import { Modal } from "@/src/components/Modal";
 import { StudentForm } from "@/src/components/studentform/StudentForm";
 import styles from "@/src/components/studentStaffPage.module.css";
+import { Dropdown } from "@/src/components/StudentStaffTable/Dropdown";
+import { ProgramSelect } from "@/src/components/StudentStaffTable/ProgramSelect";
 import { Table } from "@/src/components/Table";
 
-type BannerState = {
-  type: "success" | "error";
+export type BannerState = {
+  type: "success" | "error" | "neutral";
   message: string;
   timestamp: number;
+  undoArchiveIds?: string[];
+  undoUnarchiveIds?: string[];
 };
 
 export default function Students() {
@@ -41,7 +47,8 @@ export default function Students() {
   // state for viewing
   const [activeView, setActiveView] = useState<boolean>(true);
   const [searchFilter, setSearchFilter] = useState<string>("");
-  const [sortBy, setSortBy] = useState<string | null>(null);
+  const [asc, setAsc] = useState<boolean>(true);
+  const [sortBy, setSortBy] = useState<string[]>([]);
 
   const [banner, setBanner] = useState<BannerState | null>(null);
   const [bannerOpen, setBannerOpen] = useState(false);
@@ -89,17 +96,31 @@ export default function Students() {
 
   const data = useMemo(() => {
     const showArchived = !activeView;
-    const base = students.filter((s) => s.archived === showArchived);
-
+    // filter by active/archive
+    let base = students.filter((s) => s.archived === showArchived);
+    // filter by section
+    if (sortBy.length > 0) {
+      base = base.filter((s) => s.enrolledSections.some((sectionId) => sortBy.includes(sectionId)));
+    }
+    // filter by search bar
     const q = searchFilter.trim().toLowerCase();
-    if (!q) return base;
-
-    return base.filter(
-      (s) =>
-        (s.displayName ?? "").toLowerCase().includes(q) ||
-        (s.meemliEmail ?? "").toLowerCase().includes(q),
+    if (q) {
+      base = base.filter(
+        (s) =>
+          (s.displayName ?? "").toLowerCase().includes(q) ||
+          (s.meemliEmail ?? "").toLowerCase().includes(q),
+      );
+    }
+    // sort by name
+    base = base.sort((a, b) =>
+      (a.displayName ?? "").localeCompare(b.displayName ?? "", undefined, {
+        sensitivity: "base",
+      }),
     );
-  }, [students, activeView, searchFilter, selected]);
+    // reverse based on ascending / descending
+    base = asc ? base : base.reverse();
+    return base;
+  }, [students, activeView, searchFilter, selected, asc, sortBy]);
 
   const toggleActive = (flag: boolean) => {
     setActiveView(flag);
@@ -171,11 +192,12 @@ export default function Students() {
           const message = `
             Student${multi ? "s" : ""} 
             ${result.data[0].displayName} 
-            ${multi ? ` + ${result.data.length - 1} more were` : "was"} successfully archived.`;
+            ${multi ? ` + ${result.data.length - 1} more were` : "was"} archived.`;
           setBanner({
-            type: "success",
+            type: "neutral",
             message,
             timestamp: Date.now(),
+            undoArchiveIds: ids,
           });
           setSelected(new Set());
         } else {
@@ -189,6 +211,86 @@ export default function Students() {
         }
       })
       .catch((error) => setErrorMessage(error instanceof Error ? error.message : String(error)))
+      .finally(() => setLoading(false));
+  };
+
+  const undoArchive = (ids: string[]) => {
+    if (ids.length === 0) return;
+
+    setLoading(true);
+    archiveStudents(ids, false)
+      .then((result) => {
+        if (result.success) {
+          setStudents((prev) => {
+            const updated = new Map(result.data.map((s) => [s._id, s]));
+            return prev.map((s) => updated.get(s._id) ?? s);
+          });
+          const multi = ids.length > 1;
+          const message = `Archive undone for ${result.data[0].displayName}${multi ? ` + ${ids.length - 1} more` : ""}.`;
+          setBanner({
+            type: "neutral",
+            message,
+            timestamp: Date.now(),
+          });
+          setSelected(new Set());
+        } else {
+          const message = `Error: Unable to undo archive. ${result.error}`;
+          setBanner({
+            type: "error",
+            message,
+            timestamp: Date.now(),
+          });
+        }
+      })
+      .catch((error) => {
+        const message = error instanceof Error ? error.message : String(error);
+        setErrorMessage(message);
+        setBanner({
+          type: "error",
+          message: `Error: Unable to undo archive. ${message}`,
+          timestamp: Date.now(),
+        });
+      })
+      .finally(() => setLoading(false));
+  };
+
+  const undoUnarchive = (ids: string[]) => {
+    if (ids.length === 0) return;
+
+    setLoading(true);
+    archiveStudents(ids, true)
+      .then((result) => {
+        if (result.success) {
+          setStudents((prev) => {
+            const updated = new Map(result.data.map((s) => [s._id, s]));
+            return prev.map((s) => updated.get(s._id) ?? s);
+          });
+          const multi = ids.length > 1;
+          const message = `Unarchive undone for ${result.data[0].displayName}${multi ? ` + ${ids.length - 1} more` : ""}.`;
+          setBanner({
+            type: "neutral",
+            message,
+            timestamp: Date.now(),
+          });
+          setSelected(new Set());
+        } else {
+          const message = `Error: Unable to undo unarchive. ${result.error}`;
+          setBanner({
+            type: "error",
+            message,
+            timestamp: Date.now(),
+          });
+        }
+      })
+      .catch((error) => {
+        const message = error instanceof Error ? error.message : String(error);
+        setErrorMessage(message);
+        setBanner({
+          type: "error",
+          message: `Error: Unable to undo unarchive. ${message}`,
+          timestamp: Date.now(),
+        });
+      })
       .finally(() => setLoading(false));
   };
 
@@ -214,11 +316,12 @@ export default function Students() {
           const message = `
             Student${multi ? "s" : ""} 
             ${result.data[0].displayName} 
-            ${multi ? ` + ${result.data.length - 1} more were` : "was"} successfully unarchived.`;
+            ${multi ? ` + ${result.data.length - 1} more were` : "was"} unarchived.`;
           setBanner({
-            type: "success",
+            type: "neutral",
             message,
             timestamp: Date.now(),
+            undoUnarchiveIds: ids,
           });
           setSelected(new Set());
         } else {
@@ -247,46 +350,8 @@ export default function Students() {
     }
   };
 
-  const renderSortMenu = () => {
-    const [open, setOpen] = useState(false);
-    const menuRef = useRef<HTMLDivElement | null>(null);
-
-    /** Close when clicking outside */
-    useEffect(() => {
-      function handleClickOutside(event: MouseEvent) {
-        if (!menuRef.current) return;
-        if (!menuRef.current.contains(event.target as Node)) {
-          setOpen(false);
-        }
-      }
-
-      if (open) {
-        document.addEventListener("mousedown", handleClickOutside);
-      }
-
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, [open]);
-
-    return (
-      <div className={`${styles.sortMenu} ${styles.secondary}`} ref={menuRef}>
-        <button onClick={() => setOpen((v) => !v)}>
-          <ArrowUpDown />
-          Sort By
-        </button>
-        {open && (
-          <div className={styles.sortMenuDropdown}>
-            <div className={styles.sortMenuItem}>Ascending</div>
-            <div className={styles.sortMenuItem}>Descending</div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   const renderHeader = () => {
-    const archiveLabel = activeView ? "Archive Students" : "Restore Students";
+    const archiveLabel = activeView ? "Archive Students" : "Unarchive Students";
     const archiveFxn = activeView ? archive : unarchive;
     return (
       <div className={`${styles.headerBar} ${styles.top}`}>
@@ -341,6 +406,25 @@ export default function Students() {
   };
 
   const renderOptions = () => {
+    const ascItems: DropdownItem[] = [
+      {
+        content: (
+          <>
+            <ArrowUpDown />
+            <p>Sort By</p>
+          </>
+        ),
+        onClick: () => {},
+      },
+      {
+        content: <p>Ascending</p>,
+        onClick: () => setAsc(true),
+      },
+      {
+        content: <p>Descending</p>,
+        onClick: () => setAsc(false),
+      },
+    ];
     return (
       <div className={`${styles.headerBar}`}>
         <div className={styles.headerContainer}>
@@ -356,9 +440,10 @@ export default function Students() {
           >
             Archived
           </button>
+          <ProgramSelect items={sections} selected={sortBy} setSelected={setSortBy} />
         </div>
         <div className={styles.headerContainer}>
-          {renderSortMenu()}
+          <Dropdown items={ascItems} placeholder={true} />
           <div className={styles.searchWrapper}>
             <Search className={styles.searchIcon} />
             <input
@@ -376,16 +461,44 @@ export default function Students() {
 
   const renderBanner = () => {
     if (!banner || !bannerOpen) return <></>;
-    const succ = banner.type === "success";
-    const icon = succ ? (
-      <CheckCircleIcon className={styles.checkCircleIcon} />
-    ) : (
-      <XCircle className={styles.xCircleIcon} />
-    );
+    let icon = <></>;
+    let styling;
+    switch (banner.type) {
+      case "success":
+        icon = <CheckCircleIcon />;
+        styling = styles.bannerSuccess;
+        break;
+      case "neutral":
+        icon = <InfoIcon />;
+        styling = styles.bannerNeutral;
+        break;
+      case "error":
+        icon = <XCircle />;
+        styling = styles.bannerError;
+        break;
+    }
     return (
-      <div className={`${styles.banner} ${succ ? styles.bannerSuccess : styles.bannerError}`}>
+      <div className={`${styles.banner} ${styling}`}>
         {icon}
         {banner.message}
+        {banner.undoArchiveIds && banner.undoArchiveIds.length > 0 && (
+          <button
+            className={styles.bannerUndoButton}
+            onClick={() => undoArchive(banner.undoArchiveIds ?? [])}
+            type="button"
+          >
+            Undo
+          </button>
+        )}
+        {banner.undoUnarchiveIds && banner.undoUnarchiveIds.length > 0 && (
+          <button
+            className={styles.bannerUndoButton}
+            onClick={() => undoUnarchive(banner.undoUnarchiveIds ?? [])}
+            type="button"
+          >
+            Undo
+          </button>
+        )}
       </div>
     );
   };
@@ -449,6 +562,13 @@ export default function Students() {
         isEdit={isEdit}
         selected={selected}
         setSelected={setSelected}
+        onEdit={() => {
+          setBanner({
+            type: "success",
+            message: "Edits saved successfully.",
+            timestamp: Date.now(),
+          });
+        }}
       />
       {addOpen && (
         <Modal

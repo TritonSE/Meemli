@@ -105,7 +105,7 @@ column widths and properties
   width: 60px;
 }
 .nameCol {
-  width: auto;
+  width: calc(100% - 60px - 300px - 400px - var(--notes-width));
 }
 .emailCol {
   width: 300px;
