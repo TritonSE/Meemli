@@ -25,13 +25,12 @@ export default function ForgotPasswordPage() {
       return;
     }
 
-    if (
-      email &&
-      !email.includes("@") &&
-      !email.includes(".") &&
-      email.indexOf("@") < email.indexOf(".")
-    ) {
-      setFormErrors({ email: "Please enter a valid email address" });
+    const isValidEmail = (email_: string) => {
+      const atIndex = email_.indexOf("@");
+      return atIndex > 0 && email_.includes(".", atIndex);
+    };
+    if (email && !isValidEmail(email)) {
+      setFormErrors({ email: "Invalid email format" });
       return;
     }
 
