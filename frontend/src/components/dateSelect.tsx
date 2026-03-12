@@ -1,53 +1,33 @@
 import { Popover } from "@mui/material";
+import { format, isValid, parse } from "date-fns";
 import { useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 
 import styles from "./select.module.css";
 
-const longDateFormatter = new Intl.DateTimeFormat("en-US", {
-  month: "long",
-  day: "numeric",
-  year: "numeric",
-});
-
-function parseISODate(input: string): Date | undefined {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(input);
-  if (!match) {
-    return undefined;
-  }
-
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  const candidate = new Date(year, month - 1, day);
-
-  if (
-    Number.isNaN(candidate.getTime()) ||
-    candidate.getFullYear() !== year ||
-    candidate.getMonth() !== month - 1 ||
-    candidate.getDate() !== day
-  ) {
-    return undefined;
-  }
-
-  return candidate;
-}
-
-function formatISODate(date: Date): string {
-  const year = date.getFullYear().toString().padStart(4, "0");
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
-export function DateSelect({ value, onChange }: { value: string; onChange: (d: string) => void }) {
-  const parsedValue = value ? parseISODate(value) : new Date();
-  const validValue = parsedValue ?? new Date();
+export function DateSelect({
+  value,
+  onChange,
+  availableDates,
+}: {
+  value: string;
+  onChange: (d: string) => void;
+  availableDates: string[];
+}) {
+  const parsedValue = value ? parse(value, "yyyy-MM-dd", new Date()) : new Date();
+  const validValue = isValid(parsedValue) ? parsedValue : new Date();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [tempDate, setTempDate] = useState<Date | undefined>(undefined);
-  const [currentMonth, setCurrentMonth] = useState<Date>(validValue); // Now it knows what validValue is!
+  const [currentMonth, setCurrentMonth] = useState<Date>(validValue);
+
+  // Disable any day that isn't in the availableDates list
+  const isDisabled = (date: Date) => {
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    const todayStr = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(new Date().getDate()).padStart(2, "0")}`;
+    return dateStr !== todayStr && !availableDates.includes(dateStr);
+  };
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setTempDate(validValue);
@@ -61,7 +41,7 @@ export function DateSelect({ value, onChange }: { value: string; onChange: (d: s
 
   const handleApply = () => {
     if (tempDate) {
-      onChange(formatISODate(tempDate));
+      onChange(format(tempDate, "yyyy-MM-dd"));
     }
     handleClose();
   };
@@ -73,7 +53,7 @@ export function DateSelect({ value, onChange }: { value: string; onChange: (d: s
       dateToFormat.getMonth() === today.getMonth() &&
       dateToFormat.getFullYear() === today.getFullYear();
 
-    const formatted = longDateFormatter.format(dateToFormat);
+    const formatted = format(dateToFormat, "MMMM d, yyyy");
     return isToday ? `(Today) ${formatted}` : formatted;
   };
 
@@ -139,13 +119,10 @@ export function DateSelect({ value, onChange }: { value: string; onChange: (d: s
           <DayPicker
             mode="single"
             selected={tempDate}
-            onSelect={(date: unknown) => {
-              if (date === undefined || date instanceof Date) {
-                setTempDate(date);
-              }
-            }}
+            onSelect={setTempDate}
             month={currentMonth}
             onMonthChange={setCurrentMonth}
+            disabled={isDisabled}
             className={styles.customCalendar}
           />
 
