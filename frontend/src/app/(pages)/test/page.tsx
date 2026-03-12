@@ -12,7 +12,7 @@ import TestStudentForm from "@/src/pages/TestStudentForm";
 
 export default function Test() {
   // --- FAKE DATA for testing student profile view ---
-  const FAKE_STUDENTS = [
+  const FAKE_STUDENTS: Student[] = [
     {
       _id: "1",
       displayName: "Alice Johnson",
@@ -31,6 +31,7 @@ export default function Test() {
       postassessmentScore: 0,
       enrolledSections: [],
       comments: "",
+      archived: false,
     },
     {
       _id: "2",
@@ -50,6 +51,7 @@ export default function Test() {
       postassessmentScore: 0,
       enrolledSections: [],
       comments: "",
+      archived: false,
     },
     {
       _id: "3",
@@ -69,6 +71,7 @@ export default function Test() {
       postassessmentScore: 0,
       enrolledSections: [],
       comments: "",
+      archived: false,
     },
   ];
 

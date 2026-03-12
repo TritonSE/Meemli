@@ -7,6 +7,7 @@
  * // TODO: Add checkmark icon for selected items
  */
 
+import { Check } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { getAllSections } from "../../api/sections";
@@ -254,7 +255,7 @@ export function MultiSelectDropdown({
                         >
                           {text}
                         </button>
-                        <img alt="check icon" className={styles.selectedIcon} />
+                        {checked && <Check className={styles.selectedIcon} />}
                       </div>
                     );
                   })}

@@ -1,0 +1,138 @@
+.wrapper {
+  position: relative;
+  width: 200px;
+  min-width: 200px;
+  max-width: 260px;
+  font-family: Montserrat, sans-serif;
+  font-size: 16px;
+}
+
+.mainBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 50px;
+  padding: 0px 6px;
+  border-radius: 8px;
+  border: 1.5px solid #cdcfd0;
+  background: #fff;
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.mainBar:hover {
+  border-color: #b0b2b3;
+  background-color: var(--grey-50);
+}
+
+.placeholder {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  color: #494445;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.selectedItems {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.selectedItems::-webkit-scrollbar {
+  display: none;
+}
+
+.selectedBadge {
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  width: auto;
+  padding: 10px;
+  border-radius: 8px;
+  align-items: center;
+  color: white;
+  font-weight: 400;
+  background-color: var(--primary-500);
+}
+
+.chevron {
+  color: #9b9d9f;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  max-height: 280px;
+  overflow-y: auto;
+  border-radius: 8px;
+  border: 1px solid #e3e2e2;
+  background: #fff;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+  padding: 6px;
+}
+
+.panelItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 50px;
+  gap: 12px;
+  border-radius: 8px;
+  padding: 10px 8px;
+  color: #494445;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.panelItem:hover {
+  background: #f7f6f6;
+}
+
+.panelItemActive {
+  background: #f7f6f6;
+}
+.itemBox {
+  background-color: var(--primary-500);
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+.itemCode {
+  font-size: 16px;
+  font-weight: 400;
+  color: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.checkIcon {
+  color: #3f8d7c;
+  flex-shrink: 0;
+}
