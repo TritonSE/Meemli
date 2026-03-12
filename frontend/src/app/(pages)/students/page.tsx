@@ -17,7 +17,7 @@ import styles from "@/src/components/StudentStaffTable/studentStaffPage.module.c
 import { Table } from "@/src/components/StudentStaffTable/Table";
 import { Toast } from "@/src/components/Toast/Toast";
 
-export type ToastState = {
+type ToastState = {
   type: "success" | "error" | "neutral";
   message: string;
   timestamp: number;
@@ -70,6 +70,7 @@ export default function Students() {
       .finally(() => setLoading(false));
   }, []);
 
+  // update the data passed into the table upon filter changes
   const data = useMemo(() => {
     const showArchived = !activeView;
     // filter by active/archive
@@ -102,6 +103,9 @@ export default function Students() {
     setActiveView(flag);
   };
 
+  /**
+   * Deletes all selected students from the database
+   */
   const deleteEntries = () => {
     const ids = Array.from(selected);
     if (ids.length === 0) {
@@ -145,6 +149,9 @@ export default function Students() {
       .finally(() => setLoading(false));
   };
 
+  /**
+   * Handles bulk archiving students
+   */
   const archive = () => {
     const ids = Array.from(selected);
     if (ids.length === 0) {
@@ -190,6 +197,9 @@ export default function Students() {
       .finally(() => setLoading(false));
   };
 
+  /**
+   * Undoes an archive request by sending its own unarchive request
+   */
   const undoArchive = (ids: string[]) => {
     if (ids.length === 0) return;
 
@@ -229,7 +239,9 @@ export default function Students() {
       })
       .finally(() => setLoading(false));
   };
-
+  /**
+   * Undoes an unarchive request by sending an archive request
+   */
   const undoUnarchive = (ids: string[]) => {
     if (ids.length === 0) return;
 
@@ -270,6 +282,9 @@ export default function Students() {
       .finally(() => setLoading(false));
   };
 
+  /**
+   * Bulk unarchives students
+   */
   const unarchive = () => {
     const ids = Array.from(selected);
     if (ids.length === 0) {
@@ -314,6 +329,10 @@ export default function Students() {
       .finally(() => setLoading(false));
   };
 
+  /**
+   * Function bound to the delete button
+   * Checks that there are students selected before opening the delete modal
+   */
   const deleteSubmit = () => {
     if (selected.size === 0) {
       setToast({
@@ -475,6 +494,7 @@ export default function Students() {
     } else {
       name = "{Error}";
     }
+    // alter the message depending on # of selections
     const extra = num > 1 ? ` + ${num - 1} other${num - 1 > 1 ? "s" : ""}` : "";
     return (
       <div className={styles.deleteContainer}>

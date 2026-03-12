@@ -44,7 +44,6 @@ function DynamicBlockDisplay({ labels, colors }: { labels: string[]; colors: str
       setVisibleCount(count);
     };
 
-    // Use ResizeObserver to handle dynamic width changes
     const resizeObserver = new ResizeObserver(updateVisibleCount);
     resizeObserver.observe(containerRef.current);
     const timer = setTimeout(updateVisibleCount, 0);
@@ -85,6 +84,7 @@ type User = {
   meemliEmail: string;
   phoneNumber: string;
   admin: boolean;
+  archived: boolean;
   assignedsections: string[];
 };
 
@@ -114,9 +114,9 @@ export function Table({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // State for modals
-  const [formOpen, setFormOpen] = useState<boolean>(false);
+  const [editOpen, setEditOpen] = useState<boolean>(false);
   const [viewOpen, setViewOpen] = useState<boolean>(false);
-  const [formData, setFormData] = useState<Student | User | null>(null);
+  const [editData, setEditData] = useState<Student | User | null>(null);
 
   // State for page navigation
   const PAGE_SIZE = 7;
@@ -163,8 +163,9 @@ export function Table({
     const children = [];
     let fxn = () => {};
     const bool = isStudent(input);
+    // no hover if its a staff page in view mode
     if (!bool && !isEdit) return <></>;
-    // add edit icon no matter what if edit mode
+    // add edit icon if edit mode, else must be in view mode for students
     if (isEdit) {
       children.push(<EditIcon key="0" className={styles.hoverIcon} />);
     } else {
@@ -174,19 +175,19 @@ export function Table({
     if (bool) {
       if (isEdit) {
         fxn = () => {
-          setFormData(input);
-          setFormOpen(true);
+          setEditData(input);
+          setEditOpen(true);
         };
       } else {
         fxn = () => {
-          setFormData(input);
+          setEditData(input);
           setViewOpen(true);
         };
       }
     } else {
       fxn = () => {
-        setFormData(input);
-        setFormOpen(true);
+        setEditData(input);
+        setEditOpen(true);
       };
     }
     children.push(
@@ -233,7 +234,6 @@ export function Table({
   };
 
   const renderRow = (input: Student | User) => {
-    // if parent email exists, its a student, otherwise its staff
     if (isStudent(input)) {
       const sectionLabels = input.enrolledSections.map((cid) => {
         const res = sections.find((obj) => obj._id === cid);
@@ -262,12 +262,8 @@ export function Table({
         </>
       );
     } else {
-      return (
-        <>
-          {renderCheckbox(input)}
-          <td className={styles.nameItem}></td>
-        </>
-      );
+      // TODO: Add staff row rendering
+      return <></>;
     }
   };
 
@@ -351,16 +347,16 @@ export function Table({
         </table>
       </div>
       {renderNavigation()}
-      {isStudent(formData) && formOpen && (
+      {isStudent(editData) && editOpen && (
         <Modal
-          onExit={() => setFormOpen(false)}
+          onExit={() => setEditOpen(false)}
           child={
             <>
               <StudentForm
                 mode="edit"
-                student={formData}
+                student={editData}
                 onSubmit={() => {
-                  setFormOpen(false);
+                  setEditOpen(false);
                   getAllStudents()
                     .then((result) => {
                       if (result.success) {
@@ -375,22 +371,23 @@ export function Table({
                     )
                     .finally(() => setLoading(false));
                 }}
-                onCancel={() => setFormOpen(false)}
+                onCancel={() => setEditOpen(false)}
               />
             </>
           }
         />
       )}
-      {isStudent(formData) && viewOpen && (
+      {isStudent(editData) && viewOpen && (
         <Modal
           onExit={() => setViewOpen(false)}
           child={
             <>
-              <StudentProfileModal student={formData} onClose={() => setViewOpen(false)} />
+              <StudentProfileModal student={editData} onClose={() => setViewOpen(false)} />
             </>
           }
         />
       )}
+      {!isStudent(editData) && editOpen && <>TODO: Fill in with user edit form</>}
     </>
   );
 }
