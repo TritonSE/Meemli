@@ -13,14 +13,19 @@
 
   .dateTimeGroup {
     display: flex;
-    flex-direction: row;
-    align-items: end;
     gap: 1rem;
+
+    > div {
+      display: flex;
+      flex-direction: column;
+      width: 9rem;
+    }
   }
 
   .formElement {
     display: flex;
     flex-direction: column;
+    margin-bottom: 1.5rem;
 
     label {
       margin-bottom: 0.5rem;
@@ -31,8 +36,15 @@
     color: var(--error-700);
   }
 
-  .label {
+  .formLabel {
     margin-bottom: 0.5rem;
     color: var(--grey-700);
+  }
+
+  span[role="alert"] {
+    color: var(--color-red-700);
+    position: absolute;
+    transform: translate(0, 4rem);
+    width: 9rem;
   }
 }

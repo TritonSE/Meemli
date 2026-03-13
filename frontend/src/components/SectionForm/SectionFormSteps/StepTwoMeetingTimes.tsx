@@ -49,12 +49,11 @@ export function StepTwoMeetingTimes() {
   return (
     <div className={`${styles.stepContent} ${styles.dateTimeForm}`}>
       <div className={styles.formElement}>
-        <div>
+        <div className={styles.formLabel}>
           <label> Date Duration </label>
           <span className={styles.required}>*</span>
         </div>
 
-        {/* Replaced native date inputs with Controller + DateSelect */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <Controller
             name="startDate"
@@ -70,57 +69,75 @@ export function StepTwoMeetingTimes() {
         </div>
 
         {(errors.startDate || errors.endDate) && (
-          <span style={{ color: "red" }}>Please select valid dates.</span>
+          <span role="alert" style={{ transform: "translateY(5rem)" }}>
+            Please select valid dates.
+          </span>
         )}
       </div>
 
-      <div className={styles.dateTimeGroup}>
-        <Controller
-          name="days"
-          control={control}
-          render={({ field }) => (
-            <MultiSelect
-              options={WEEKDAYS}
-              label="Meeting Time"
-              placeholder="Days"
-              value={field.value}
-              onChange={field.onChange}
-              required={true}
-              fitContent={true}
+      <div>
+        <div className={styles.formLabel}>
+          <label> Meeting Times </label>
+          <span className={styles.required}>*</span>
+        </div>
+        <div className={styles.dateTimeGroup}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <Controller
+              name="days"
+              control={control}
+              render={({ field }) => (
+                <MultiSelect
+                  options={WEEKDAYS}
+                  placeholder="Days"
+                  mode="multiple"
+                  value={field.value}
+                  onChange={field.onChange}
+                  required={true}
+                  fitContent={true}
+                />
+              )}
             />
-          )}
-        />
-        {errors.days && <span style={{ color: "red" }}>{errors.days.message}</span>}
+            {errors.days && <span role="alert">{errors.days.message}</span>}
+          </div>
 
-        <Controller
-          name="startTime"
-          control={control}
-          render={({ field }) => (
-            <MultiSelect
-              options={TIME_INTERVALS}
-              placeholder="Start Time"
-              value={field.value ? [field.value] : []}
-              onChange={(val) => field.onChange(val[0] || "")}
-              required={true}
-              fitContent={true}
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <Controller
+              name="startTime"
+              control={control}
+              render={({ field }) => (
+                <MultiSelect
+                  options={TIME_INTERVALS}
+                  placeholder="Start Time"
+                  mode="single"
+                  value={field.value ? [field.value] : []}
+                  onChange={(val) => field.onChange(val[0] || "")}
+                  required={true}
+                  fitContent={true}
+                />
+              )}
             />
-          )}
-        />
+            {errors.startTime && <span role="alert">{errors.startTime.message}</span>}
+          </div>
 
-        <Controller
-          name="endTime"
-          control={control}
-          render={({ field }) => (
-            <MultiSelect
-              options={TIME_INTERVALS}
-              placeholder="End Time"
-              value={field.value ? [field.value] : []}
-              onChange={(val) => field.onChange(val[0] || "")}
-              required={true}
-              fitContent={true}
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <Controller
+              name="endTime"
+              control={control}
+              render={({ field }) => (
+                <MultiSelect
+                  options={TIME_INTERVALS}
+                  placeholder="End Time"
+                  mode="single"
+                  value={field.value ? [field.value] : []}
+                  onChange={(val) => field.onChange(val[0] || "")}
+                  required={true}
+                  fitContent={true}
+                />
+              )}
             />
-          )}
-        />
+            {errors.endTime && <span role="alert">{errors.endTime.message}</span>}
+          </div>
+        </div>
       </div>
     </div>
   );

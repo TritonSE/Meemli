@@ -27,7 +27,7 @@ export const sectionDraftSchema = z.object({
   startTime: z.string().min(1, "Start time is required"),
   endTime: z.string().min(1, "End time is required"),
   teachers: z.array(z.string()).min(1, "Please assign at least one teacher"),
-  enrolledStudents: z.array(z.string()).optional().default([]),
+  enrolledStudents: z.array(z.string()).min(1, "Please assign at least one student"),
 });
 
 export type SectionDraft = z.infer<typeof sectionDraftSchema>;

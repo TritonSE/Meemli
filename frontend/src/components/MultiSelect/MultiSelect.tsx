@@ -16,6 +16,7 @@ export const MultiSelect: React.FC<{
   required?: boolean;
   fitContent?: boolean;
   placeholder?: string;
+  mode?: "single" | "multiple";
 }> = ({
   options,
   value = [],
@@ -25,6 +26,7 @@ export const MultiSelect: React.FC<{
   withChips = false,
   fitContent = false,
   placeholder = "Select...",
+  mode = "multiple",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -77,6 +79,12 @@ export const MultiSelect: React.FC<{
   const toggleOption = (option: Option) => {
     if (!onChange) return;
 
+    if (mode === "single") {
+      onChange([option.id]);
+      setIsOpen(false); // Auto-close dropdown on select for single mode
+      return;
+    }
+
     const isCurrentlySelected = value.includes(option.id);
     if (isCurrentlySelected) {
       onChange(value.filter((id) => id !== option.id));
@@ -98,10 +106,19 @@ export const MultiSelect: React.FC<{
         role="combobox"
         aria-expanded={isOpen}
         onClick={() => setIsOpen(!isOpen)}
-        // 1. Declare this div as the anchor point using inline styles
         style={{ anchorName } as React.CSSProperties}
       >
-        <div className={styles.values}>
+        <div
+          className={styles.values}
+          style={{
+            display: "flex",
+            overflowX: "auto",
+            scrollbarWidth: "none",
+            whiteSpace: "nowrap",
+            maxWidth: "100%",
+            gap: "4px",
+          }}
+        >
           {selectedOptions.length > 0 ? (
             withChips ? (
               selectedOptions.map((s) => (
@@ -126,16 +143,13 @@ export const MultiSelect: React.FC<{
         </svg>
       </div>
 
-      {/* 2. The Popover Element */}
       <div
         className={styles.popover}
         role="listbox"
         popover="manual"
         ref={popoverRef}
-        // Tell this popover to anchor itself to the control div
         style={{ positionAnchor: anchorName } as React.CSSProperties}
       >
-        {/* Only mount contents when open so autoFocus works */}
         {isOpen && (
           <>
             <input

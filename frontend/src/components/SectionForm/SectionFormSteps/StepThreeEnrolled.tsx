@@ -117,7 +117,7 @@ export function StepThreeEnrolled() {
             />
           )}
         />
-        {errors.teachers && <span style={{ color: "red" }}>{errors.teachers.message}</span>}
+        {errors.teachers && <span role="alert">{errors.teachers.message}</span>}
       </div>
       <div className={styles.formElement}>
         <Controller
@@ -136,9 +136,7 @@ export function StepThreeEnrolled() {
             />
           )}
         />
-        {errors.enrolledStudents && (
-          <span style={{ color: "red" }}>{errors.enrolledStudents.message}</span>
-        )}
+        {errors.enrolledStudents && <span role="alert">{errors.enrolledStudents.message}</span>}
       </div>
     </div>
   );

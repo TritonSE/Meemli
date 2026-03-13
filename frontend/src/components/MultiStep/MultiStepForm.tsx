@@ -164,9 +164,6 @@ export function MultiStepForm<T extends FieldValues>({
               <p className={styles.description}>{curStepMeta.description}</p>
             )}
           </div>
-          <div className={styles.infoBar}>
-            <h2 className={styles.subheading}>{curStepMeta.title}</h2>
-          </div>
         </div>
 
         {mode === "edit" && (

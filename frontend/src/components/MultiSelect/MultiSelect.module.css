@@ -4,7 +4,6 @@
   position: relative;
   gap: 8px;
   font-family: "Inter", sans-serif;
-  width: fit-content;
   max-width: 400px;
   color: var(--grey-500);
 
@@ -21,7 +20,9 @@
 
   .control {
     display: flex;
-    min-width: 9rem;
+
+    overflow-x: scroll;
+    scrollbar-width: none;
     align-items: center;
     justify-content: space-between;
     padding: 8px 12px;
@@ -157,6 +158,6 @@
 }
 
 .fitContent {
-  min-width: 7rem;
-  width: fit-content;
+  min-width: 9rem;
+  max-width: 5rem;
 }
