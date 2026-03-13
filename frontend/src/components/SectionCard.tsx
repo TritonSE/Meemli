@@ -1,11 +1,13 @@
 "use client";
+import { Calendar, GraduationCap } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+
 import styles from "./SectionCard.module.css";
-import { GraduationCap, Calendar } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+
+// To check -- day is string, days is string[], are we going to accept multiple days for one card? or just one day per card.
 
 export const SectionCard = function SectionCard({
   code,
-  day,
   teachers,
   startTime,
   endTime,
@@ -19,23 +21,22 @@ export const SectionCard = function SectionCard({
   onDelete,
 }: {
   code: string;
-  day: string;
   teachers: string[];
   startTime: string;
   endTime: string;
-  teacherName: string;
   startDate: string;
   endDate: string;
   color: string;
   archived: boolean;
-  days: string;
+  days: string[];
   onEdit: () => void;
-  onArchive: () => void;
-  onDelete: () => void;
+  onArchive: () => void | Promise<void>;
+  onDelete: () => void | Promise<void>;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = () => setMenuOpen((prev) => !prev);
   const menuRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -54,9 +55,31 @@ export const SectionCard = function SectionCard({
         </button>
         {menuOpen && (
           <div className={styles.dropdown}>
-            <button onClick={onEdit}>Edit</button>
-            <button onClick={onArchive}>Archive</button>
-            <button onClick={onDelete}>Delete</button>
+            <button
+              onClick={() => {
+                onEdit();
+                setMenuOpen(false);
+              }}
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => {
+                void onArchive();
+                setMenuOpen(false);
+              }}
+            >
+              {!archived && "Archive"}
+              {archived && "Unarchive"}
+            </button>
+            <button
+              onClick={() => {
+                void onDelete();
+                setMenuOpen(false);
+              }}
+            >
+              Delete
+            </button>
           </div>
         )}
       </div>
@@ -64,13 +87,13 @@ export const SectionCard = function SectionCard({
       <div className={styles.cardBody}>
         <h3>{code}</h3>
         <p>
-          {day} {startTime} - {endTime}
+          {days} {startTime} - {endTime}
         </p>
 
         <hr />
 
         <div className={styles.row}>
-          <GraduationCap /> {teachers[0]}
+          <GraduationCap /> {teachers && teachers[0]}
         </div>
         <div className={styles.row}>
           <Calendar /> {startDate} - {endDate}

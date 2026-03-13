@@ -1,0 +1,262 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.titleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--grey-900);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--grey-500);
+  margin: 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tab {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--grey-200);
+  background: white;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--grey-600);
+  cursor: pointer;
+}
+
+.tabActive {
+  background-color: var(--primary-500);
+  color: white;
+  border-color: var(--primary-500);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--grey-700);
+}
+
+.required {
+  color: var(--primary-500);
+  margin-left: 2px;
+}
+
+.input {
+  padding: 12px 16px;
+  border: 1.5px solid var(--grey-200);
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--grey-900);
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  background: white;
+}
+
+.input:focus {
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(74, 109, 140, 0.1);
+}
+
+.colorSwatches {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.swatch {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s;
+}
+
+.swatch:hover {
+  transform: scale(1.1);
+}
+
+.swatchSelected::after {
+  content: "✓";
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.cancelButton {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--grey-200);
+  background: white;
+  color: var(--grey-700);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.cancelButton:hover {
+  background: var(--grey-25);
+}
+
+.submitButton {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--primary-500);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.submitButton:hover {
+  background-color: var(--primary-600);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Times tab */
+.dateRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dateRow span {
+  font-size: 14px;
+  color: var(--grey-500);
+  white-space: nowrap;
+}
+
+.dateInputWrapper {
+  position: relative;
+  flex: 1;
+}
+
+.dateInputWrapper input {
+  padding: 12px 14px 12px 44px;
+  border: 1.5px solid var(--grey-200);
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--grey-900);
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  background: white;
+}
+
+.dateInputWrapper input:focus {
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(74, 109, 140, 0.1);
+}
+
+.dateIcon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--grey-400);
+  pointer-events: none;
+}
+
+.timeRow {
+  display: flex;
+  gap: 12px;
+}
+
+.select {
+  flex: 1;
+  padding: 12px 36px 12px 16px;
+  border: 1.5px solid var(--grey-200);
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--grey-900);
+  background: white;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  min-width: 0;
+}
+
+.select:focus {
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(74, 109, 140, 0.1);
+}
+
+.select option {
+  padding: 10px;
+  font-size: 14px;
+}
+
+/* People tab */
+.tagBox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--grey-200);
+  border-radius: 8px;
+  min-height: 44px;
+  position: relative;
+}
+
+.tag {
+  background: #D8EFE8;
+  color: #233E3A;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.chevron {
+  position: absolute;
+  right: 12px;
+  color: var(--grey-400);
+}
+
+.placeholderText {
+  font-size: 14px;
+  color: var(--grey-400);
+}
