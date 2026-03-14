@@ -3,12 +3,17 @@ import { useState } from "react";
 
 import type { Student } from "@/src/api/students";
 
+import { getAllSections } from "@/src/api/sections";
 // API & Types
 import { getStudent } from "@/src/api/students";
+import { CreateSectionFlow } from "@/src/components/SectionForm/SectionForm";
 // Components
 import { StudentCard } from "@/src/components/StudentCard/StudentCard";
 import { StudentProfileModal } from "@/src/components/StudentProfileView/StudentProfileView";
+import { spawnSuccessDialog } from "@/src/components/SuccessPopup/SuccessPopup";
 import TestStudentForm from "@/src/pages/TestStudentForm";
+
+const EDIT_SECTION_ID_EXAMPLE = "69afa73190beaafad01125f3";
 
 export default function Test() {
   // --- FAKE DATA for testing student profile view ---
@@ -75,6 +80,25 @@ export default function Test() {
   // --- 2. STATE ---
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
+  const [sectionModalState, setSectionState] = useState<"active" | null>(null);
+  const [editSectionModalState, setEditSectionState] = useState<"active" | null>(null);
+
+  function toggleSection() {
+    if (sectionModalState == null) {
+      setSectionState("active");
+    } else {
+      setSectionState(null);
+    }
+  }
+
+  function toggleEditSection() {
+    if (editSectionModalState == null) {
+      setEditSectionState("active");
+    } else {
+      setEditSectionState(null);
+    }
+  }
+
   // New state for handling the "Real ID" input
   const [manualId, setManualId] = useState("");
   const [loading, setLoading] = useState(false);
@@ -107,7 +131,10 @@ export default function Test() {
   return (
     <div>
       <div style={{ padding: "20px" }}>
+        <h1> Create Class Form</h1>
+
         <h1>Test Page</h1>
+        {/* <SectionForm> */}
 
         {/* --- TEST REAL ID --- */}
         <div
@@ -151,6 +178,65 @@ export default function Test() {
             </div>
           ))}
         </div>
+
+        <button
+          onClick={() => {
+            toggleSection();
+          }}
+          style={{
+            border: "1px solid var(--grey-200)",
+            padding: "0.5rem 0.9rem",
+            borderRadius: "8px",
+            marginTop: "20px",
+            cursor: "pointer",
+          }}
+        >
+          Click to open section
+        </button>
+
+        <button
+          onClick={() => {
+            toggleEditSection();
+          }}
+          style={{
+            border: "1px solid var(--grey-200)",
+            padding: "0.5rem 0.9rem",
+            borderRadius: "8px",
+            marginTop: "20px",
+            cursor: "pointer",
+          }}
+        >
+          Click to open EDIT section {EDIT_SECTION_ID_EXAMPLE}
+        </button>
+
+        <button
+          onClick={() => {
+            void (async () => {
+              const result = await getAllSections();
+              if (result.success) {
+                console.info("Sections List:", result.data);
+              } else {
+                console.error("Failed to fetch sections:", result.error);
+              }
+            })();
+          }}
+        >
+          {" "}
+          fetch all sections{" "}
+        </button>
+
+        <br></br>
+        <button onClick={() => spawnSuccessDialog("success")}> SPAWN SUCESSS DIALOG </button>
+
+        <CreateSectionFlow
+          active={sectionModalState === "active"}
+          onClose={() => toggleSection()}
+        />
+        <CreateSectionFlow
+          active={editSectionModalState === "active"}
+          onClose={() => toggleEditSection()}
+          sectionId={EDIT_SECTION_ID_EXAMPLE}
+        />
 
         <StudentProfileModal student={selectedStudent} onClose={() => setSelectedStudent(null)} />
       </div>

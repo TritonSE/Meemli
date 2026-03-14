@@ -1,0 +1,10 @@
+.stepContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+
+  span[role="alert"] {
+    color: var(--color-red-700);
+    position: absolute;
+  }
+}

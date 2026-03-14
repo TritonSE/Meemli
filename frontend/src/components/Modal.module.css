@@ -18,6 +18,7 @@
   position: relative; /* sits inside overlay */
   width: 80%;
   max-width: 700px;
+  height: fit-content;
 
   background: white;
   border: 1px solid var(--grey-100);
@@ -28,7 +29,13 @@
 
   /* if the form content gets tall */
   max-height: 95vh;
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: scroll;
   scrollbar-width: none;
   justify-content: center;
+}
+
+.fitContent {
+  width: fit-content;
+  height: fit-content;
 }
