@@ -45,6 +45,7 @@ export async function updateSection(section: UpdateSectionRequest): Promise<APIR
     const json = (await response.json()) as Section;
     return { success: true, data: json };
   } catch (error) {
+    console.error("Error updating section:", error);
     return handleAPIError(error);
   }
 }

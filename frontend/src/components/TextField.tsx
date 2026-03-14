@@ -10,7 +10,7 @@ export type TextFieldProps = {
   label: string;
   error?: boolean;
   required?: boolean;
-} & Omit<React.ComponentProps<"input">, "type">;
+} & React.ComponentProps<"input">;
 
 // Use forwardRef to allow both RefObjects and Callback Refs (from react-hook-form)
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(

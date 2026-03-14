@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
+import { useAuth } from "../../context/AuthContext";
 import { Tooltip } from "../Tooltip/Tooltip";
 
 import style from "./Navbar.module.css";
@@ -24,6 +25,18 @@ const navItems: NavItem[] = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout()
+      .then(() => {
+        router.push("/login");
+      })
+      .catch((e) => {
+        console.error("Failed to log out", e);
+      });
+  };
 
   return (
     <nav className={style.sideNav}>
@@ -63,7 +76,7 @@ export function Navbar() {
         })}
       </div>
 
-      <button>
+      <button onClick={handleLogout} className={style.logoutBtn} aria-label="Log out">
         <Image src="/icons/nav/logout.svg" alt="Logout icon" width={20} height={20} />
       </button>
     </nav>

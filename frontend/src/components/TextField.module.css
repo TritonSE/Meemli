@@ -33,6 +33,7 @@
   border: 2px solid var(--primary-500);
   outline: none;
 }
+
 .input:hover {
   border: 1.5px solid var(--grey-300);
 }

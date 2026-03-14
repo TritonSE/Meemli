@@ -6,6 +6,8 @@
 /**
  * A custom type defining which HTTP methods we will handle in this file
  */
+import { auth } from "../util/firebase";
+
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
@@ -31,6 +33,18 @@ async function fetchRequest(
   const newHeaders = { ...headers };
   if (hasBody) {
     newHeaders["Content-Type"] = "application/json";
+  }
+
+  // automatically attach Firebase auth token if a user is signed in
+  try {
+    const user = auth.currentUser;
+    if (user) {
+      const token = await user.getIdToken();
+      newHeaders.Authorization = `Bearer ${token}`;
+    }
+  } catch (e) {
+    // swallow token errors; requests can still proceed unauthenticated
+    console.warn("Failed to fetch ID token", e);
   }
 
   const response = await fetch(url, {

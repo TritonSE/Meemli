@@ -9,7 +9,7 @@ const validateCode = body("code").notEmpty().withMessage("Code is required");
 
 export const validateTeachers: ValidationChain[] = [
   body("teachers").isArray().withMessage("Teachers must be an array"),
-  body("teachers.*").isString().withMessage("Each teacher must be a string"),
+  body("teachers.*").isString().withMessage("Each teacher must be a string").bail(),
 ];
 
 export const validateEnrolledStudents: ValidationChain[] = [
