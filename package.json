@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "firebase": "^12.9.0",
-    "lucide-react": "^0.575.0"
+    "lucide-react": "^0.575.0",
+    "mui": "^0.0.1"
   }
 }

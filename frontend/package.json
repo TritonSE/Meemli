@@ -20,7 +20,6 @@
     "@mui/material": "^7.3.7",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.564.0",
-    "mui": "^0.0.1",
     "next": "16.0.10",
     "react": "19.2.1",
     "react-day-picker": "^9.13.2",

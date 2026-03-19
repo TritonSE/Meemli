@@ -96,88 +96,90 @@ export default function Programs() {
 
   return (
     <div className={styles.pageWrapper}>
-      <div className={styles.header}>
-        <div className={styles.titleSection}>
-          <h1>Classes</h1>
-          <p>Take attendance, add notes, and see trends</p>
-        </div>
-        <button className={styles.createButton} onClick={() => setShowCreateModal(true)}>
-          <Plus size={16} />
-          Create New Class
-        </button>
-      </div>
-
-      <div className={styles.controls}>
-        <div className={styles.tabs}>
-          <button
-            className={`${styles.tabButton} ${activeTab === "active" ? styles.tabActive : ""}`}
-            onClick={() => setActiveTab("active")}
-          >
-            <Clock size={15} />
-            Active
-          </button>
-          <button
-            className={`${styles.tabButton} ${activeTab === "archived" ? styles.tabActive : ""}`}
-            onClick={() => setActiveTab("archived")}
-          >
-            <Archive size={15} />
-            Archived
-          </button>
-        </div>
-        <div className={styles.rightControls}>
-          <div ref={sortMenuRef} className={styles.sortContainer}>
-            <button className={styles.sortButton} onClick={() => setSortOpen((open) => !open)}>
-              <ArrowUpDown size={15} />
-              Sort By
-            </button>
-            {sortOpen && (
-              <div className={styles.sortDropdown}>
-                {[
-                  { label: "Alphabetical", value: "alphabetical" },
-                  { label: "Date Created", value: "createdAt" },
-                  { label: "Start Date", value: "startDate" },
-                  { label: "End Date", value: "endDate" },
-                  { label: "Color", value: "color" },
-                ].map((opt) => (
-                  <button
-                    key={opt.value}
-                    className={styles.sortOption}
-                    onClick={() => setSortBy(opt.value as typeof sortBy)}
-                  >
-                    {opt.label}
-                    {sortBy === opt.value && <Check size={14} />}
-                  </button>
-                ))}
-
-                <hr className={styles.sortDivider} />
-
-                {[
-                  { label: "Ascending", value: "asc", icon: <ArrowUp size={14} /> },
-                  { label: "Descending", value: "desc", icon: <ArrowDown size={14} /> },
-                ].map((opt) => (
-                  <button
-                    key={opt.value}
-                    className={styles.sortOption}
-                    onClick={() => setSortDir(opt.value as typeof sortDir)}
-                  >
-                    <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      {opt.icon}
-                      {opt.label}
-                    </span>
-                    {sortDir === opt.value && <Check size={14} />}
-                  </button>
-                ))}
-              </div>
-            )}
+      <div className={styles.headerSection}>
+        <div className={styles.header}>
+          <div className={styles.titleSection}>
+            <h1>Classes</h1>
+            <p>Take attendance, add notes, and see trends</p>
           </div>
-          <div className={styles.searchWrapper}>
-            <Search size={15} className={styles.searchIcon} />
-            <input
-              className={styles.searchInput}
-              placeholder="Search Class"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+          <button className={styles.createButton} onClick={() => setShowCreateModal(true)}>
+            <Plus size={16} />
+            Create New Class
+          </button>
+        </div>
+
+        <div className={styles.controls}>
+          <div className={styles.tabs}>
+            <button
+              className={`${styles.tabButton} ${activeTab === "active" ? styles.tabActive : ""}`}
+              onClick={() => setActiveTab("active")}
+            >
+              <Clock size={15} />
+              Active
+            </button>
+            <button
+              className={`${styles.tabButton} ${activeTab === "archived" ? styles.tabActive : ""}`}
+              onClick={() => setActiveTab("archived")}
+            >
+              <Archive size={15} />
+              Archived
+            </button>
+          </div>
+          <div className={styles.rightControls}>
+            <div ref={sortMenuRef} className={styles.sortContainer}>
+              <button className={styles.sortButton} onClick={() => setSortOpen((open) => !open)}>
+                <ArrowUpDown size={15} />
+                Sort By
+              </button>
+              {sortOpen && (
+                <div className={styles.sortDropdown}>
+                  {[
+                    { label: "Alphabetical", value: "alphabetical" },
+                    { label: "Date Created", value: "createdAt" },
+                    { label: "Start Date", value: "startDate" },
+                    { label: "End Date", value: "endDate" },
+                    { label: "Color", value: "color" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      className={styles.sortOption}
+                      onClick={() => setSortBy(opt.value as typeof sortBy)}
+                    >
+                      {opt.label}
+                      {sortBy === opt.value && <Check size={14} />}
+                    </button>
+                  ))}
+
+                  <hr className={styles.sortDivider} />
+
+                  {[
+                    { label: "Ascending", value: "asc", icon: <ArrowUp size={14} /> },
+                    { label: "Descending", value: "desc", icon: <ArrowDown size={14} /> },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      className={styles.sortOption}
+                      onClick={() => setSortDir(opt.value as typeof sortDir)}
+                    >
+                      <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        {opt.icon}
+                        {opt.label}
+                      </span>
+                      {sortDir === opt.value && <Check size={14} />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className={styles.searchWrapper}>
+              <Search size={15} className={styles.searchIcon} />
+              <input
+                className={styles.searchInput}
+                placeholder="Search Class"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -209,15 +211,18 @@ export default function Programs() {
       {/* pop up for deleting section */}
       {deletingSection && (
         <Modal
+          wrapperStyle={{ maxWidth: "640px", padding: "48px" }}
           child={
             <div className={styles.confirmDialog}>
-              <div className={styles.confirmTitle}>
-                <AlertTriangle size={22} color="#e53935" /> Deleting Class
+              <div className={styles.confirmContent}>
+                <div className={styles.confirmTitle}>
+                  <AlertTriangle size={36} color="#B42318" /> Deleting Class
+                </div>
+                <p className={styles.confirmBody}>
+                  Are you sure you want to delete <strong>{deletingSection.code}</strong>? This
+                  action cannot be undone.
+                </p>
               </div>
-              <p>
-                Are you sure you want to delete <strong>{deletingSection.code}</strong>?
-              </p>
-              <p className={styles.confirmWarning}>This action cannot be undone.</p>
               <div className={styles.confirmFooter}>
                 <button className={styles.confirmCancel} onClick={() => setDeletingSection(null)}>
                   Cancel

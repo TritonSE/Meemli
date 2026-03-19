@@ -87,16 +87,16 @@ export const SectionCard = function SectionCard({
       <div className={styles.cardBody}>
         <h3>{code}</h3>
         <p>
-          {days} {startTime} - {endTime}
+          {days.join(", ")} {startTime} - {endTime}
         </p>
 
         <hr />
 
         <div className={styles.row}>
-          <GraduationCap /> {teachers && teachers[0]}
+          <GraduationCap size={16} /> {teachers && teachers[0]}
         </div>
         <div className={styles.row}>
-          <Calendar /> {startDate} - {endDate}
+          <Calendar size={16} /> {startDate} - {endDate}
         </div>
       </div>
     </div>

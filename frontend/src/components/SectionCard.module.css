@@ -1,18 +1,17 @@
 .cardWrapper {
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  background: white;
   width: 100%;
 }
 
 .topBar {
-  height: 76px;
+  height: 48px;
   display: flex;
   justify-content: flex-end;
   align-items: flex-start;
-  padding: 12px;
+  padding: 10px 20px 20px;
   position: relative;
+  border-radius: 8px 8px 0 0;
 }
 
 .menuButton {
@@ -50,8 +49,9 @@
   background: none;
   border: none;
   cursor: pointer;
+  font-family: "Montserrat", sans-serif;
   font-size: 14px;
-  color: var(--grey-900);
+  color: #231f20;
 }
 
 .dropdown button:hover {
@@ -59,35 +59,53 @@
 }
 
 .cardBody {
-  padding: 20px 20px 25px 20px;
+  padding: 20px 20px 25px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
+  background: #ffffff;
+  border-left: 1px solid #e3e2e2;
+  border-right: 1px solid #e3e2e2;
+  border-bottom: 1px solid #e3e2e2;
+  border-radius: 0 0 8px 8px;
 }
 
 .cardBody h3 {
-  font-size: 18px;
+  font-family: "Montserrat", sans-serif;
   font-weight: 600;
+  font-size: 18px;
+  line-height: 28px;
+  letter-spacing: -0.02em;
+  color: #231f20;
   margin: 0;
-  color: var(--grey-900);
 }
 
 .cardBody p {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 500;
   font-size: 14px;
-  color: var(--grey-500);
+  line-height: 20px;
+  letter-spacing: -0.02em;
+  color: #6c6a6b;
   margin: 0;
 }
 
 .cardBody hr {
   border: none;
-  border-top: 1px solid var(--grey-100);
+  border-top: 1px solid #e3e2e2;
   margin: 0;
+  width: 100%;
+  align-self: stretch;
 }
 
 .row {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
-  color: var(--grey-600);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: -0.02em;
+  color: #494445;
 }

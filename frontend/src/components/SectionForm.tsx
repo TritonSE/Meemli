@@ -4,6 +4,7 @@ import { Calendar, ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 import { CustomSelect } from "./CustomSelect";
+import { MultiSelect } from "./MultiSelect";
 import { ProgressBar } from "./ProgressBar";
 import styles from "./SectionForm.module.css";
 
@@ -167,10 +168,10 @@ export const SectionForm = function SectionForm({
               Meeting Time <span className={styles.required}>*</span>
             </label>
             <div className={styles.timeRow}>
-              <CustomSelect
+              <MultiSelect
                 options={DAYS.map((d) => ({ label: d, value: d }))}
-                value={formData.days[0] ?? ""}
-                onChange={(val) => setFormData((prev) => ({ ...prev, days: [val] }))}
+                values={formData.days}
+                onChange={(vals) => setFormData((prev) => ({ ...prev, days: vals }))}
                 placeholder="Days"
               />
               <CustomSelect

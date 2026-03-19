@@ -1,26 +1,43 @@
 .pageWrapper {
-  padding: 40px 48px;
-  background: #f5f6f8;
+  padding: 64px 128px 60px;
+  background: #fcfbfb;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.headerSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 48px;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 32px;
+  align-items: center;
+  width: 100%;
 }
 
 .titleSection h1 {
-  font-size: 28px;
-  font-weight: 700;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 38px;
+  letter-spacing: -0.02em;
+  color: #231f20;
   margin: 0 0 4px;
-  color: var(--grey-900);
 }
 
 .titleSection p {
-  font-size: 14px;
-  color: var(--grey-500);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  color: #6c6a6b;
   margin: 0;
 }
 
@@ -28,13 +45,17 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: var(--primary-500);
-  color: white;
+  background-color: #3f8d7c;
+  color: #ffffff;
   border: none;
   border-radius: 8px;
-  padding: 10px 20px;
-  font-size: 14px;
+  padding: 10px 16px;
+  height: 44px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
   font-weight: 600;
+  line-height: 24px;
+  letter-spacing: -0.02em;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -47,26 +68,30 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  width: 100%;
 }
 
 .tabs {
   display: flex;
-  gap: 8px;
+  gap: 16px;
 }
 
 .tabButton {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 18px;
-  border-radius: 20px;
+  gap: 8px;
+  padding: 10px 14px;
+  height: 40px;
+  border-radius: 8px;
+  font-family: "Montserrat", sans-serif;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.02em;
   cursor: pointer;
-  border: 1.5px solid var(--grey-200);
-  background: white;
-  color: var(--grey-600);
+  border: 1px solid #cdcfd0;
+  background: #ffffff;
+  color: #494445;
 }
 
 .tabButton:hover {
@@ -74,35 +99,39 @@
 }
 
 .tabActive {
-  background-color: var(--primary-500);
-  color: white;
-  border-color: var(--primary-500);
+  background-color: #3f8d7c;
+  color: #ffffff;
+  border-color: #3f8d7c;
 }
 
 .tabActive:hover {
   background-color: var(--primary-600);
   border-color: var(--primary-600);
-  color: white;
+  color: #ffffff;
 }
 
 .rightControls {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .sortButton {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
+  gap: 8px;
+  padding: 10px 14px;
+  height: 40px;
   border-radius: 8px;
+  font-family: "Montserrat", sans-serif;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.02em;
   cursor: pointer;
-  border: 1px solid var(--grey-200);
-  background: white;
-  color: var(--grey-600);
+  border: 1px solid #cdcfd0;
+  background: #ffffff;
+  color: #494445;
   white-space: nowrap;
 }
 
@@ -119,64 +148,103 @@
 .searchIcon {
   position: absolute;
   left: 12px;
-  color: var(--grey-400);
+  color: #9b9d9f;
   pointer-events: none;
 }
 
 .searchInput {
-  padding: 8px 14px 8px 36px;
-  border: 1px solid var(--grey-200);
+  padding: 8px 6px 8px 38px;
+  border: 1px solid #cdcfd0;
   border-radius: 8px;
-  font-size: 14px;
-  color: var(--grey-900);
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  color: #231f20;
   outline: none;
-  width: 200px;
+  width: 240px;
+  height: 40px;
+}
+
+.searchInput::placeholder {
+  color: #9b9d9f;
 }
 
 .searchInput:focus {
   border-color: var(--primary-500);
 }
 
+/* ── Confirm dialog ───────────────────────────── */
+
 .confirmDialog {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  align-items: center;
+  gap: 24px;
   width: 100%;
-  max-width: 460px;
+}
+
+.confirmContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
 }
 
 .confirmTitle {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--grey-900);
+  gap: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 38px;
+  letter-spacing: -0.02em;
+  color: #231f20;
   margin: 0;
 }
 
-.confirmWarning {
-  font-weight: 600;
-  color: var(--grey-700);
+.confirmBody {
+  font-family: "Montserrat", sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  color: #231f20;
   margin: 0;
 }
 
 .confirmFooter {
   display: flex;
+  flex-direction: row;
+  align-items: flex-end;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 8px;
+  gap: 16px;
+  width: 100%;
 }
 
 .confirmCancel {
-  padding: 10px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 16px;
+  gap: 8px;
+  height: 44px;
+  background: #3f8d7c;
   border-radius: 8px;
   border: none;
-  background-color: var(--primary-500);
-  color: white;
-  font-size: 14px;
+  font-family: "Montserrat", sans-serif;
   font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  color: #ffffff;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .confirmCancel:hover {
@@ -184,19 +252,30 @@
 }
 
 .confirmDelete {
-  padding: 10px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 16px;
+  gap: 8px;
+  height: 44px;
+  background: #ffffff;
+  border: 1px solid #fda29b;
   border-radius: 8px;
-  border: 1.5px solid #e53935;
-  background: white;
-  color: #e53935;
-  font-size: 14px;
+  font-family: "Montserrat", sans-serif;
   font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  color: #f04438;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .confirmDelete:hover {
   background: #fff5f5;
 }
+
+/* ── Sort dropdown ────────────────────────────── */
 
 .sortContainer {
   position: relative;
@@ -207,7 +286,7 @@
   top: calc(100% + 6px);
   right: 0;
   background: white;
-  border: 1px solid var(--grey-200);
+  border: 1px solid #cdcfd0;
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   z-index: 50;
@@ -224,8 +303,10 @@
   background: none;
   border: none;
   border-radius: 8px;
+  font-family: "Montserrat", sans-serif;
   font-size: 14px;
-  color: var(--grey-800);
+  font-weight: 500;
+  color: #494445;
   cursor: pointer;
   text-align: left;
   gap: 8px;
@@ -237,12 +318,14 @@
 
 .sortDivider {
   border: none;
-  border-top: 1px solid var(--grey-100);
+  border-top: 1px solid #e3e2e2;
   margin: 4px 0;
 }
+
+/* ── Grid ─────────────────────────────────────── */
 
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  gap: 12px;
 }
