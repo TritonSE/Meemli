@@ -3,14 +3,9 @@ import { body } from "express-validator";
 import type { ValidationChain } from "express-validator";
 
 const TIME_24H_REGEX = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
+const COLOR_REGEX = /^#([0-9a-f]{3}){1,2}$/i; // #RGB or #RRGGBB
 
 const validateCode = body("code").notEmpty().withMessage("Code is required");
-
-const validateProgram = body("program")
-  .notEmpty()
-  .withMessage("Program is required")
-  .isMongoId()
-  .withMessage("Program must be a valid MongoDB ObjectID");
 
 export const validateTeachers: ValidationChain[] = [
   body("teachers").isArray().withMessage("Teachers must be an array"),
@@ -78,13 +73,67 @@ const validateEndTime = body("endTime")
     return true;
   });
 
+const makeStartDateValidator = () =>
+  body("startDate")
+    .exists()
+    .withMessage("startDate is required")
+    .bail()
+    .isString()
+    .withMessage("startDate must be a string")
+    .bail()
+    .isISO8601()
+    .withMessage("startDate must be a valid ISO8601 date (e.g. 2026-01-14)");
+
+const makeEndDateValidator = () =>
+  body("endDate")
+    .optional()
+    .isString()
+    .withMessage("endDate must be a string")
+    .bail()
+    .isISO8601()
+    .withMessage("endDate must be a valid ISO8601 date (e.g. 2026-01-14)");
+
+// Cross-field rule: if endDate exists, it must be >= startDate
+const makeDateOrderValidator = () =>
+  body("endDate")
+    .optional()
+    .custom((endDate, { req }) => {
+      const { startDate } = req.body as { startDate?: string };
+
+      // if startDate missing, startDate validator will catch it (for create)
+      if (!startDate || !endDate) return true;
+      // if either is not a string, other validators will catch it
+      if (typeof endDate !== "string" || typeof startDate !== "string") {
+        return true;
+      }
+      const start = new Date(startDate).getTime();
+      const end = new Date(endDate).getTime();
+
+      if (Number.isNaN(start) || Number.isNaN(end)) return true; // ISO validators handle this
+      if (end < start) throw new Error("endDate must be the same as or after startDate");
+      return true;
+    });
+
+const makeArchivedValidator = () =>
+  body("archived").optional().isBoolean().withMessage("archived must be a boolean");
+
+const makeColorValidator = () =>
+  body("color")
+    .isString()
+    .matches(COLOR_REGEX)
+    .withMessage("color must be a string of hex format #RGB or #RGGBB");
+
 export const createSectionValidator = [
   validateCode,
   validateDays,
   validateEndTime,
   ...validateEnrolledStudents,
-  validateProgram,
   validateStartTime,
+  makeStartDateValidator(),
+  makeEndDateValidator(),
+  makeDateOrderValidator(),
+  makeArchivedValidator(),
+  makeColorValidator(),
   ...validateTeachers,
 ];
 
@@ -93,7 +142,11 @@ export const updateSectionValidator = [
   validateDays.optional(),
   validateEndTime.optional(),
   ...validateEnrolledStudents.map((v) => v.optional()),
-  validateProgram.optional(),
   validateStartTime.optional(),
+  makeStartDateValidator(),
+  makeEndDateValidator(),
+  makeDateOrderValidator(),
+  makeArchivedValidator(),
+  makeColorValidator(),
   ...validateTeachers.map((v) => v.optional()),
 ];

@@ -107,3 +107,13 @@ export const whoAmI: RequestHandler = async (req, res, next) => {
     return next(error);
   }
 };
+
+//  Get All Users
+export const getAllUsers: RequestHandler = async (req, res, next) => {
+  try {
+    const users = await UserModel.find();
+    res.status(200).json(users);
+  } catch (error) {
+    return next(error);
+  }
+};

@@ -4,13 +4,15 @@ import type { APIResult } from "./requests";
 
 export type Section = {
   _id: string;
-
   code: string;
-  program: string; // ObjectID in backend
-  teachers: string[]; // ObjectID[] in backend
+  teachers: string[]; // Firebase IDS in backend (string[])
   enrolledStudents: string[]; // ObjectID[] in backend
   startTime: string;
   endTime: string;
+  startDate: string;
+  endDate: string;
+  archived: boolean;
+  color: string;
   days: string[];
 };
 
@@ -52,6 +54,7 @@ export async function createSection(student: CreateSectionRequest): Promise<APIR
   try {
     const response = await post(`/sections`, student);
     const json = (await response.json()) as Section;
+
     return { success: true, data: json };
   } catch (error) {
     return handleAPIError(error);
