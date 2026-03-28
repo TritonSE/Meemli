@@ -17,7 +17,10 @@ const userSchema = new Schema({
   lastName: { type: String, required: true },
   personalEmail: { type: String, required: true },
   meemliEmail: { type: String, required: true },
+  phoneNumber: { type: String, required: true },
   admin: { type: Boolean, required: true },
+  archived: { type: Boolean, required: true, default: false },
+  assignedSections: [{ type: Schema.Types.ObjectId, ref: "Section" }],
 });
 
 type User = InferSchemaType<typeof userSchema>;

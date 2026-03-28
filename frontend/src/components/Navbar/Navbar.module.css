@@ -60,4 +60,17 @@
     width: 100%;
     gap: 1rem;
   }
+
+  /* logout button sits at bottom of sidebar, style similar to nav links */
+  .logoutBtn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: transform 0.15s ease-in-out;
+  }
+
+  .logoutBtn:hover {
+    transform: scale(1.2);
+  }
 }

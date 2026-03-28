@@ -1,0 +1,87 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field {
+  position: relative;
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.inlineLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #231f20;
+}
+
+.inputWithIcon {
+  position: relative;
+}
+
+.eyeBtn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  color: #6b7280;
+  opacity: 0.85;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.eyeBtn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.helper {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: #6c6a6b;
+}
+
+.helper[data-error="true"] {
+  color: #be2d46;
+}
+
+.helper[data-error="false"] {
+  color: #6c6a6b;
+}
+
+.actions {
+  margin-top: 8px;
+}
+
+.primaryBtn {
+  width: 100%;
+  height: 44px;
+  border-radius: 10px;
+}
+
+.footerLinkRow {
+  margin-top: 6px;
+}
+
+.link {
+  font-size: 13px;
+  font-weight: 600;
+  color: #3f8d7c;
+  text-decoration: none;
+}
+
+.link:hover {
+  color: #307164;
+}

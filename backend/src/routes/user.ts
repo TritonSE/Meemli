@@ -11,6 +11,9 @@ router.post("/", UserValidator.validateCreateUser, UserController.createUser);
 // Edit User by ID
 router.put("/:id", UserValidator.validateEditUser, UserController.editUserById);
 
+// Get All Users
+router.get("/", UserController.getAllUsers);
+
 // Who Am I
 router.get("/:id", UserController.whoAmI);
 

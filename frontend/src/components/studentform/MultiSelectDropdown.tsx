@@ -26,9 +26,7 @@ type SectionLike = {
 
 type MultiSelectDropdownProps = {
   label?: string;
-  /** Selected section ids */
   value: string[];
-  /** Called with next selected ids */
   onChange: (next: string[]) => void;
 
   required?: boolean;
@@ -83,7 +81,6 @@ export function MultiSelectDropdown({
   const [error, setError] = useState<string | null>(null);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
-  // will recalculate every time a check is ticked or unticked
   const selectedSet = useMemo(() => new Set(value), [value]);
 
   const sectionIdToProgramId = useMemo(() => {
