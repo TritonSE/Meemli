@@ -239,6 +239,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
       phoneNumber: phoneNumber.trim(),
       admin: isAdmin,
       assignedSections: programs.map((program) => program.value),
+      archived: false,
     })
       .then((result) => {
         if (result.success) {

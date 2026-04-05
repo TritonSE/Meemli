@@ -17,6 +17,7 @@ type CreateUserBody = {
   phoneNumber: string;
   admin: boolean;
   assignedSections?: string[];
+  archived: false;
 };
 
 export const createUser: RequestHandler = async (req, res, next) => {
@@ -47,6 +48,7 @@ export const createUser: RequestHandler = async (req, res, next) => {
       phoneNumber,
       admin,
       assignedSections: assignedSectionsIds,
+      archived: false,
     });
 
     res.status(201).json(user);
@@ -89,7 +91,6 @@ export const editUserById: RequestHandler = async (req, res, next) => {
 // Who Am I
 export const whoAmI: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
-
   await firebaseAdminAuth.getUser(id).catch((error) => {
     if (error instanceof FirebaseAuthError && error.code === "auth/user-not-found") {
       return res.status(404).json({ message: "User not found" });
@@ -111,7 +112,7 @@ export const whoAmI: RequestHandler = async (req, res, next) => {
 //  Get All Users
 export const getAllUsers: RequestHandler = async (req, res, next) => {
   try {
-    const users = await UserModel.find();
+    const users = await UserModel.find().populate("assignedSections");
     res.status(200).json(users);
   } catch (error) {
     return next(error);

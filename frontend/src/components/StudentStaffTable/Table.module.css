@@ -4,9 +4,9 @@
   font-family: "Montserrat", sans-serif;
   width: 100%;
   height: 65vh;
-  table-layout: fixed;
   background-color: #fcfbfb;
   flex: 1;
+  overflow-x: auto;
 }
 
 .table {
@@ -17,8 +17,36 @@
   border-radius: 8px;
   overflow: hidden;
   width: 100%;
+  table-layout: fixed;
 
+  --checkbox-width: 0px;
+  --email-width: 0px;
+  --role-width: 0px;
+  --phone-width: 0px;
+  --programs-width: 0px;
+  --notes-width: 0px;
+  --name-min-width: 75px;
+
+  min-width: calc(
+    var(--checkbox-width) + var(--email-width) + var(--role-width) + var(--phone-width) +
+      var(--programs-width) + var(--notes-width) + var(--name-min-width)
+  );
+}
+
+.withCheckbox {
+  --checkbox-width: 60px;
+}
+
+.studentTable {
+  --email-width: 300px;
+  --programs-width: 400px;
   --notes-width: 300px;
+}
+
+.staffTable {
+  --role-width: 220px;
+  --phone-width: 190px;
+  --programs-width: 550px;
 }
 
 .table th,
@@ -102,16 +130,28 @@ column widths and properties
 }
 
 .checkboxCol {
-  width: 60px;
+  width: var(--checkbox-width);
 }
 .nameCol {
-  width: calc(100% - 60px - 300px - 400px - var(--notes-width));
+  width: max(
+    75px,
+    calc(
+      100% - var(--checkbox-width) - var(--email-width) - var(--role-width) - var(--phone-width) -
+        var(--programs-width) - var(--notes-width)
+    )
+  );
 }
 .emailCol {
-  width: 300px;
+  width: var(--email-width);
+}
+.roleCol {
+  width: var(--role-width);
+}
+.phoneNumberCol {
+  width: var(--phone-width);
 }
 .programsCol {
-  width: 400px;
+  width: var(--programs-width);
 }
 .notesCol {
   width: var(--notes-width);
@@ -120,6 +160,8 @@ column widths and properties
 /* Styling for name column */
 .nameItem {
   position: relative;
+  overflow: hidden;
+  min-width: 75px;
 }
 .hoverWrap {
   position: absolute;
@@ -187,26 +229,9 @@ column widths and properties
 /* 
 Styling for sections column 
 */
-.blockItems {
-  display: flex;
-  gap: 6px;
-  flex-wrap: nowrap;
+
+.programsItem {
   overflow: hidden;
-  align-items: center;
-}
-.blockItem {
-  display: flex;
-  flex-direction: row;
-  flex-shrink: 0;
-  width: auto;
-  padding: 10px;
-  border-radius: 8px;
-  align-items: center;
-  color: white;
-}
-.moreItem {
-  background: var(--grey-100);
-  color: var(--grey-700);
 }
 
 /*

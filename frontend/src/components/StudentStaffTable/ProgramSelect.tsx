@@ -1,6 +1,8 @@
 import { Check, ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { getChipColors } from "../ChipColor";
+
 import type { Section } from "@/src/api/sections";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -16,6 +18,11 @@ export type ProgramSelectProps = {
 export function ProgramSelect({ items, selected, setSelected }: ProgramSelectProps) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+
+  const getSectionChipColors = (section: Section) => {
+    const hex = typeof section.color === "string" && section.color ? section.color : "#008080";
+    return getChipColors(hex);
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -75,11 +82,22 @@ export function ProgramSelect({ items, selected, setSelected }: ProgramSelectPro
             <div className={styles.selectedItems}>
               {items
                 .filter((section) => selected.includes(section._id))
-                .map((section) => (
-                  <span key={section._id} className={styles.selectedBadge}>
-                    {section.code}
-                  </span>
-                ))}
+                .map((section) => {
+                  const { backgroundColor, textColor } = getSectionChipColors(section);
+
+                  return (
+                    <span
+                      key={section._id}
+                      className={styles.selectedBadge}
+                      style={{
+                        backgroundColor,
+                        color: textColor,
+                      }}
+                    >
+                      {section.code}
+                    </span>
+                  );
+                })}
             </div>
             <ChevronDown
               size={24}
@@ -94,14 +112,22 @@ export function ProgramSelect({ items, selected, setSelected }: ProgramSelectPro
         <div className={styles.panel}>
           {items.map((section) => {
             const active = isSelected(section);
+            const { backgroundColor, textColor } = getSectionChipColors(section);
             return (
               <div
                 key={section._id}
                 className={`${styles.panelItem} ${active ? styles.panelItemActive : ""}`}
                 onClick={() => toggleItem(section)}
               >
-                <div className={styles.itemBox}>
-                  <span className={styles.itemCode}>{section.code}</span>
+                <div
+                  className={styles.itemBox}
+                  style={{
+                    backgroundColor,
+                  }}
+                >
+                  <span className={styles.itemCode} style={{ color: textColor }}>
+                    {section.code}
+                  </span>
                 </div>
                 {active && <Check size={16} strokeWidth={2.5} className={styles.checkIcon} />}
               </div>

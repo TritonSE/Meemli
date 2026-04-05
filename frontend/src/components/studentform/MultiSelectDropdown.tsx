@@ -11,6 +11,7 @@ import { Check } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { getAllSections } from "../../api/sections";
+import { getChipColors } from "../ChipColor";
 
 import styles from "./MultiSelectDropdown.module.css";
 
@@ -36,34 +37,6 @@ type MultiSelectDropdownProps = {
   getLabel?: (section: SectionLike) => string;
   getValue?: (section: SectionLike) => string;
 };
-/**
- * Styling for different programs. Hash the program id for consistency
- * across different refreshes and users.
- */
-type ProgramStyle = {
-  bg: string;
-  text: string;
-};
-
-const PALETTE: ProgramStyle[] = [
-  { bg: "#D8EFE8", text: "#233E3A" },
-  { bg: "#FDE4D7", text: "#771817" },
-  { bg: "#E7F5FE", text: "#1B3A4B" },
-  { bg: "#FAFBC6", text: "#6C4917" },
-];
-
-function hashToIndex(input: string, mod: number) {
-  let h = 0;
-  for (let i = 0; i < input.length; i++) {
-    h = (h * 31 + input.charCodeAt(i)) >>> 0;
-  }
-  return h % mod;
-}
-
-function programStyle(programId?: string): ProgramStyle {
-  if (!programId) return { bg: "transparent", text: "inherit" };
-  return PALETTE[hashToIndex(programId, PALETTE.length)];
-}
 
 export function MultiSelectDropdown({
   label = "Assigned Program(s)",
@@ -82,14 +55,6 @@ export function MultiSelectDropdown({
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const selectedSet = useMemo(() => new Set(value), [value]);
-
-  const sectionIdToProgramId = useMemo(() => {
-    const m = new Map<string, string | undefined>();
-    for (const s of sections) {
-      m.set(getValue(s), typeof s.program === "string" ? s.program : undefined);
-    }
-    return m;
-  }, [sections, getValue]);
 
   // Fetch sections once on mount
   useEffect(() => {
@@ -173,16 +138,18 @@ export function MultiSelectDropdown({
             : selectedLabels.length > 0
               ? value.map((id, i) => {
                   const l = selectedLabels[i] ?? id;
-                  const prog = sectionIdToProgramId.get(id);
-                  const c = programStyle(prog);
+                  const section = sections.find((s) => getValue(s) === id);
+                  const hex =
+                    typeof section?.color === "string" && section.color ? section.color : "#008080";
+                  const { backgroundColor, textColor } = getChipColors(hex);
 
                   return (
                     <div
                       key={id}
                       className={styles.chosen}
                       style={{
-                        background: c.bg,
-                        color: c.text,
+                        background: backgroundColor,
+                        color: textColor,
                       }}
                     >
                       {l}
@@ -232,9 +199,8 @@ export function MultiSelectDropdown({
                     const id = getValue(s);
                     const text = getLabel(s);
                     const checked = selectedSet.has(id);
-
-                    const prog = typeof s.program === "string" ? s.program : undefined;
-                    const c = programStyle(prog);
+                    const hex = typeof s.color === "string" && s.color ? s.color : "#008080";
+                    const { backgroundColor, textColor } = getChipColors(hex);
 
                     let className = styles.listItem;
                     if (checked) className += ` ${styles.listItemSelected}`;
@@ -246,8 +212,8 @@ export function MultiSelectDropdown({
                           className={styles.itemBtn}
                           onClick={() => toggle(id)}
                           style={{
-                            background: c.bg,
-                            color: c.text,
+                            background: backgroundColor,
+                            color: textColor,
                           }}
                         >
                           {text}

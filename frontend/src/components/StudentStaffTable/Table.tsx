@@ -1,18 +1,22 @@
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import styles from "./Table.module.css";
 
 import type { Section } from "@/src/api/sections";
 import type { Student } from "@/src/api/students";
+import type { User } from "@/src/api/user";
 import type { Dispatch, SetStateAction } from "react";
 
 import EditIcon from "@/public/icons/edit.svg";
 import PrevIcon from "@/public/icons/prev.svg";
 import ShowIcon from "@/public/icons/show.svg";
 import { getAllStudents } from "@/src/api/students";
+import { DynamicBlockDisplay } from "@/src/components/DynamicBlockDisplay/DynamicBlockDisplay";
 import { Modal } from "@/src/components/Modal";
+import { NameCard } from "@/src/components/StudentCard/NameCard";
 import { StudentCard } from "@/src/components/StudentCard/StudentCard";
+import { StudentEditForm } from "@/src/components/studentform/StudentEditForm";
 import { StudentForm } from "@/src/components/studentform/StudentForm";
 import { StudentProfileModal } from "@/src/components/StudentProfileView/StudentProfileView";
 
@@ -21,78 +25,14 @@ import { StudentProfileModal } from "@/src/components/StudentProfileView/Student
  * @param labels - Array of strings to display as labels
  * @param colors - Array of colors (hex or CSS color names) corresponding to each label
  */
-function DynamicBlockDisplay({ labels, colors }: { labels: string[]; colors: string[] }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [visibleCount, setVisibleCount] = useState<number>(3);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const updateVisibleCount = () => {
-      const container = containerRef.current;
-      if (!container || container.children.length === 0) return;
-
-      const containerWidth = container.clientWidth;
-      const firstChild = container.children[0] as HTMLElement;
-      const itemWidth = firstChild.offsetWidth;
-      const gap = 6;
-      const overflowItemEstimate = 45;
-
-      let count = Math.floor((containerWidth - overflowItemEstimate - gap) / (itemWidth + gap));
-      count = Math.max(0, Math.min(count, labels.length));
-
-      setVisibleCount(count);
-    };
-
-    const resizeObserver = new ResizeObserver(updateVisibleCount);
-    resizeObserver.observe(containerRef.current);
-    const timer = setTimeout(updateVisibleCount, 0);
-
-    return () => {
-      resizeObserver.disconnect();
-      clearTimeout(timer);
-    };
-  }, [labels.length]);
-
-  const visible = labels.slice(0, visibleCount);
-  const remaining = labels.length - visible.length;
-
-  // TODO: update to section color
-  return (
-    <div ref={containerRef} className={styles.blockItems}>
-      {visible.map((label, index) => (
-        <div
-          key={index}
-          className={styles.blockItem}
-          style={{ backgroundColor: colors[index] ?? "#008080" }}
-        >
-          {label}
-        </div>
-      ))}
-      {remaining > 0 && (
-        <div className={`${styles.blockItem} ${styles.moreItem}`}>+{remaining}</div>
-      )}
-    </div>
-  );
-}
-
-type User = {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  personalEmail: string;
-  meemliEmail: string;
-  phoneNumber: string;
-  admin: boolean;
-  archived: boolean;
-  assignedsections: string[];
-};
+// --- Color helpers ---
 
 export type TableProps = {
   data: Student[] | User[];
   setData: Dispatch<SetStateAction<any>>;
   sections: Section[];
   type: "staff" | "student";
+  state: "admin" | "teacher";
   isEdit: boolean;
   onEdit?: () => void;
   selected: Set<string>;
@@ -104,6 +44,7 @@ export function Table({
   data,
   setData,
   type,
+  state,
   sections,
   isEdit,
   onEdit,
@@ -124,6 +65,7 @@ export function Table({
   const pageCount = Math.max(1, Math.ceil(totalRows / PAGE_SIZE));
   const [page, setPage] = useState<number>(0);
   const [pageInput, setPageInput] = useState<string>("1");
+  const tableClassName = `${styles.table} ${type === "student" ? styles.studentTable : styles.staffTable} ${isEdit ? styles.withCheckbox : ""}`;
 
   /**
    * Checks if an input is student or staff. Used to stop linter errors
@@ -172,18 +114,11 @@ export function Table({
       children.push(<ShowIcon key="0" className={styles.hoverIcon} />);
     }
 
-    if (bool) {
-      if (isEdit) {
-        fxn = () => {
-          setEditData(input);
-          setEditOpen(true);
-        };
-      } else {
-        fxn = () => {
-          setEditData(input);
-          setViewOpen(true);
-        };
-      }
+    if (bool && !isEdit) {
+      fxn = () => {
+        setEditData(input);
+        setViewOpen(true);
+      };
     } else {
       fxn = () => {
         setEditData(input);
@@ -235,17 +170,22 @@ export function Table({
 
   const renderRow = (input: Student | User) => {
     if (isStudent(input)) {
-      const sectionLabels = input.enrolledSections.map((cid) => {
-        const res = sections.find((obj) => obj._id === cid);
-        return res ? res.code : "Error";
-      });
-      const sortedLabels = sectionLabels.sort((a, b) =>
-        (a ?? "").localeCompare(b ?? "", undefined, {
-          sensitivity: "base",
-        }),
-      );
-      // TODO: replace with section color
-      const sectionColors = input.enrolledSections.map(() => "teal");
+      const sortedSections = input.enrolledSections
+        .map((cid) => {
+          const res = sections.find((obj) => obj._id === cid);
+          return {
+            label: res?.code ?? "Error",
+            color: res?.color ?? "gray",
+          };
+        })
+        .sort((a, b) =>
+          (a.label ?? "").localeCompare(b.label ?? "", undefined, {
+            sensitivity: "base",
+          }),
+        );
+
+      const sortedLabels = sortedSections.map((s) => s.label);
+      const sectionColors = sortedSections.map((s) => s.color);
 
       return (
         <>
@@ -255,15 +195,49 @@ export function Table({
             <div className={styles.hoverWrap}>{renderHoverBtn(input)}</div>
           </td>
           <td className={styles.textItem}>{input.parentContact.email}</td>
-          <td>
+          <td className={styles.programsItem}>
             <DynamicBlockDisplay labels={sortedLabels} colors={sectionColors} />
           </td>
           <td className={styles.notesItem}>{input.comments}</td>
         </>
       );
     } else {
-      // TODO: Add staff row rendering
-      return <></>;
+      const sortedSections = input.assignedSections
+        .map((cid) => {
+          const res = sections.find((obj) => obj._id === cid);
+          return {
+            label: res?.code ?? "Error",
+            color: res?.color ?? "gray",
+          };
+        })
+        .sort((a, b) =>
+          (a.label ?? "").localeCompare(b.label ?? "", undefined, {
+            sensitivity: "base",
+          }),
+        );
+
+      const sortedLabels = sortedSections.map((s) => s.label);
+      const sectionColors = sortedSections.map((s) => s.color);
+
+      return (
+        <>
+          {renderCheckbox(input)}
+          <td className={styles.nameItem}>
+            <NameCard name={`${input.firstName} ${input.lastName}`} email={input.meemliEmail} />
+            <div className={styles.hoverWrap}>{renderHoverBtn(input)}</div>
+          </td>
+          <td className={styles.roleItem}>
+            <DynamicBlockDisplay
+              labels={input.admin ? ["Administrator"] : ["Staff"]}
+              colors={input.admin ? ["#FF5000"] : ["#00FF00"]}
+            />
+          </td>
+          <td className={styles.textItem}>{input.phoneNumber}</td>
+          <td className={styles.programsItem}>
+            <DynamicBlockDisplay labels={sortedLabels} colors={sectionColors} />
+          </td>
+        </>
+      );
     }
   };
 
@@ -321,16 +295,14 @@ export function Table({
         <th className={`${styles.nameCol} ${styles.headerItem}`}>Name</th>
         <th className={`${styles.roleCol} ${styles.headerItem}`}>Role</th>
         <th className={`${styles.phoneNumberCol} ${styles.headerItem}`}>Phone Number</th>
-        <th className={`${styles.dateCol} ${styles.headerItem}`}>Start Date</th>
         <th className={`${styles.programsCol} ${styles.headerItem}`}>Assigned Programs</th>
       </>
     );
   }
-
   return (
     <>
       <div className={styles.tableWrapper}>
-        <table className={styles.table}>
+        <table className={tableClassName}>
           <thead>
             <tr className={styles.headerRow}>
               {isEdit && <th className={styles.checkboxCol}></th>}
@@ -347,7 +319,7 @@ export function Table({
         </table>
       </div>
       {renderNavigation()}
-      {isStudent(editData) && editOpen && (
+      {isStudent(editData) && editOpen && state === "admin" && (
         <Modal
           onExit={() => setEditOpen(false)}
           child={
@@ -372,6 +344,35 @@ export function Table({
                     .finally(() => setLoading(false));
                 }}
                 onCancel={() => setEditOpen(false)}
+              />
+            </>
+          }
+        />
+      )}
+      {isStudent(editData) && editOpen && state !== "admin" && (
+        <Modal
+          onExit={() => setEditOpen(false)}
+          child={
+            <>
+              <StudentEditForm
+                student={editData}
+                onCancel={() => setEditOpen(false)}
+                onSubmit={() => {
+                  setEditOpen(false);
+                  getAllStudents()
+                    .then((result) => {
+                      if (result.success) {
+                        setData(result.data);
+                        if (onEdit) {
+                          onEdit();
+                        }
+                      }
+                    })
+                    .catch((error) =>
+                      setErrorMessage(error instanceof Error ? error.message : String(error)),
+                    )
+                    .finally(() => setLoading(false));
+                }}
               />
             </>
           }
