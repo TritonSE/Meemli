@@ -1,4 +1,4 @@
-import { validationResult } from "express-validator";
+import createHTTPError from "http-errors";
 
 import { AttendanceModel } from "../models/attendance";
 import { SessionModel } from "../models/session";
@@ -14,8 +14,6 @@ type CreateSessionBody = {
 
 export const createSession: RequestHandler = async (req, res, next) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) throw new Error(errors.array()[0].msg as string);
     const { section, sessionDate } = req.body as CreateSessionBody;
 
     const session = await SessionModel.create({
@@ -36,15 +34,13 @@ type UpdateSessionBody = Partial<{
 
 export const editSessionById: RequestHandler = async (req, res, next) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) throw new Error(errors.array()[0].msg as string);
     const { id } = req.params;
     const updateData: UpdateSessionBody = req.body as UpdateSessionBody;
     const updatedSession = await SessionModel.findByIdAndUpdate(id, updateData, { new: true });
 
     // updatedSession will be null if no session with the given ID was found
     if (!updatedSession) {
-      return res.status(404).json({ error: "Session not found" });
+      throw createHTTPError(404, "Session not found");
     }
 
     return res.status(200).json(updatedSession);
@@ -61,7 +57,7 @@ export const getSession: RequestHandler = async (req, res, next) => {
     const session = await SessionModel.findById(id);
 
     if (!session) {
-      return res.status(404).json({ error: "Session not found" });
+      throw createHTTPError(404, "Session not found");
     }
 
     // This creates records if missing, checks the date, returns them
