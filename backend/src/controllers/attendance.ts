@@ -64,7 +64,7 @@ export const ensureAttendanceForSession = async (sessionId: string) => {
   if (existing.length > 0) return existing;
 
   const session = await SessionModel.findById(sessionId);
-  if (!session) throw new Error("Session not found");
+  if (!session) throw createHTTPError(404, "Session not found");
 
   const sessionDate = new Date(session.sessionDate);
   const today = new Date();
