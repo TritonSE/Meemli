@@ -11,15 +11,40 @@ import { TextField } from "../../../components/TextField";
 import styles from "./page.module.css";
 
 type Step = "invited" | "form" | "success";
-
+type ActivatePageProps = {
+  // You can add props here if needed, such as a token for activation
+  inviterName?: string; // Example prop for inviter's name
+  inviteeEmail?: string; // Example prop for invitee's email
+};
 function ActivatePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Example: /activate?email=janedoe@gmail.com&inviter=Usha%20Sekar
-  const email = useMemo(() => searchParams?.get("email") ?? "janedoe@gmail.com", [searchParams]);
-  const inviter = useMemo(() => searchParams?.get("inviter") ?? "Usha Sekar", [searchParams]);
+  const email = useMemo(() => {
+    const nestedUrl = searchParams?.get("continueUrl");
+    if (!nestedUrl) return "your email";
 
+    try {
+      const innerParams = new URL(nestedUrl).searchParams;
+
+      return innerParams.get("email") ?? "your email";
+    } catch (error) {
+      console.error("Failed to parse continueUrl:", error);
+      return "your email";
+    }
+  }, [searchParams]);
+
+  const inviter = useMemo(() => {
+    const nestedUrl = searchParams?.get("continueUrl");
+    if (!nestedUrl) return "Meemli";
+
+    try {
+      const innerParams = new URL(nestedUrl).searchParams;
+      return innerParams.get("inviter") ?? "Meemli";
+    } catch {
+      return "Meemli";
+    }
+  }, [searchParams]);
   const [step, setStep] = useState<Step>("invited");
 
   const [password, setPassword] = useState("");

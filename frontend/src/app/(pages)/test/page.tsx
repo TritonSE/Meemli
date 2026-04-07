@@ -1,4 +1,6 @@
 "use client";
+
+import { getAuth } from "firebase/auth";
 import { useState } from "react";
 
 import type { Student } from "@/src/api/students";
@@ -12,6 +14,7 @@ import { StudentCard } from "@/src/components/StudentCard/StudentCard";
 import { StudentProfileModal } from "@/src/components/StudentProfileView/StudentProfileView";
 import { spawnSuccessDialog } from "@/src/components/SuccessPopup/SuccessPopup";
 import TestStudentForm from "@/src/pages/TestStudentForm";
+import { sendMeemliActivationEmail } from "@/src/util/firebase";
 
 const EDIT_SECTION_ID_EXAMPLE = "69afa73190beaafad01125f3";
 
@@ -128,6 +131,38 @@ export default function Test() {
     }
   };
 
+  // TODO
+  // figure out what package to send emails with
+  // create a function that sends an a password reset email
+  // delete users if they never verified/activated their accounts.
+
+  // get current users name to pass as inviterName (optional, defaults to "An Admin")
+
+  const currentUser = getAuth().currentUser;
+  const inviterName = currentUser
+    ? currentUser.displayName || currentUser.email || "An Admin"
+    : "An Admin";
+
+  const [targetEmail, setTargetEmail] = useState("");
+
+  const handleSend = async () => {
+    if (!targetEmail) {
+      console.log("enter an email first");
+      return;
+    }
+
+    const result = await sendMeemliActivationEmail(targetEmail, inviterName);
+
+    if (result?.success) {
+      console.log(`Success! Activation email sent to ${targetEmail}`);
+      console.log(`Inviter Name: ${inviterName}`);
+
+      setTargetEmail("");
+    } else {
+      console.log(`Error: ${result?.error}`);
+    }
+  };
+
   return (
     <div>
       <div style={{ padding: "20px" }}>
@@ -164,6 +199,26 @@ export default function Test() {
           </div>
           {error && <p style={{ color: "red", marginTop: "8px" }}>{error}</p>}
         </div>
+
+        <form onSubmit={(e) => e.preventDefault()}>
+          <label>Email to send activation to</label>
+          <br />
+          <input
+            type="email"
+            placeholder="Enter email to activate"
+            style={{ marginLeft: "10px", padding: "5px" }}
+            value={targetEmail}
+            onChange={(e) => setTargetEmail(e.target.value)}
+          />
+        </form>
+
+        <br />
+        <button
+          onClick={() => void handleSend()}
+          style={{ padding: "10px 20px", cursor: "pointer" }}
+        >
+          Send Activation Email
+        </button>
 
         {/* --- EXISTING FAKE LIST --- */}
         <h3>Fake Data List</h3>
