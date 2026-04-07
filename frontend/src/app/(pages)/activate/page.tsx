@@ -11,11 +11,7 @@ import { TextField } from "../../../components/TextField";
 import styles from "./page.module.css";
 
 type Step = "invited" | "form" | "success";
-type ActivatePageProps = {
-  // You can add props here if needed, such as a token for activation
-  inviterName?: string; // Example prop for inviter's name
-  inviteeEmail?: string; // Example prop for invitee's email
-};
+
 function ActivatePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
