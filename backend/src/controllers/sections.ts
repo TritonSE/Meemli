@@ -22,7 +22,16 @@ export const createSection: RequestHandler = async (req, res) => {
 // Only keep the fields clients can update
 export type UpdateSectionBody = Pick<
   SectionDoc,
-  "code" | "teachers" | "enrolledStudents" | "startTime" | "endTime" | "startDate" | "endDate" | "archived" | "color" | "days"
+  | "code"
+  | "teachers"
+  | "enrolledStudents"
+  | "startTime"
+  | "endTime"
+  | "startDate"
+  | "endDate"
+  | "archived"
+  | "color"
+  | "days"
 >;
 
 // ---------------------- UPDATE ----------------------

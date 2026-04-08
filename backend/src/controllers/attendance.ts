@@ -2,6 +2,8 @@ import { validationResult } from "express-validator";
 import { Types } from "mongoose";
 
 import { AttendanceModel } from "../models/attendance";
+import { Section } from "../models/sections";
+import { SessionModel } from "../models/session";
 
 import type { RequestHandler } from "express";
 
@@ -52,6 +54,37 @@ export const updateAttendanceById: RequestHandler = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+const getStudentsInSection = async (sectionId: Types.ObjectId): Promise<Types.ObjectId[]> => {
+  const section = await Section.findById(sectionId).select("enrolledStudents");
+
+  // Can't be null because of validation checks prior to calling this function
+  return section!.enrolledStudents;
+};
+
+export const ensureAttendanceForSession = async (sessionId: string) => {
+  const existing = await AttendanceModel.find({ session: sessionId });
+  if (existing.length > 0) return existing;
+
+  const session = await SessionModel.findById(sessionId);
+  if (!session) throw new Error("Session not found");
+
+  const sessionDate = new Date(session.sessionDate);
+  const today = new Date();
+  sessionDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+  // Don't create attendance for future sessions
+  if (sessionDate > today) return [];
+
+  const students = await getStudentsInSection(session.section);
+  await Promise.all(
+    students.map(async (studentId) =>
+      AttendanceModel.create({ session: session._id, student: studentId, status: "PRESENT" }),
+    ),
+  );
+
+  return AttendanceModel.find({ session: sessionId });
 };
 
 export const getAttendanceBySessionId: RequestHandler = async (req, res, next) => {

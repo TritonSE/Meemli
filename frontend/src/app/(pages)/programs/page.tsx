@@ -12,8 +12,6 @@ import {
   Search,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Toast } from "@/src/components/Toast";
-import { useToast } from "@/src/hooks/useToast";
 
 import styles from "./page.module.css";
 
@@ -27,6 +25,8 @@ import {
 import { Modal } from "@/src/components/Modal";
 import { SectionCard } from "@/src/components/SectionCard";
 import { SectionForm } from "@/src/components/SectionForm";
+import { Toast } from "@/src/components/Toast";
+import { useToast } from "@/src/hooks/useToast";
 
 // next steps : fetch data, render actual data, filter by active archived, search bar
 

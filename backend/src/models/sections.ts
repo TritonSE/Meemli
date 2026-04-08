@@ -5,7 +5,7 @@ import type { Document, Types } from "mongoose"; // Types still used for ObjectI
 // Type definition for Section documents
 export type SectionDoc = Document & {
   code: string;
-  teachers: Types.ObjectId[];
+  teachers: string[];
   enrolledStudents: Types.ObjectId[];
   startTime: string;
   endTime: string;
@@ -21,12 +21,13 @@ const sectionSchema = new mongoose.Schema(
   {
     code: {
       type: String,
-      required: true,
+      required: true, // Code must be provided
     },
     teachers: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "User",
-      default: [],
+      type: [String],
+      ref: "User", // Reference to the User model
+      required: true, // Must contain at least one teacher
+      default: [], // Default to an empty array if no teachers are added
     },
     enrolledStudents: {
       type: [mongoose.Schema.Types.ObjectId],
@@ -39,7 +40,7 @@ const sectionSchema = new mongoose.Schema(
     },
     endTime: {
       type: String,
-      required: true,
+      required: true, // End time must be provided
     },
     startDate: {
       type: String,
@@ -55,7 +56,6 @@ const sectionSchema = new mongoose.Schema(
     },
     color: {
       type: String,
-      required: true,
     },
     days: {
       type: [String],

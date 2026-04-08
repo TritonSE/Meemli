@@ -1,0 +1,50 @@
+.dateTimeForm {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  input,
+  select,
+  .inputBox {
+    border: 1px solid var(--grey-100);
+    width: fit-content;
+    margin: 0 0.5rem;
+  }
+
+  .dateTimeGroup {
+    display: flex;
+    gap: 1rem;
+
+    > div {
+      display: flex;
+      flex-direction: column;
+      width: 9rem;
+    }
+  }
+
+  .formElement {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+
+    label {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .required {
+    color: var(--error-700);
+  }
+
+  .formLabel {
+    margin-bottom: 0.5rem;
+    color: var(--grey-700);
+  }
+
+  span[role="alert"] {
+    color: var(--color-red-700);
+    position: absolute;
+    transform: translate(0, 4rem);
+    width: 9rem;
+  }
+}

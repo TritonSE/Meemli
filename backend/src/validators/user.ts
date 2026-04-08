@@ -1,4 +1,5 @@
 import { body } from "express-validator";
+import { Types } from "mongoose";
 
 import type { ValidationChain } from "express-validator";
 
@@ -44,6 +45,18 @@ const makeMeemliEmailValidator = (): ValidationChain => {
     .withMessage("meemliEmail must be a valid email");
 };
 
+const makePhoneNumberValidator = (): ValidationChain => {
+  return body("phoneNumber")
+    .exists()
+    .withMessage("phoneNumber is required")
+    .bail()
+    .isString()
+    .withMessage("phoneNumber must be a string")
+    .bail()
+    .matches(/^\d{10}$/)
+    .withMessage("phoneNumber must be a valid 10-digit number");
+};
+
 const makeAdminValidator = (): ValidationChain => {
   return body("admin")
     .exists()
@@ -53,12 +66,28 @@ const makeAdminValidator = (): ValidationChain => {
     .withMessage("admin must be a boolean");
 };
 
+const makeAssignedSectionsValidator = (): ValidationChain => {
+  return body("assignedSections")
+    .exists()
+    .withMessage("assignedSections is required")
+    .bail()
+    .isArray()
+    .withMessage("assignedSections must be an array")
+    .bail()
+    .custom((value: string[]) => {
+      return value.every((section) => Types.ObjectId.isValid(new Types.ObjectId(section)));
+    })
+    .withMessage("assignedSections must contain valid ObjectId strings");
+};
+
 export const validateCreateUser = [
   makeFirstNameValidator(),
   makeLastNameValidator(),
   makePersonalEmailValidator(),
   makeMeemliEmailValidator(),
+  makePhoneNumberValidator(),
   makeAdminValidator(),
+  makeAssignedSectionsValidator(),
 ];
 
 export const validateEditUser = [
@@ -66,5 +95,7 @@ export const validateEditUser = [
   makeLastNameValidator().optional(),
   makePersonalEmailValidator().optional(),
   makeMeemliEmailValidator().optional(),
+  makePhoneNumberValidator().optional(),
   makeAdminValidator().optional(),
+  makeAssignedSectionsValidator().optional(),
 ];

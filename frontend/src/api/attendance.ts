@@ -49,8 +49,18 @@ export const updateAttendanceBulk = async (
   return response.json() as Promise<UpdateAttendanceBulkResponse>;
 };
 
-export const getAllSessions = async (): Promise<AttendanceSession[]> => {
-  const response = await get("/sessions");
+// Deprecated function to get all sessions, now sessions are fetched by section
+// export const getAllSessions = async (): Promise<AttendanceSession[]> => {
+//   const response = await get("/sessions");
+//   const data: unknown = await response.json();
+//   return data as AttendanceSession[];
+// };
+
+// Function to get sessions by section
+export const getSessionsBySection = async (
+  activeSectionId: string,
+): Promise<AttendanceSession[]> => {
+  const response = await get(`/sessions/section/${activeSectionId}`);
   const data: unknown = await response.json();
   return data as AttendanceSession[];
 };

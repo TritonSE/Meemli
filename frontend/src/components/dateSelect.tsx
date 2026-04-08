@@ -6,13 +6,33 @@ import "react-day-picker/dist/style.css";
 
 import styles from "./select.module.css";
 
-export function DateSelect({ value, onChange }: { value: string; onChange: (d: string) => void }) {
+export function DateSelect({
+  value,
+  onChange,
+  availableDates, // Now optional
+}: {
+  value: string;
+  onChange: (d: string) => void;
+  availableDates?: string[]; // Added the '?' for optionality
+}) {
   const parsedValue = value ? parse(value, "yyyy-MM-dd", new Date()) : new Date();
   const validValue = isValid(parsedValue) ? parsedValue : new Date();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [tempDate, setTempDate] = useState<Date | undefined>(undefined);
-  const [currentMonth, setCurrentMonth] = useState<Date>(validValue); // Now it knows what validValue is!
+  const [currentMonth, setCurrentMonth] = useState<Date>(validValue);
+
+  // Disable logic updated to handle undefined availableDates
+  const isDisabled = (date: Date) => {
+    // If availableDates is not provided, don't disable any dates
+    if (!availableDates) return false;
+
+    const dateStr = format(date, "yyyy-MM-dd");
+    const todayStr = format(new Date(), "yyyy-MM-dd");
+
+    // Disable if it's not today AND not in the allowed list
+    return dateStr !== todayStr && !availableDates.includes(dateStr);
+  };
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setTempDate(validValue);
@@ -107,6 +127,7 @@ export function DateSelect({ value, onChange }: { value: string; onChange: (d: s
             onSelect={setTempDate}
             month={currentMonth}
             onMonthChange={setCurrentMonth}
+            disabled={isDisabled}
             className={styles.customCalendar}
           />
 

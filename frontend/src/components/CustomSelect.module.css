@@ -79,7 +79,7 @@
 }
 
 .optionSelected {
-  background: #D8EFE8;
+  background: #d8efe8;
   color: var(--primary-500);
   font-weight: 500;
 }

@@ -1,18 +1,11 @@
 import { validationResult } from "express-validator";
 
 import { AttendanceModel } from "../models/attendance";
-import { Section } from "../models/sections";
 import { SessionModel } from "../models/session";
 
+import { ensureAttendanceForSession } from "./attendance";
+
 import type { RequestHandler } from "express";
-import type { Types } from "mongoose";
-
-const getStudentsInSection = async (sectionId: string): Promise<Types.ObjectId[]> => {
-  const section = await Section.findById(sectionId).select("enrolledStudents");
-
-  // Can't be null because of validation checks prior to calling this function
-  return section!.enrolledStudents;
-};
 
 type CreateSessionBody = {
   section: string;
@@ -29,22 +22,6 @@ export const createSession: RequestHandler = async (req, res, next) => {
       section,
       sessionDate,
     });
-
-    // create Attendance records for all students enrolled in Section
-
-    // Get all student Ids in the section (enrolledStudents list)
-    const students = await getStudentsInSection(section);
-
-    // Create attendance records for all students in session
-    await Promise.all(
-      students.map(async (studentId) =>
-        AttendanceModel.create({
-          session: session._id,
-          student: studentId,
-          status: "PRESENT",
-        }),
-      ),
-    );
 
     return res.status(201).json(session);
   } catch (error) {
@@ -87,17 +64,31 @@ export const getSession: RequestHandler = async (req, res, next) => {
       return res.status(404).json({ error: "Session not found" });
     }
 
-    // Check what we are searching for in the Attendance collection
-    const query = { session: id };
-    // Run the query
-    const attendanceRecords = await AttendanceModel.find(query).populate("student");
+    // This creates records if missing, checks the date, returns them
+    const attendanceRecords = await ensureAttendanceForSession(id);
+    const populated = await AttendanceModel.populate(attendanceRecords, { path: "student" });
 
     const response = {
       ...session.toObject(),
-      attendees: attendanceRecords,
+      attendees: populated,
     };
 
     res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Returns all Sessions under a specific Section ID
+export const getSessionsBySectionId: RequestHandler = async (req, res, next) => {
+  const { sectionId } = req.params;
+
+  try {
+    const sessions = await SessionModel.find({ section: sectionId });
+
+    // No population of attendance records needed
+
+    res.status(200).json(sessions);
   } catch (error) {
     next(error);
   }
