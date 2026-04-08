@@ -18,7 +18,7 @@ export type Section = {
 };
 
 export type CreateSectionRequest = Omit<Section, "_id" | "createdAt">;
-export type UpdateSectionRequest = Section;
+export type UpdateSectionRequest = Omit<Section, "createdAt">;
 
 export async function getAllSections(): Promise<APIResult<Section[]>> {
   try {
