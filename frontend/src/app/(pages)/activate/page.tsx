@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  confirmPasswordReset,
+  sendPasswordResetEmail,
+  verifyPasswordResetCode,
+} from "firebase/auth";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
@@ -9,7 +14,6 @@ import { Button } from "../../../components/Button";
 import { TextField } from "../../../components/TextField";
 
 import styles from "./page.module.css";
-import { confirmPasswordReset, sendPasswordResetEmail, verifyPasswordResetCode } from "firebase/auth";
 
 import { auth } from "@/src/util/firebase";
 
@@ -18,7 +22,7 @@ type Step = "loading" | "invited" | "form" | "success" | "expired";
 function ActivatePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const actionCode = searchParams?.get('oobCode');
+  const actionCode = searchParams?.get("oobCode");
 
   const [step, setStep] = useState<Step>("loading");
   const [error, setError] = useState("");
@@ -31,7 +35,7 @@ function ActivatePageContent() {
     try {
       const innerParams = new URL(nestedUrl).searchParams;
       return innerParams.get("email") ?? "your email";
-    } catch (err) { 
+    } catch (err) {
       console.error("Failed to parse continueUrl:", err);
       return "your email";
     }
@@ -68,8 +72,8 @@ function ActivatePageContent() {
       .then(() => {
         setStep("invited");
       })
-      .catch((rawError: unknown) => { // FIX 2: Type as unknown
-        const fbError = rawError as { code?: string }; // Cast to safe interface
+      .catch((rawError: unknown) => {
+        const fbError = rawError as { code?: string };
         console.error("OOB Validation failed:", rawError);
         setStep("expired");
         if (fbError?.code === "auth/expired-action-code") {
@@ -99,19 +103,21 @@ function ActivatePageContent() {
     if (password !== confirm) return;
     if (!actionCode) return;
 
-    confirmPasswordReset(auth, actionCode, password).then((_resp) => {
-      setStep("success");
-    }).catch((rawError: unknown) => {
-      const fbError = rawError as { code?: string }; // Cast to safe interface
-      console.error("Error confirming password reset:", rawError);
-      
-      setStep("expired");
-      if (fbError?.code === "auth/expired-action-code") {
-        setError("Your session expired during submission. Please try again.");
-      } else {
-        setError("Failed to update password. Please try again.");
-      }
-    });
+    confirmPasswordReset(auth, actionCode, password)
+      .then((_resp) => {
+        setStep("success");
+      })
+      .catch((rawError: unknown) => {
+        const fbError = rawError as { code?: string };
+        console.error("Error confirming password reset:", rawError);
+
+        setStep("expired");
+        if (fbError?.code === "auth/expired-action-code") {
+          setError("Your session expired during submission. Please try again.");
+        } else {
+          setError("Failed to update password. Please try again.");
+        }
+      });
   }
 
   if (step === "loading") return null;
@@ -119,22 +125,25 @@ function ActivatePageContent() {
   return (
     <>
       {step === "expired" && (
-        <AuthCard
-          title="Link Expired or Invalid"
-          subtitle={error}
-        >
+        <AuthCard title="Link Expired or Invalid" subtitle={error}>
           <div className={styles.actions}>
             {email !== "your email" && resendStatus !== "sent" && (
               <Button
                 kind="primary"
                 label={resendStatus === "sending" ? "Sending..." : "Resend Activation Email"}
-                onClick={() => void handleResend()} 
+                onClick={() => void handleResend()}
                 className={styles.primaryBtn}
                 type="button"
               />
             )}
-            {resendStatus === "sent" && <p className={styles.helper}>Check your inbox for a new link!</p>}
-            <Link className={styles.link} href="/login" style={{ marginTop: '1rem', display: 'block', textAlign: 'center' }}>
+            {resendStatus === "sent" && (
+              <p className={styles.helper}>Check your inbox for a new link!</p>
+            )}
+            <Link
+              className={styles.link}
+              href="/login"
+              style={{ marginTop: "1rem", display: "block", textAlign: "center" }}
+            >
               Return to Sign in
             </Link>
           </div>
