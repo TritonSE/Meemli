@@ -26,8 +26,8 @@ export const sendMeemliActivationEmail = async (
   email: string,
   inviterName: string = "An Admin",
 ) => {
-  // Ensures we don't break during Next.js Server Side Rendering
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://meemli.com";
+  // Use the env variable, fallback to dev domain (per your EM), then prod
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://meemli-dev.web.app";
 
   const actionCodeSettings = {
     // custom Next.js route

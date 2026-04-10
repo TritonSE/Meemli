@@ -2,19 +2,27 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 
 import { AuthCard } from "../../../components/AuthCard";
 import { Button } from "../../../components/Button";
 import { TextField } from "../../../components/TextField";
 
 import styles from "./page.module.css";
+import { confirmPasswordReset, sendPasswordResetEmail, verifyPasswordResetCode } from "firebase/auth";
 
-type Step = "invited" | "form" | "success";
+import { auth } from "@/src/util/firebase";
+
+type Step = "loading" | "invited" | "form" | "success" | "expired";
 
 function ActivatePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const actionCode = searchParams?.get('oobCode');
+
+  const [step, setStep] = useState<Step>("loading");
+  const [error, setError] = useState("");
+  const [resendStatus, setResendStatus] = useState<"idle" | "sending" | "sent">("idle");
 
   const email = useMemo(() => {
     const nestedUrl = searchParams?.get("continueUrl");
@@ -22,10 +30,9 @@ function ActivatePageContent() {
 
     try {
       const innerParams = new URL(nestedUrl).searchParams;
-
       return innerParams.get("email") ?? "your email";
-    } catch (error) {
-      console.error("Failed to parse continueUrl:", error);
+    } catch (err) { 
+      console.error("Failed to parse continueUrl:", err);
       return "your email";
     }
   }, [searchParams]);
@@ -41,7 +48,6 @@ function ActivatePageContent() {
       return "Meemli";
     }
   }, [searchParams]);
-  const [step, setStep] = useState<Step>("invited");
 
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -51,22 +57,90 @@ function ActivatePageContent() {
   const minLenOk = password.length >= 8;
   const matchOk = confirm.length === 0 ? true : password === confirm;
 
+  useEffect(() => {
+    if (!actionCode) {
+      setStep("expired");
+      setError("No activation code found. Please check your email link.");
+      return;
+    }
+
+    verifyPasswordResetCode(auth, actionCode)
+      .then(() => {
+        setStep("invited");
+      })
+      .catch((rawError: unknown) => { // FIX 2: Type as unknown
+        const fbError = rawError as { code?: string }; // Cast to safe interface
+        console.error("OOB Validation failed:", rawError);
+        setStep("expired");
+        if (fbError?.code === "auth/expired-action-code") {
+          setError("This activation link has expired.");
+        } else {
+          setError("This link is invalid or has already been used.");
+        }
+      });
+  }, [actionCode]);
+
+  const handleResend = async () => {
+    if (!email || email === "your email") return;
+    setResendStatus("sending");
+    try {
+      await sendPasswordResetEmail(auth, email, { url: window.location.href });
+      setResendStatus("sent");
+    } catch (err) {
+      console.error("Resend failed", err);
+      setResendStatus("idle");
+    }
+  };
+
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    // Basic client-side checks (keep these even if backend validates too)
     if (!minLenOk) return;
     if (password !== confirm) return;
+    if (!actionCode) return;
 
-    // TODO: call your API with token/email/password
-    // const token = searchParams.get('token')
-    // await activateAccount({ token, email, password })
-
-    setStep("success");
+    confirmPasswordReset(auth, actionCode, password).then((_resp) => {
+      setStep("success");
+    }).catch((rawError: unknown) => {
+      const fbError = rawError as { code?: string }; // Cast to safe interface
+      console.error("Error confirming password reset:", rawError);
+      
+      setStep("expired");
+      if (fbError?.code === "auth/expired-action-code") {
+        setError("Your session expired during submission. Please try again.");
+      } else {
+        setError("Failed to update password. Please try again.");
+      }
+    });
   }
+
+  if (step === "loading") return null;
 
   return (
     <>
+      {step === "expired" && (
+        <AuthCard
+          title="Link Expired or Invalid"
+          subtitle={error}
+        >
+          <div className={styles.actions}>
+            {email !== "your email" && resendStatus !== "sent" && (
+              <Button
+                kind="primary"
+                label={resendStatus === "sending" ? "Sending..." : "Resend Activation Email"}
+                onClick={() => void handleResend()} 
+                className={styles.primaryBtn}
+                type="button"
+              />
+            )}
+            {resendStatus === "sent" && <p className={styles.helper}>Check your inbox for a new link!</p>}
+            <Link className={styles.link} href="/login" style={{ marginTop: '1rem', display: 'block', textAlign: 'center' }}>
+              Return to Sign in
+            </Link>
+          </div>
+        </AuthCard>
+      )}
+
       {step === "invited" && (
         <AuthCard
           aria-label="Activation invite"
@@ -108,7 +182,6 @@ function ActivatePageContent() {
                 <label className={styles.inlineLabel}>Create Password</label>
               </div>
 
-              {/* TODO: make component for password field and use it here + in login */}
               <div className={styles.inputWithIcon}>
                 <TextField
                   type={showPw ? "text" : "password"}
@@ -126,7 +199,6 @@ function ActivatePageContent() {
                   onClick={() => setShowPw((v) => !v)}
                   aria-label={showPw ? "Hide password" : "Show password"}
                 >
-                  {/* simple inline icon (no dependency) */}
                   {showPw ? (
                     <svg viewBox="0 0 24 24" fill="none">
                       <path
