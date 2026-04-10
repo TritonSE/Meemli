@@ -12,13 +12,15 @@ import EditIcon from "@/public/icons/edit.svg";
 import PrevIcon from "@/public/icons/prev.svg";
 import ShowIcon from "@/public/icons/show.svg";
 import { getAllStudents } from "@/src/api/students";
+import { getAllUsers } from "@/src/api/user";
 import { DynamicBlockDisplay } from "@/src/components/DynamicBlockDisplay/DynamicBlockDisplay";
 import { Modal } from "@/src/components/Modal";
 import { NameCard } from "@/src/components/StudentCard/NameCard";
 import { StudentCard } from "@/src/components/StudentCard/StudentCard";
-import { StudentEditForm } from "@/src/components/studentform/StudentEditForm";
 import { StudentForm } from "@/src/components/studentform/StudentForm";
 import { StudentProfileModal } from "@/src/components/StudentProfileView/StudentProfileView";
+import { StudentEditForm } from "@/src/components/StudentStaffTable/StudentEditForm";
+import { UserEditForm } from "@/src/components/StudentStaffTable/UserEditForm";
 
 /**
  * Component for dynamically rendering block-like items based on available container space
@@ -72,7 +74,7 @@ export function Table({
    * @param input data to check
    * @returns boolean value
    */
-  const isStudent = (input: Student | User | null) => {
+  const isStudent = (input: Student | User | null): input is Student => {
     return typeof input === "object" && input !== null && "parentContact" in input;
   };
 
@@ -204,7 +206,9 @@ export function Table({
     } else {
       const sortedSections = input.assignedSections
         .map((cid) => {
-          const res = sections.find((obj) => obj._id === cid);
+          // there's a weird backend bug going on here. assignedSections is stored as Section[], but it gets passed as string[]
+          // so this is a temporary fix to make sure the code works for both cases until the bug is fixed
+          const res = sections.find((obj) => obj._id === cid._id);
           return {
             label: res?.code ?? "Error",
             color: res?.color ?? "gray",
@@ -388,7 +392,36 @@ export function Table({
           }
         />
       )}
-      {!isStudent(editData) && editOpen && <>TODO: Fill in with user edit form</>}
+      {editData && !isStudent(editData) && editOpen && (
+        <Modal
+          onExit={() => setEditOpen(false)}
+          child={
+            <>
+              <UserEditForm
+                user={editData}
+                sections={sections}
+                onCancel={() => setEditOpen(false)}
+                onSubmit={() => {
+                  setEditOpen(false);
+                  getAllUsers()
+                    .then((result) => {
+                      if (result.success) {
+                        setData(result.data);
+                        if (onEdit) {
+                          onEdit();
+                        }
+                      }
+                    })
+                    .catch((error) =>
+                      setErrorMessage(error instanceof Error ? error.message : String(error)),
+                    )
+                    .finally(() => setLoading(false));
+                }}
+              />
+            </>
+          }
+        />
+      )}
     </>
   );
 }

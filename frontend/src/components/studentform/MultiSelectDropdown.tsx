@@ -116,7 +116,7 @@ export function MultiSelectDropdown({
   const triggerClass = open ? `${styles.trigger} ${styles.triggerOpen}` : styles.trigger;
 
   return (
-    <div ref={rootRef} className={styles.root}>
+    <div ref={rootRef} className={`${styles.root} ${disabled ? styles.rootDisabled : ""}`}>
       {label && (
         <div className={styles.label}>
           {label}

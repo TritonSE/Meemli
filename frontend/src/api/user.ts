@@ -81,6 +81,12 @@ export async function updateUser(user: UpdateUserRequest): Promise<APIResult<Use
   }
 }
 
+/**
+ * Bulk archive or unarchive users by their Firebase IDs.
+ * @param ids - array of Firebase IDs of users to be archived or unarchived
+ * @param archived - boolean flag indicating whether to archive (true) or unarchive (false) the specified users
+ * @returns APIResult containing an array of the updated User objects
+ */
 export async function archiveUsers(ids: string[], archived: boolean): Promise<APIResult<User[]>> {
   try {
     const response = await put(`${USER_ROUTE}/archive`, { ids, flag: archived });

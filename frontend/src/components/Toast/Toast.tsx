@@ -25,7 +25,7 @@ export type ToastProps = {
  * @param trigger - toast renders whenever this is changed (Date.now() works well)
  * @param onClose - optional callback to run when the toast is finished
  * @param action - optional function that is bound to the toast (most typically an undo button)
- * @returns
+ * @returns Toast component
  */
 export function Toast({ type, message, durationMs = 5000, trigger, onClose, action }: ToastProps) {
   const [isVisible, setIsVisible] = useState<boolean>(Boolean(message));

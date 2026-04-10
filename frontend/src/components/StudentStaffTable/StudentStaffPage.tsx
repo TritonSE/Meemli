@@ -9,13 +9,13 @@ import type { DropdownItem } from "@/src/components/StudentStaffTable/Dropdown";
 import EditIcon from "@/public/icons/edit.svg";
 import { getAllSections } from "@/src/api/sections";
 import { archiveStudents, deleteStudents, getAllStudents } from "@/src/api/students";
-import { getAllUsers, type User } from "@/src/api/user";
+import { archiveUsers, deleteUsers, getAllUsers, type User } from "@/src/api/user";
 import { AddStaffForm } from "@/src/components/AddStaff/AddStaffForm";
 import { Modal } from "@/src/components/Modal";
 import { StudentForm } from "@/src/components/studentform/StudentForm";
 import { Dropdown } from "@/src/components/StudentStaffTable/Dropdown";
 import { ProgramSelect } from "@/src/components/StudentStaffTable/ProgramSelect";
-import styles from "@/src/components/StudentStaffTable/studentStaffPage.module.css";
+import styles from "@/src/components/StudentStaffTable/StudentStaffPage.module.css";
 import { Table } from "@/src/components/StudentStaffTable/Table";
 import { Toast } from "@/src/components/Toast/Toast";
 
@@ -189,7 +189,11 @@ export default function StudentStaffPage({ type, state }: StudentStaffPageProps)
           if (result.success) {
             setRoot((prev) => {
               const updated = new Map(result.data.map((s) => [s._id, s]));
-              return prev.map((s) => updated.get(s._id) ?? s);
+              if ("parentContact" in result.data[0]) {
+                return prev.map((s) => updated.get(s._id) ?? s) as Student[];
+              } else {
+                return prev.map((s) => updated.get(s._id) ?? s) as User[];
+              }
             });
             // create toast message on successful request
             const multi = ids.length > 1;
@@ -215,7 +219,32 @@ export default function StudentStaffPage({ type, state }: StudentStaffPageProps)
         .catch((error) => setErrorMessage(error instanceof Error ? error.message : String(error)))
         .finally(() => setLoading(false));
     } else {
-      console.log("deleting staff");
+      deleteUsers(ids)
+        .then((result) => {
+          if (result.success) {
+            setRoot((prev) => {
+              const updated = new Map(result.data.map((s) => [s._id, s]));
+              // this check is necessary to silence TypeScript warnings
+              if ("parentContact" in result.data[0]) {
+                return prev.map((s) => updated.get(s._id) ?? s) as Student[];
+              } else {
+                return prev.map((s) => updated.get(s._id) ?? s) as User[];
+              }
+            });
+            // create toast message on successful request
+            const multi = ids.length > 1;
+            const message = `${ids.length} staff member${multi ? "s were" : " was"} successfuly deleted.`;
+            setToast({ type: "success", message, timestamp: getNextToastTrigger() });
+            setSelected(new Set());
+            setRoot(result.data);
+          } else {
+            setErrorMessage(result.error);
+            const message = `Error: Unable to delete staff member(s). ${result.error}`;
+            setToast({ type: "error", message, timestamp: getNextToastTrigger() });
+          }
+        })
+        .catch((error) => setErrorMessage(error instanceof Error ? error.message : String(error)))
+        .finally(() => setLoading(false));
     }
   };
 
@@ -247,14 +276,19 @@ export default function StudentStaffPage({ type, state }: StudentStaffPageProps)
           if (result.success) {
             setRoot((prev) => {
               const updated = new Map(result.data.map((s) => [s._id, s]));
-              return prev.map((s) => updated.get(s._id) ?? s);
+              if ("parentContact" in result.data[0]) {
+                return prev.map((s) => updated.get(s._id) ?? s) as Student[];
+              } else {
+                return prev.map((s) => updated.get(s._id) ?? s) as User[];
+              }
             });
-            // create toast message on successful request
+            // conditional message formatting
             const multi = ids.length > 1;
             const message = `
             Student${multi ? "s" : ""} 
             ${result.data[0].displayName} 
             ${multi ? ` + ${result.data.length - 1} more were` : "was"} archived.`;
+            // set toast with undo option
             setToast({
               type: "neutral",
               message,
@@ -265,17 +299,43 @@ export default function StudentStaffPage({ type, state }: StudentStaffPageProps)
           } else {
             setErrorMessage(result.error);
             const message = `Error: Unable to unarchive student(s). ${result.error}`;
-            setToast({
-              type: "error",
-              message,
-              timestamp: getNextToastTrigger(),
-            });
+            setToast({ type: "error", message, timestamp: getNextToastTrigger() });
           }
         })
         .catch((error) => setErrorMessage(error instanceof Error ? error.message : String(error)))
         .finally(() => setLoading(false));
     } else {
-      console.log("archiving staff");
+      archiveUsers(ids, true)
+        .then((result) => {
+          if (result.success) {
+            setRoot((prev) => {
+              const updated = new Map(result.data.map((s) => [s._id, s]));
+              if ("parentContact" in result.data[0]) {
+                return prev.map((s) => updated.get(s._id) ?? s) as Student[];
+              } else {
+                return prev.map((s) => updated.get(s._id) ?? s) as User[];
+              }
+            });
+            const multi = ids.length > 1;
+            const message = `
+            Staff member${multi ? "s" : ""} 
+            ${result.data[0].firstName} ${result.data[0].lastName} 
+            ${multi ? ` + ${result.data.length - 1} more were` : "was"} archived.`;
+            setToast({
+              type: "neutral",
+              message,
+              timestamp: getNextToastTrigger(),
+              undoArchiveIds: ids,
+            });
+            setSelected(new Set());
+          } else {
+            setErrorMessage(result.error);
+            const message = `Error: Unable to archive staff member(s). ${result.error}`;
+            setToast({ type: "error", message, timestamp: getNextToastTrigger() });
+          }
+        })
+        .catch((error) => setErrorMessage(error instanceof Error ? error.message : String(error)))
+        .finally(() => setLoading(false));
     }
   };
 
@@ -291,23 +351,21 @@ export default function StudentStaffPage({ type, state }: StudentStaffPageProps)
           if (result.success) {
             setRoot((prev) => {
               const updated = new Map(result.data.map((s) => [s._id, s]));
-              return prev.map((s) => updated.get(s._id) ?? s);
+              if ("parentContact" in result.data[0]) {
+                return prev.map((s) => updated.get(s._id) ?? s) as Student[];
+              } else {
+                return prev.map((s) => updated.get(s._id) ?? s) as User[];
+              }
             });
             const multi = ids.length > 1;
-            const message = `Archive undone for ${result.data[0].displayName}${multi ? ` + ${ids.length - 1} more` : ""}.`;
-            setToast({
-              type: "neutral",
-              message,
-              timestamp: getNextToastTrigger(),
-            });
+            const message = `Archive undone for 
+            ${result.data[0].displayName}
+            ${multi ? ` + ${ids.length - 1} more` : ""}.`;
+            setToast({ type: "neutral", message, timestamp: getNextToastTrigger() });
             setSelected(new Set());
           } else {
             const message = `Error: Unable to undo archive. ${result.error}`;
-            setToast({
-              type: "error",
-              message,
-              timestamp: getNextToastTrigger(),
-            });
+            setToast({ type: "error", message, timestamp: getNextToastTrigger() });
           }
         })
         .catch((error) => {
@@ -321,7 +379,38 @@ export default function StudentStaffPage({ type, state }: StudentStaffPageProps)
         })
         .finally(() => setLoading(false));
     } else {
-      console.log("undoing archive for staff");
+      archiveUsers(ids, false)
+        .then((result) => {
+          if (result.success) {
+            setRoot((prev) => {
+              const updated = new Map(result.data.map((s) => [s._id, s]));
+              if ("parentContact" in result.data[0]) {
+                return prev.map((s) => updated.get(s._id) ?? s) as Student[];
+              } else {
+                return prev.map((s) => updated.get(s._id) ?? s) as User[];
+              }
+            });
+            const multi = ids.length > 1;
+            const message = `Archive undone for 
+            ${result.data[0].firstName} 
+            ${result.data[0].lastName}${multi ? ` + ${ids.length - 1} more` : ""}.`;
+            setToast({ type: "neutral", message, timestamp: getNextToastTrigger() });
+            setSelected(new Set());
+          } else {
+            const message = `Error: Unable to undo archive. ${result.error}`;
+            setToast({ type: "error", message, timestamp: getNextToastTrigger() });
+          }
+        })
+        .catch((error) => {
+          const message = error instanceof Error ? error.message : String(error);
+          setErrorMessage(message);
+          setToast({
+            type: "error",
+            message: `Error: Unable to undo archive. ${message}`,
+            timestamp: getNextToastTrigger(),
+          });
+        })
+        .finally(() => setLoading(false));
     }
   };
   /**
@@ -329,7 +418,6 @@ export default function StudentStaffPage({ type, state }: StudentStaffPageProps)
    */
   const undoUnarchive = (ids: string[]) => {
     if (ids.length === 0) return;
-
     setLoading(true);
     if (type === "student") {
       archiveStudents(ids, true)
@@ -337,23 +425,19 @@ export default function StudentStaffPage({ type, state }: StudentStaffPageProps)
           if (result.success) {
             setRoot((prev) => {
               const updated = new Map(result.data.map((s) => [s._id, s]));
-              return prev.map((s) => updated.get(s._id) ?? s);
+              if ("parentContact" in result.data[0]) {
+                return prev.map((s) => updated.get(s._id) ?? s) as Student[];
+              } else {
+                return prev.map((s) => updated.get(s._id) ?? s) as User[];
+              }
             });
             const multi = ids.length > 1;
             const message = `Unarchive undone for ${result.data[0].displayName}${multi ? ` + ${ids.length - 1} more` : ""}.`;
-            setToast({
-              type: "neutral",
-              message,
-              timestamp: getNextToastTrigger(),
-            });
+            setToast({ type: "neutral", message, timestamp: getNextToastTrigger() });
             setSelected(new Set());
           } else {
             const message = `Error: Unable to undo unarchive. ${result.error}`;
-            setToast({
-              type: "error",
-              message,
-              timestamp: getNextToastTrigger(),
-            });
+            setToast({ type: "error", message, timestamp: getNextToastTrigger() });
           }
         })
         .catch((error) => {
@@ -367,7 +451,39 @@ export default function StudentStaffPage({ type, state }: StudentStaffPageProps)
         })
         .finally(() => setLoading(false));
     } else {
-      console.log("undoing unarchive");
+      archiveUsers(ids, true)
+        .then((result) => {
+          if (result.success) {
+            setRoot((prev) => {
+              const updated = new Map(result.data.map((s) => [s._id, s]));
+              if ("parentContact" in result.data[0]) {
+                return prev.map((s) => updated.get(s._id) ?? s) as Student[];
+              } else {
+                return prev.map((s) => updated.get(s._id) ?? s) as User[];
+              }
+            });
+            const multi = ids.length > 1;
+            const message = `Unarchive undone for 
+            ${result.data[0].firstName} 
+            ${result.data[0].lastName}
+            ${multi ? ` + ${ids.length - 1} more` : ""}.`;
+            setToast({ type: "neutral", message, timestamp: getNextToastTrigger() });
+            setSelected(new Set());
+          } else {
+            const message = `Error: Unable to undo unarchive. ${result.error}`;
+            setToast({ type: "error", message, timestamp: getNextToastTrigger() });
+          }
+        })
+        .catch((error) => {
+          const message = error instanceof Error ? error.message : String(error);
+          setErrorMessage(message);
+          setToast({
+            type: "error",
+            message: `Error: Unable to undo unarchive. ${message}`,
+            timestamp: getNextToastTrigger(),
+          });
+        })
+        .finally(() => setLoading(false));
     }
   };
 
@@ -399,7 +515,11 @@ export default function StudentStaffPage({ type, state }: StudentStaffPageProps)
           if (result.success) {
             setRoot((prev) => {
               const updated = new Map(result.data.map((s) => [s._id, s]));
-              return prev.map((s) => updated.get(s._id) ?? s);
+              if ("parentContact" in result.data[0]) {
+                return prev.map((s) => updated.get(s._id) ?? s) as Student[];
+              } else {
+                return prev.map((s) => updated.get(s._id) ?? s) as User[];
+              }
             });
             const multi = ids.length > 1;
             const message = `
@@ -416,17 +536,43 @@ export default function StudentStaffPage({ type, state }: StudentStaffPageProps)
           } else {
             setErrorMessage(result.error);
             const message = `Error: Unable to unarchive student(s). ${result.error}`;
-            setToast({
-              type: "error",
-              message,
-              timestamp: getNextToastTrigger(),
-            });
+            setToast({ type: "error", message, timestamp: getNextToastTrigger() });
           }
         })
         .catch((error) => setErrorMessage(error instanceof Error ? error.message : String(error)))
         .finally(() => setLoading(false));
     } else {
-      console.log("unarchiving staff");
+      archiveUsers(ids, false)
+        .then((result) => {
+          if (result.success) {
+            setRoot((prev) => {
+              const updated = new Map(result.data.map((s) => [s._id, s]));
+              if ("parentContact" in result.data[0]) {
+                return prev.map((s) => updated.get(s._id) ?? s) as Student[];
+              } else {
+                return prev.map((s) => updated.get(s._id) ?? s) as User[];
+              }
+            });
+            const multi = ids.length > 1;
+            const message = `
+              Staff member${multi ? "s" : ""} 
+              ${result.data[0].firstName} ${result.data[0].lastName} 
+              ${multi ? ` + ${result.data.length - 1} more were` : "was"} unarchived.`;
+            setToast({
+              type: "neutral",
+              message,
+              timestamp: getNextToastTrigger(),
+              undoUnarchiveIds: ids,
+            });
+            setSelected(new Set());
+          } else {
+            setErrorMessage(result.error);
+            const message = `Error: Unable to unarchive staff member(s). ${result.error}`;
+            setToast({ type: "error", message, timestamp: getNextToastTrigger() });
+          }
+        })
+        .catch((error) => setErrorMessage(error instanceof Error ? error.message : String(error)))
+        .finally(() => setLoading(false));
     }
   };
 
@@ -617,10 +763,10 @@ export default function StudentStaffPage({ type, state }: StudentStaffPageProps)
     const arr = Array.from(data.filter((s) => selected.has(s._id)));
     let name;
     if (arr.length > 0) {
-      if (type === "student") {
+      if ("parentContact" in arr[0]) {
         name = arr[0].displayName;
       } else {
-        name = arr[0].name;
+        name = `${arr[0].firstName} ${arr[0].lastName}`;
       }
     } else {
       name = "{Error}";
@@ -700,11 +846,7 @@ export default function StudentStaffPage({ type, state }: StudentStaffPageProps)
                     .then((result) => {
                       if (result.success) setRoot(result.data);
                       const message = `Student ${new_stud.displayName} was added successfully`;
-                      setToast({
-                        type: "success",
-                        message,
-                        timestamp: getNextToastTrigger(),
-                      });
+                      setToast({ type: "success", message, timestamp: getNextToastTrigger() });
                     })
                     .catch((error) => {
                       setErrorMessage(error instanceof Error ? error.message : String(error));

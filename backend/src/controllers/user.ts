@@ -118,3 +118,47 @@ export const getAllUsers: RequestHandler = async (req, res, next) => {
     return next(error);
   }
 };
+
+export const archiveUsersByIds: RequestHandler = async (req, res, next) => {
+  const errors = validationResult(req);
+  try {
+    validationErrorParser(errors);
+  } catch (error) {
+    return next(error);
+  }
+
+  const { ids, flag } = req.body as { ids: string[]; flag: boolean };
+  if (ids.length === 0) {
+    return res.status(400).json({ message: "No valid user IDs provided" });
+  }
+
+  try {
+    await UserModel.updateMany({ _id: { $in: ids } }, { archived: flag });
+    const users = await UserModel.find({ _id: { $in: ids } }).populate("assignedSections");
+    res.status(200).json(users);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const deleteUsersByIds: RequestHandler = async (req, res, next) => {
+  const errors = validationResult(req);
+  try {
+    validationErrorParser(errors);
+  } catch (error) {
+    return next(error);
+  }
+
+  const { ids } = req.body as { ids: string[] };
+  if (ids.length === 0) {
+    return res.status(400).json({ message: "No valid user IDs provided" });
+  }
+
+  try {
+    await UserModel.deleteMany({ _id: { $in: ids } });
+    const remainingUsers = await UserModel.find({}).populate("assignedSections");
+    res.status(200).json(remainingUsers);
+  } catch (error) {
+    return next(error);
+  }
+};

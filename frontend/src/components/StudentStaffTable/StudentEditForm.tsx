@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from "react";
+import { useState } from "react";
 
 import { updateStudent } from "../../api/students";
 import { Button } from "../Button";
@@ -31,7 +31,7 @@ export function StudentEditForm({ student, onCancel, onSubmit }: StudentEditForm
     return "";
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  const handleSubmit: NonNullable<React.ComponentProps<"form">["onSubmit"]> = (event) => {
     event.preventDefault();
 
     const preError = validateScore(preassessmentScore, "Pre-assessment score");
@@ -76,7 +76,7 @@ export function StudentEditForm({ student, onCancel, onSubmit }: StudentEditForm
       .catch((error) => {
         console.error(error);
       });
-  }
+  };
 
   return (
     <form className={styles.wrapper} onSubmit={handleSubmit}>

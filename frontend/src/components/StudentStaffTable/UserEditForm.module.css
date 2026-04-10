@@ -1,0 +1,59 @@
+.wrapper {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  font-family: "Montserrat", sans-serif;
+  color: black;
+  padding: 10px;
+  width: 100%;
+  max-width: 750px;
+  border-radius: 12px;
+  overflow: visible;
+}
+
+.headerSegment {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0 0 20px;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.nameRow {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 2vw;
+  margin: 10px 0;
+}
+
+.fieldGroup {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+  margin: 10px 0;
+  font-family: "Montserrat", sans-serif;
+}
+
+.buttonRow {
+  display: flex;
+  flex-direction: row;
+  margin-top: auto;
+  margin-left: auto;
+  gap: 10px;
+  padding-top: 12px;
+}
+
+@media (max-width: 640px) {
+  .nameRow {
+    flex-direction: column;
+    gap: 0;
+  }
+}
