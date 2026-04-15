@@ -15,16 +15,10 @@ import { useEffect, useRef, useState } from "react";
 
 import styles from "./page.module.css";
 
-import {
-  createSection,
-  deleteSection,
-  getAllSections,
-  type Section,
-  updateSection,
-} from "@/src/api/sections";
+import { deleteSection, getAllSections, type Section, updateSection } from "@/src/api/sections";
 import { Modal } from "@/src/components/Modal";
 import { SectionCard } from "@/src/components/SectionCard";
-import { SectionForm } from "@/src/components/SectionForm";
+import { CreateSectionFlow } from "@/src/components/SectionForm/SectionForm";
 import { Toast } from "@/src/components/Toast";
 import { useToast } from "@/src/hooks/useToast";
 
@@ -47,6 +41,15 @@ export default function Programs() {
   const sortMenuRef = useRef<HTMLDivElement>(null);
   const { toast, showToast, dismissToast } = useToast();
 
+  const fetchData = async () => {
+    const result = await getAllSections();
+    if (result.success) {
+      setSections(result.data);
+    } else {
+      throw new Error("Data could not be fetched");
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (sortMenuRef.current && !sortMenuRef.current.contains(e.target as Node)) {
@@ -58,14 +61,6 @@ export default function Programs() {
   }, [sortOpen]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const result = await getAllSections();
-      if (result.success) {
-        setSections(result.data);
-      } else {
-        throw new Error("Data could not be fetched");
-      }
-    };
     void fetchData();
   }, []);
 
@@ -184,29 +179,13 @@ export default function Programs() {
         </div>
       </div>
       {/* Create new section! */}
-      {showCreateModal && (
-        <Modal
-          child={
-            <SectionForm
-              // no initialData prop — empty form
-              onSubmit={async (data) => {
-                const result = await createSection({
-                  ...data,
-                  teachers: [],
-                  enrolledStudents: [],
-                });
-                if (result.success) {
-                  setSections((prev) => [...prev, result.data]);
-                  setShowCreateModal(false);
-                  showToast(`${data.code} Successfully Created!`);
-                }
-              }}
-              onCancel={() => setShowCreateModal(false)}
-            />
-          }
-          onExit={() => setShowCreateModal(false)}
-        />
-      )}
+      <CreateSectionFlow
+        active={showCreateModal}
+        onClose={() => {
+          setShowCreateModal(false);
+          void fetchData();
+        }}
+      />
 
       {/* pop up for deleting section */}
       {deletingSection && (
@@ -256,27 +235,14 @@ export default function Programs() {
       )}
 
       {/* Edit section modal! */}
-      {editingSection && (
-        <Modal
-          child={
-            <SectionForm
-              initialData={editingSection}
-              onSubmit={async (data) => {
-                const result = await updateSection({ ...editingSection, ...data });
-                if (result.success) {
-                  setSections((prev) =>
-                    prev.map((s) => (s._id === result.data._id ? result.data : s)),
-                  );
-                  setEditingSection(null);
-                  showToast(`${data.code} Successfully Edited!`);
-                }
-              }}
-              onCancel={() => setEditingSection(null)}
-            />
-          }
-          onExit={() => setEditingSection(null)}
-        />
-      )}
+      <CreateSectionFlow
+        active={!!editingSection}
+        sectionId={editingSection?._id}
+        onClose={() => {
+          setEditingSection(null);
+          void fetchData();
+        }}
+      />
 
       <div className={styles.grid}>
         {visibleSections.map((section) => (
