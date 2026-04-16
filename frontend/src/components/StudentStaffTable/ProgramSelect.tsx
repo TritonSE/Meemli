@@ -17,8 +17,8 @@ export type ProgramSelectProps = {
 
 /**
  * Component that handles selecting multiple programs for a user.
- * @param items react component 
- * @returns 
+ * @param items react component
+ * @returns
  */
 export function ProgramSelect({ items, selected, setSelected }: ProgramSelectProps) {
   const [open, setOpen] = useState(false);
