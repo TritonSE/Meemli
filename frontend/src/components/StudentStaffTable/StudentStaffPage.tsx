@@ -648,8 +648,10 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
             <>
               <button
                 className={`${styles.secondary} ${styles.headerButton}`}
-                onClick={() => setEdit(!isEdit)}
-              >
+                onClick={() => {
+                  setEdit(!isEdit)
+                  setSelected(new Set())
+                }}>
                 Cancel
               </button>
               {state === "admin" && (
