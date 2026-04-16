@@ -2,6 +2,8 @@
 import { ArchiveIcon, ArrowUpDown, PlusIcon, Search, Trash2, TriangleAlert } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 
+import styles from "./StudentStaffPage.module.css";
+
 import type { Section } from "@/src/api/sections";
 import type { Student } from "@/src/api/students";
 import type { DropdownItem } from "@/src/components/StudentStaffTable/Dropdown";
@@ -15,7 +17,6 @@ import { Modal } from "@/src/components/Modal";
 import { StudentForm } from "@/src/components/studentform/StudentForm";
 import { Dropdown } from "@/src/components/StudentStaffTable/Dropdown";
 import { ProgramSelect } from "@/src/components/StudentStaffTable/ProgramSelect";
-import styles from "@/src/components/StudentStaffTable/StudentStaffPage.module.css";
 import { Table } from "@/src/components/StudentStaffTable/Table";
 import { Toast } from "@/src/components/Toast/Toast";
 
@@ -30,10 +31,18 @@ type ToastState = {
 type StudentStaffPageProps = {
   type: "student" | "staff";
   state: "admin" | "teacher";
+  disabled?: boolean;
 };
 
-export default function StudentStaffPage({ type, state }: StudentStaffPageProps) {
-  // students holds all students
+export default function StudentStaffPage({ type, state, disabled }: StudentStaffPageProps) {
+  // root holds all data
+  if (disabled) {
+    return (
+      <div className={styles.disabledContainer}>
+        <h1>You do not have access to this page</h1>
+      </div>
+    )
+  }
   const [root, setRoot] = useState<Student[] | User[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
 

@@ -13,5 +13,6 @@ export default function Staff() {
     return <div>You must be logged in to view this page.</div>;
   }
   const state: "admin" | "teacher" = user.admin ? "admin" : "teacher";
-  return <StudentStaffPage type="staff" state={state} />;
+  const disabled = user.archived;
+  return <StudentStaffPage type="staff" state={state} disabled={disabled} />;
 }
