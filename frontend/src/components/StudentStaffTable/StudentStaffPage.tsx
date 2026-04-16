@@ -1,8 +1,7 @@
 "use client";
+import styles from "@/src/components/StudentStaffTable/StudentStaffPage.module.css";
 import { ArchiveIcon, ArrowUpDown, PlusIcon, Search, Trash2, TriangleAlert } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
-
-import styles from "./StudentStaffPage.module.css";
 
 import type { Section } from "@/src/api/sections";
 import type { Student } from "@/src/api/students";
