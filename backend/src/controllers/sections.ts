@@ -9,10 +9,10 @@ const handleError = (res: Response, message: string, status = 400) =>
 
 // ---------------------- CREATE — admin only ----------------------
 export const createSection: RequestHandler = async (req, res) => {
-  if (!req.userContext?.admin) {
-    return handleError(res, "Forbidden", 403);
-  }
   try {
+    if (!req.userContext?.admin) {
+      return handleError(res, "Forbidden", 403);
+    }
     const section = new Section(req.body);
     await section.save();
     res.status(201).json(section);
@@ -41,10 +41,10 @@ export const updateSection: RequestHandler<{ id: string }, unknown, UpdateSectio
   req,
   res,
 ) => {
-  if (!req.userContext?.admin) {
-    return handleError(res, "Forbidden", 403);
-  }
   try {
+    if (!req.userContext?.admin) {
+      return handleError(res, "Forbidden", 403);
+    }
     const section = await Section.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
@@ -58,10 +58,10 @@ export const updateSection: RequestHandler<{ id: string }, unknown, UpdateSectio
 
 // ---------------------- DELETE — admin only ----------------------
 export const deleteSection: RequestHandler<{ id: string }> = async (req, res) => {
-  if (!req.userContext?.admin) {
-    return handleError(res, "Forbidden", 403);
-  }
   try {
+    if (!req.userContext?.admin) {
+      return handleError(res, "Forbidden", 403);
+    }
     const section = await Section.findByIdAndDelete(req.params.id);
     if (!section) return handleError(res, `Section ${req.params.id} not found`, 404);
     res.status(204).send();
@@ -92,9 +92,8 @@ export const getSection: RequestHandler<{ id: string }> = async (req, res) => {
 // Admins: all sections
 // Teachers: only sections where their UID is in the teachers array
 export const getAllSections: RequestHandler = async (req, res) => {
-  const filter = req.userContext?.admin ? {} : { teachers: req.userId };
-
   try {
+    const filter = req.userContext?.admin ? {} : { teachers: req.userId };
     const sections = await Section.find(filter);
     res.json(sections);
   } catch (error: unknown) {

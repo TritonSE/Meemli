@@ -1,11 +1,14 @@
 import { validationResult } from "express-validator";
+import createHttpError from "http-errors";
 
 import { AttendanceModel } from "../models/attendance";
 import { SessionModel } from "../models/session";
+import { Section } from "../models/sections";
 
 import { ensureAttendanceForSession } from "./attendance";
 
 import type { RequestHandler } from "express";
+import { Types } from "mongoose";
 
 type CreateSessionBody = {
   section: string;
@@ -14,6 +17,9 @@ type CreateSessionBody = {
 
 export const createSession: RequestHandler = async (req, res, next) => {
   try {
+    if (!req.userContext?.admin) {
+      throw new createHttpError.Forbidden("Admin privileges required to create session");
+    }
     const errors = validationResult(req);
     if (!errors.isEmpty()) throw new Error(errors.array()[0].msg as string);
     const { section, sessionDate } = req.body as CreateSessionBody;
@@ -36,6 +42,9 @@ type UpdateSessionBody = Partial<{
 
 export const editSessionById: RequestHandler = async (req, res, next) => {
   try {
+    if (!req.userContext?.admin) {
+      throw new createHttpError.Forbidden("Admin privileges required to edit session");
+    }
     const errors = validationResult(req);
     if (!errors.isEmpty()) throw new Error(errors.array()[0].msg as string);
     const { id } = req.params;
@@ -57,23 +66,23 @@ export const getSession: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    //Get the Session Info (Date, Section)
     const session = await SessionModel.findById(id);
-
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
     }
 
-    // This creates records if missing, checks the date, returns them
+    // Non-admins can only view sessions for sections they teach
+    if (!req.userContext?.admin) {
+      const section = await Section.findById(session.section);
+      if (!section || !section.teachers.includes(req.userId!)) {
+        throw new createHttpError.Forbidden("You do not have permission to view this session");
+      }
+    }
+
     const attendanceRecords = await ensureAttendanceForSession(id);
     const populated = await AttendanceModel.populate(attendanceRecords, { path: "student" });
 
-    const response = {
-      ...session.toObject(),
-      attendees: populated,
-    };
-
-    res.status(200).json(response);
+    res.status(200).json({ ...session.toObject(), attendees: populated });
   } catch (error) {
     next(error);
   }
@@ -84,10 +93,14 @@ export const getSessionsBySectionId: RequestHandler = async (req, res, next) => 
   const { sectionId } = req.params;
 
   try {
+    if (!req.userContext?.admin) {
+      const section = await Section.findById(sectionId);
+      if (!section || !section.teachers.includes(req.userId!)) {
+        throw new createHttpError.Forbidden("You do not have permission to view sessions for this section");
+      }
+    }
+
     const sessions = await SessionModel.find({ section: sectionId });
-
-    // No population of attendance records needed
-
     res.status(200).json(sessions);
   } catch (error) {
     next(error);
@@ -96,8 +109,19 @@ export const getSessionsBySectionId: RequestHandler = async (req, res, next) => 
 
 export const getAllSessions: RequestHandler = async (req, res, next) => {
   try {
-    const sessions = await SessionModel.find().populate("section");
+    // Admins: return all sessions
+    if (req.userContext?.admin) {
+      const sessions = await SessionModel.find().populate("section");
+      return res.status(200).json(sessions);
+    }
 
+    // Non-admins: find only sections they teach, then return sessions for those
+    const assignedSections = await Section.find({ teachers: req.userId });
+    const assignedSectionIds = assignedSections.map((s: { _id: Types.ObjectId }) => s._id);
+
+    const sessions = await SessionModel.find({ section: { $in: assignedSectionIds } }).populate(
+      "section",
+    );
     res.status(200).json(sessions);
   } catch (error) {
     next(error);
