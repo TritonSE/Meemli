@@ -112,7 +112,7 @@ export const whoAmI: RequestHandler = async (req, res, next) => {
 //  Get All Users
 export const getAllUsers: RequestHandler = async (req, res, next) => {
   try {
-    const users = await UserModel.find().populate("assignedSections");
+    const users = await UserModel.find();
     res.status(200).json(users);
   } catch (error) {
     return next(error);
@@ -134,7 +134,7 @@ export const archiveUsersByIds: RequestHandler = async (req, res, next) => {
 
   try {
     await UserModel.updateMany({ _id: { $in: ids } }, { archived: flag });
-    const users = await UserModel.find({ _id: { $in: ids } }).populate("assignedSections");
+    const users = await UserModel.find({ _id: { $in: ids } });
     res.status(200).json(users);
   } catch (error) {
     return next(error);
@@ -156,7 +156,7 @@ export const deleteUsersByIds: RequestHandler = async (req, res, next) => {
 
   try {
     await UserModel.deleteMany({ _id: { $in: ids } });
-    const remainingUsers = await UserModel.find({}).populate("assignedSections");
+    const remainingUsers = await UserModel.find({});
     res.status(200).json(remainingUsers);
   } catch (error) {
     return next(error);

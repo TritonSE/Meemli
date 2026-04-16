@@ -29,10 +29,7 @@ export function UserEditForm({ user, sections: _sections, onCancel, onSubmit }: 
   const [lastName, setLastName] = useState(user.lastName);
   const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
   const [role, setRole] = useState(user.admin ? "Admin" : "Staff");
-  const [assignedSections, setAssignedSections] = useState(
-    user.assignedSections.map((s) => s._id) as string[],
-  );
-
+  const [assignedSections, setAssignedSections] = useState(user.assignedSections);
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
   const [phoneNumberError, setPhoneNumberError] = useState("");
@@ -82,7 +79,9 @@ export function UserEditForm({ user, sections: _sections, onCancel, onSubmit }: 
       personalEmail: user.personalEmail,
       meemliEmail: user.meemliEmail,
       archived: user.archived,
-      assignedSections,
+      assignedSections: _sections
+        .filter((section) => assignedSections.includes(section._id))
+        .map((section) => section._id),
     })
       .then((result) => {
         if (result.success) {

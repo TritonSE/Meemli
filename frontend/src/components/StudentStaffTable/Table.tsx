@@ -206,9 +206,7 @@ export function Table({
     } else {
       const sortedSections = input.assignedSections
         .map((cid) => {
-          // there's a weird backend bug going on here. assignedSections is stored as Section[], but it gets passed as string[]
-          // so this is a temporary fix to make sure the code works for both cases until the bug is fixed
-          const res = sections.find((obj) => obj._id === cid._id);
+          const res = sections.find((obj) => obj._id === cid);
           return {
             label: res?.code ?? "Error",
             color: res?.color ?? "gray",

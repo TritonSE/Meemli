@@ -2,7 +2,7 @@
 import { ArchiveIcon, ArrowUpDown, PlusIcon, Search, Trash2, TriangleAlert } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 
-import styles from "./test_styles.module.css";
+import styles from "./StudentStaffPage.module.css";
 
 import type { Section } from "@/src/api/sections";
 import type { Student } from "@/src/api/students";
@@ -41,7 +41,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
       <div className={styles.disabledContainer}>
         <h1>You do not have access to this page</h1>
       </div>
-    )
+    );
   }
   const [root, setRoot] = useState<Student[] | User[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
