@@ -1,5 +1,5 @@
 "use client";
-import styles from "@/src/components/StudentStaffTable/StudentStaffPage.module.css";
+import styles from "@/src/components/StudentStaffTable/Page.module.css";
 import { ArchiveIcon, ArrowUpDown, PlusIcon, Search, Trash2, TriangleAlert } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 
