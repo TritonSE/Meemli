@@ -57,6 +57,7 @@ const sectionSchema = new mongoose.Schema(
     },
     color: {
       type: String,
+      default: "#ff00ff",
     },
     days: {
       type: [String],
