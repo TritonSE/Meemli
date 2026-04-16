@@ -1,5 +1,4 @@
 "use client";
-import styles from "@/src/components/StudentStaffTable/Page.module.css";
 import { ArchiveIcon, ArrowUpDown, PlusIcon, Search, Trash2, TriangleAlert } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 
@@ -15,6 +14,7 @@ import { AddStaffForm } from "@/src/components/AddStaff/AddStaffForm";
 import { Modal } from "@/src/components/Modal";
 import { StudentForm } from "@/src/components/studentform/StudentForm";
 import { Dropdown } from "@/src/components/StudentStaffTable/Dropdown";
+import styles from "@/src/components/StudentStaffTable/Page.module.css";
 import { ProgramSelect } from "@/src/components/StudentStaffTable/ProgramSelect";
 import { Table } from "@/src/components/StudentStaffTable/Table";
 import { Toast } from "@/src/components/Toast/Toast";

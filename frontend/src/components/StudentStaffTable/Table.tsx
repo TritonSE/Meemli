@@ -134,9 +134,11 @@ export function Table({
     );
     const inside = <div className={styles.hoverInner}>{children}</div>;
     return (
+      <div className={styles.hoverWrap}>
       <button className={styles.hiddenButton} onClick={fxn}>
         {inside}
       </button>
+      </div>
     );
   };
 
@@ -194,7 +196,7 @@ export function Table({
           {renderCheckbox(input)}
           <td className={styles.nameItem}>
             <StudentCard data={input} variant="list" />
-            <div className={styles.hoverWrap}>{renderHoverBtn(input)}</div>
+            {renderHoverBtn(input)}
           </td>
           <td className={styles.textItem}>{input.parentContact.email}</td>
           <td className={styles.programsItem}>
@@ -226,7 +228,7 @@ export function Table({
           {renderCheckbox(input)}
           <td className={styles.nameItem}>
             <NameCard name={`${input.firstName} ${input.lastName}`} email={input.meemliEmail} />
-            <div className={styles.hoverWrap}>{renderHoverBtn(input)}</div>
+            {renderHoverBtn(input)}
           </td>
           <td className={styles.roleItem}>
             <DynamicBlockDisplay
