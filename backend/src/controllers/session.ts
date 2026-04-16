@@ -8,7 +8,7 @@ import { Section } from "../models/sections";
 import { ensureAttendanceForSession } from "./attendance";
 
 import type { RequestHandler } from "express";
-import { Types } from "mongoose";
+import type { Types } from "mongoose";
 
 type CreateSessionBody = {
   section: string;
