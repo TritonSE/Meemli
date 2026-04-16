@@ -1,0 +1,11 @@
+.container {
+  font-family: "Montserrat", sans-serif;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-color: #fcfbfb;
+  padding: 64px 128px 0 128px;
+
+  --button-padding: 24px 14px;
+}

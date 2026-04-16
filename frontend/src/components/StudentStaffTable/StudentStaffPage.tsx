@@ -2,7 +2,7 @@
 import { ArchiveIcon, ArrowUpDown, PlusIcon, Search, Trash2, TriangleAlert } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 
-import styles from "./StudentStaffPage.module.css";
+import styles from "./test_styles.module.css";
 
 import type { Section } from "@/src/api/sections";
 import type { Student } from "@/src/api/students";
