@@ -34,7 +34,6 @@ type StudentStaffPageProps = {
 };
 
 export default function StudentStaffPage({ type, state, disabled }: StudentStaffPageProps) {
-  // root holds all data
   if (disabled) {
     return (
       <div className={styles.disabledContainer}>
@@ -42,6 +41,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
       </div>
     );
   }
+  // root holds all data
   const [root, setRoot] = useState<Student[] | User[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
 
@@ -117,12 +117,14 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
     if (type === "student") {
       let base = (root as Student[]).filter((s) => s.archived === showArchived);
 
+      // filter by sections if any are selected.
       if (sortBy.length > 0) {
         base = base.filter((s) =>
           s.enrolledSections.some((sectionId) => sortBy.includes(sectionId)),
         );
       }
 
+      // filter by search query if it exists. Checks for matches in display name and email.
       if (q) {
         base = base.filter(
           (s) =>
@@ -131,6 +133,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
         );
       }
 
+      // sort by first name, then last name
       base = base.sort((a, b) =>
         (a.displayName ?? "").localeCompare(b.displayName ?? "", undefined, {
           sensitivity: "base",
@@ -649,9 +652,10 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
               <button
                 className={`${styles.secondary} ${styles.headerButton}`}
                 onClick={() => {
-                  setEdit(!isEdit)
-                  setSelected(new Set())
-                }}>
+                  setEdit(!isEdit);
+                  setSelected(new Set());
+                }}
+              >
                 Cancel
               </button>
               {state === "admin" && (

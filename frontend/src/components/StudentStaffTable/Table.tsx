@@ -22,13 +22,6 @@ import { StudentProfileModal } from "@/src/components/StudentProfileView/Student
 import { StudentEditForm } from "@/src/components/StudentStaffTable/StudentEditForm";
 import { UserEditForm } from "@/src/components/StudentStaffTable/UserEditForm";
 
-/**
- * Component for dynamically rendering block-like items based on available container space
- * @param labels - Array of strings to display as labels
- * @param colors - Array of colors (hex or CSS color names) corresponding to each label
- */
-// --- Color helpers ---
-
 export type TableProps = {
   data: Student[] | User[];
   setData: Dispatch<SetStateAction<any>>;
@@ -95,10 +88,10 @@ export function Table({
   useEffect(() => {
     if (page > pageCount - 1) clampedSetPage(pageCount - 1);
   }, [pageCount]);
+
   /**
    * Creates the correct hover button depending on different states
-   * the form can be in. For example, a student page in edit mode will
-   * have the "Edit Info" button that spawns an edit student page.
+   * the form can be in.
    * @param input student or staff data
    */
   const renderHoverBtn = (input: Student | User) => {
@@ -135,9 +128,9 @@ export function Table({
     const inside = <div className={styles.hoverInner}>{children}</div>;
     return (
       <div className={styles.hoverWrap}>
-      <button className={styles.hiddenButton} onClick={fxn}>
-        {inside}
-      </button>
+        <button className={styles.hiddenButton} onClick={fxn}>
+          {inside}
+        </button>
       </div>
     );
   };

@@ -24,6 +24,14 @@ type UserEditFormProps = {
   onSubmit?: () => void;
 };
 
+/**
+ * Form for editing a user. Validates input and displays error messages. On submit, calls the API to update the user.
+ * @param user the user to edit
+ * @param sections list of all sections to choose from when assigning sections to the user
+ * @param onCancel callback when the user clicks the cancel button
+ * @param onSubmit callback when the user successfully submits the form.
+ * @returns form component
+ */
 export function UserEditForm({ user, sections: _sections, onCancel, onSubmit }: UserEditFormProps) {
   const [firstName, setFirstName] = useState(user.firstName);
   const [lastName, setLastName] = useState(user.lastName);

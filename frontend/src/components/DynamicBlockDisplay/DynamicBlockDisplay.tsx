@@ -4,7 +4,13 @@ import styles from "./DynamicBlockDisplay.module.css";
 
 import { getChipColors } from "@/src/components/ChipColor";
 
-// --- Main component ---
+/**
+ * Renders a horizontal list of colored blocks with labels. If the blocks exceed the width of the parent
+ * container, it will render a "+X" block at the end, where X is the number of hidden blocks.
+ * @param labels array of labels to display
+ * @param colors array of hex colors to display. Must have the same length as labels
+ * @returns
+ */
 export function DynamicBlockDisplay({ labels, colors }: { labels: string[]; colors: string[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);

@@ -13,5 +13,6 @@ export default function Students() {
     return <div>You must be logged in to view this page.</div>;
   }
   const state: "admin" | "teacher" = user.admin ? "admin" : "teacher";
-  return <StudentStaffPage type="student" state={state} />;
+  const disabled = user.archived;
+  return <StudentStaffPage type="student" state={state} disabled={disabled} />;
 }
