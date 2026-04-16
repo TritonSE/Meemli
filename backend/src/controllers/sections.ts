@@ -1,4 +1,5 @@
 import { Section } from "../models/sections";
+import { SessionModel } from "../models/session";
 
 import type { SectionDoc } from "../models/sections";
 // controllers/sections.ts
@@ -13,6 +14,32 @@ export const createSection: RequestHandler = async (req, res) => {
   try {
     const section = new Section(req.body);
     await section.save();
+
+    const sectionEndDate = new Date(section.endDate);
+    const sectionStartDate = new Date(section.startDate);
+    const sessionDates = [];
+
+    let sessionDate = new Date(sectionStartDate);
+    while (sessionDate <= sectionEndDate) {
+      if (
+        section.days.includes(
+          sessionDate.toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" }),
+        )
+      ) {
+        sessionDates.push(new Date(sessionDate));
+      }
+      sessionDate = new Date(sessionDate.setDate(sessionDate.getDate() + 1));
+    }
+
+    await Promise.all(
+      sessionDates.map(async (date: Date) => {
+        await SessionModel.create({
+          section: section._id,
+          sessionDate: date,
+        });
+      }),
+    );
+
     res.status(201).json(section);
   } catch (error: unknown) {
     handleError(res, error instanceof Error ? error.message : "Unknown error");
@@ -49,6 +76,34 @@ export const updateSection: RequestHandler<{ id: string }, unknown, UpdateSectio
     if (!section) {
       return handleError(res, `Section ${req.params.id} not found`, 404);
     }
+
+    const sectionEndDate = new Date(section.endDate);
+    const sectionStartDate = new Date(section.startDate);
+    const sessionDates = [];
+
+    let sessionDate = new Date(sectionStartDate);
+    while (sessionDate <= sectionEndDate) {
+      if (
+        section.days.includes(
+          sessionDate.toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" }),
+        )
+      ) {
+        sessionDates.push(new Date(sessionDate));
+      }
+      sessionDate = new Date(sessionDate.setDate(sessionDate.getDate() + 1));
+    }
+
+    await Promise.all(
+      sessionDates.map(async (date: Date) => {
+        const session = await SessionModel.findOne({ section: section._id, sessionDate: date });
+        if (!session) {
+          await SessionModel.create({
+            section: section._id,
+            sessionDate: date,
+          });
+        }
+      }),
+    );
 
     res.json(section);
   } catch (error: unknown) {
