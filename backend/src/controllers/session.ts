@@ -1,5 +1,4 @@
-import { validationResult } from "express-validator";
-import createHttpError from "http-errors";
+import createHTTPError from "http-errors";
 
 import { AttendanceModel } from "../models/attendance";
 import { SessionModel } from "../models/session";
@@ -18,10 +17,9 @@ type CreateSessionBody = {
 export const createSession: RequestHandler = async (req, res, next) => {
   try {
     if (!req.userContext?.admin) {
-      throw new createHttpError.Forbidden("Admin privileges required to create session");
+      throw createHTTPError(403, "Admin privileges required to create session");
     }
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) throw new Error(errors.array()[0].msg as string);
+
     const { section, sessionDate } = req.body as CreateSessionBody;
 
     const session = await SessionModel.create({
@@ -43,17 +41,16 @@ type UpdateSessionBody = Partial<{
 export const editSessionById: RequestHandler = async (req, res, next) => {
   try {
     if (!req.userContext?.admin) {
-      throw new createHttpError.Forbidden("Admin privileges required to edit session");
+      throw  createHTTPError(403,"Admin privileges required to edit session");
     }
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) throw new Error(errors.array()[0].msg as string);
+   
     const { id } = req.params;
     const updateData: UpdateSessionBody = req.body as UpdateSessionBody;
     const updatedSession = await SessionModel.findByIdAndUpdate(id, updateData, { new: true });
 
     // updatedSession will be null if no session with the given ID was found
     if (!updatedSession) {
-      return res.status(404).json({ error: "Session not found" });
+      throw createHTTPError(404, "Session not found");
     }
 
     return res.status(200).json(updatedSession);
@@ -68,14 +65,14 @@ export const getSession: RequestHandler = async (req, res, next) => {
   try {
     const session = await SessionModel.findById(id);
     if (!session) {
-      return res.status(404).json({ error: "Session not found" });
+      throw createHTTPError(404, "Session not found");
     }
 
     // Non-admins can only view sessions for sections they teach
     if (!req.userContext?.admin) {
       const section = await Section.findById(session.section);
       if (!section || !section.teachers.includes(req.userId!)) {
-        throw new createHttpError.Forbidden("You do not have permission to view this session");
+        throw createHTTPError(403, "You do not have permission to view this session");
       }
     }
 
@@ -96,7 +93,7 @@ export const getSessionsBySectionId: RequestHandler = async (req, res, next) => 
     if (!req.userContext?.admin) {
       const section = await Section.findById(sectionId);
       if (!section || !section.teachers.includes(req.userId!)) {
-        throw new createHttpError.Forbidden("You do not have permission to view sessions for this section");
+        throw createHTTPError(403, "You do not have permission to view sessions for this section");
       }
     }
 
