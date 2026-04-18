@@ -126,10 +126,17 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
 
       // filter by search query if it exists. Checks for matches in display name and email.
       if (q) {
+        const terms = q.split(" ");
         base = base.filter(
           (s) =>
-            (s.displayName ?? "").toLowerCase().includes(q) ||
-            (s.meemliEmail ?? "").toLowerCase().includes(q),
+            terms.every((term) =>
+              (s.displayName ?? "").toLowerCase().includes(term) ||
+              (s.meemliEmail ?? "").toLowerCase().includes(term) ||
+              (s.parentContact?.firstName ?? "").toLowerCase().includes(term) ||
+              (s.parentContact?.lastName ?? "").toLowerCase().includes(term) ||
+              (s.parentContact?.email ?? "").toLowerCase().includes(term) ||
+              (s.comments ?? "").toLowerCase().includes(term),
+            )
         );
       }
 
@@ -151,11 +158,14 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
       }
 
       if (q) {
+        const terms = q.split(" ");
         base = base.filter(
           (s) =>
-            (s.firstName ?? "").toLowerCase().includes(q) ||
-            (s.lastName ?? "").toLowerCase().includes(q) ||
-            (s.meemliEmail ?? "").toLowerCase().includes(q),
+            terms.every((term) =>
+              (s.firstName ?? "").toLowerCase().includes(term) ||
+              (s.lastName ?? "").toLowerCase().includes(term) ||
+              (s.meemliEmail ?? "").toLowerCase().includes(term),
+            )
         );
       }
 
