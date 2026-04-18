@@ -49,6 +49,11 @@ function hexToHsl(hex: string) {
   };
 }
 
+/**
+ * Get the background and text colors for a chip based on the input color.
+ * @param color - The base color in hex format.
+ * @returns An object containing the backgroundColor and textColor in HSL format.
+ */
 export function getChipColors(color: string) {
   const { h, s, l } = hexToHsl(color);
   const backgroundColor = `hsl(${h}, ${s}%, ${Math.min(l + 35, 92)}%)`; // lighter
