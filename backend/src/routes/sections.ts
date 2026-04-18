@@ -1,4 +1,3 @@
-// routes/sections.ts
 import express from "express";
 
 import {
@@ -14,12 +13,15 @@ import { createSectionValidator, updateSectionValidator } from "../validators/se
 const router = express.Router();
 
 // ---------------------- ROUTES ----------------------
-router.post("/", createSectionValidator, validateRequest, createSection);
-
-router.put("/:id", updateSectionValidator, validateRequest, updateSection);
-
-router.delete("/:id", deleteSection);
+// GET Routes
 router.get("/:id", getSection);
 router.get("/", getAllSections);
+
+// POST, PUT Routes
+router.post("/", createSectionValidator, validateRequest, createSection);
+router.put("/:id", updateSectionValidator, validateRequest, updateSection);
+
+// DELETE Routes
+router.delete("/:id", deleteSection);
 
 export default router;

@@ -1,23 +1,27 @@
 import express from "express";
 
 import * as AttendanceController from "../controllers/attendance";
+import { validateRequest } from "../middleware/validateRequest";
 import * as AttendanceValidator from "../validators/attendance";
 
 const router = express.Router();
 
-// Get attendance record by Session ID
+// ---------------------- ROUTES ----------------------
+// GET Routes
 router.get("/session/:sessionId", AttendanceController.getAttendanceBySessionId);
 
-// Create attendance record
-router.post("/", AttendanceValidator.createAttendance, AttendanceController.createAttendance);
-
-//for saving
+// POST, PUT Routes
+router.post(
+  "/",
+  AttendanceValidator.createAttendance,
+  validateRequest,
+  AttendanceController.createAttendance,
+);
 router.put("/bulk-update", AttendanceController.updateBulkAttendance);
-
-// Update attendance record by ID
 router.put(
   "/:id",
   AttendanceValidator.updateAttendanceById,
+  validateRequest,
   AttendanceController.updateAttendanceById,
 );
 
