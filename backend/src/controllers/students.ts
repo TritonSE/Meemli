@@ -107,12 +107,7 @@ export const archiveStudentsByIds: RequestHandler = async (req, res, next) => {
 
   try {
     await StudentModel.updateMany({ _id: { $in: validIds } }, { $set: { archived: flag } });
-
-    // return the updated documents so the frontend can sync its state
-    const students = await StudentModel.find({ _id: { $in: validIds } }).populate(
-      "enrolledSections",
-    );
-    res.status(200).json(students);
+    res.status(200).json({ message: `Students ${flag ? "archived" : "unarchived"} successfully` });
   } catch (error) {
     return next(error);
   }
@@ -146,8 +141,7 @@ export const deleteStudentsByIds: RequestHandler = async (req, res, next) => {
   }
   try {
     await StudentModel.deleteMany({ _id: { $in: validIds } });
-    const remainingStudents = await StudentModel.find({}).populate("enrolledSections");
-    res.status(200).json(remainingStudents);
+    res.status(200).json({ message: "Students deleted successfully" });
   } catch (error) {
     return next(error);
   }
