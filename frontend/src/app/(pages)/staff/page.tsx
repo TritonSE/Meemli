@@ -5,24 +5,27 @@ import { useState } from "react";
 import { AddStaffForm } from "@/src/components/AddStaff/AddStaffForm";
 import { Button } from "@/src/components/Button";
 import { Modal } from "@/src/components/Modal";
+import AdminRoute from "@/src/components/AdminRoute/AdminRoute";
 
 export default function Staff() {
   const [addOpen, setAddOpen] = useState(false);
 
   return (
-    <section>
-      <h1>Staff</h1>
-      <Button label="Add Staff" kind="primary" onClick={() => setAddOpen(!addOpen)} />
-      {addOpen && (
-        <Modal
-          onExit={() => setAddOpen(!addOpen)}
-          child={
-            <>
-              <AddStaffForm onExit={() => setAddOpen(false)} />
-            </>
-          }
-        />
-      )}
-    </section>
+    <AdminRoute>
+      <section>
+        <h1>Staff</h1>
+        <Button label="Add Staff" kind="primary" onClick={() => setAddOpen(!addOpen)} />
+        {addOpen && (
+          <Modal
+            onExit={() => setAddOpen(!addOpen)}
+            child={
+              <>
+                <AddStaffForm onExit={() => setAddOpen(false)} />
+              </>
+            }
+          />
+        )}
+      </section>
+    </AdminRoute>
   );
 }
