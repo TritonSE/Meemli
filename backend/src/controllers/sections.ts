@@ -9,27 +9,35 @@ import type { RequestHandler, Response } from "express";
 const handleError = (res: Response, message: string, status = 400) =>
   res.status(status).json({ message });
 
+// Populate sessions list
+const populateSessions = async (section: SectionDoc) => {
+  const today = new Date();
+  const sectionEndDate = new Date(section.endDate);
+  const sectionStartDate = new Date(section.startDate);
+  const sessionDates = [];
+
+  let sessionDate = new Date(sectionStartDate);
+  while (sessionDate >= today && sessionDate <= sectionEndDate) {
+    if (
+      section.days.includes(
+        sessionDate.toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" }),
+      )
+    ) {
+      sessionDates.push(new Date(sessionDate));
+    }
+    sessionDate = new Date(sessionDate.setDate(sessionDate.getDate() + 1));
+  }
+
+  return sessionDates;
+};
+
 // ---------------------- CREATE ----------------------
 export const createSection: RequestHandler = async (req, res) => {
   try {
     const section = new Section(req.body);
     await section.save();
 
-    const sectionEndDate = new Date(section.endDate);
-    const sectionStartDate = new Date(section.startDate);
-    const sessionDates = [];
-
-    let sessionDate = new Date(sectionStartDate);
-    while (sessionDate <= sectionEndDate) {
-      if (
-        section.days.includes(
-          sessionDate.toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" }),
-        )
-      ) {
-        sessionDates.push(new Date(sessionDate));
-      }
-      sessionDate = new Date(sessionDate.setDate(sessionDate.getDate() + 1));
-    }
+    const sessionDates = await populateSessions(section);
 
     await Promise.all(
       sessionDates.map(async (date: Date) => {
@@ -77,21 +85,9 @@ export const updateSection: RequestHandler<{ id: string }, unknown, UpdateSectio
       return handleError(res, `Section ${req.params.id} not found`, 404);
     }
 
-    const sectionEndDate = new Date(section.endDate);
-    const sectionStartDate = new Date(section.startDate);
-    const sessionDates = [];
+    await SessionModel.deleteMany({ section: section._id, sessionDate: { $gt: new Date() } });
 
-    let sessionDate = new Date(sectionStartDate);
-    while (sessionDate <= sectionEndDate) {
-      if (
-        section.days.includes(
-          sessionDate.toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" }),
-        )
-      ) {
-        sessionDates.push(new Date(sessionDate));
-      }
-      sessionDate = new Date(sessionDate.setDate(sessionDate.getDate() + 1));
-    }
+    const sessionDates = await populateSessions(section);
 
     await Promise.all(
       sessionDates.map(async (date: Date) => {
