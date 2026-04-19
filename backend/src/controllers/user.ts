@@ -130,6 +130,13 @@ export const deleteUsersByIds: RequestHandler = async (req, res, next) => {
     throw createHTTPError(400, "No valid user IDs provided");
   }
 
+  await firebaseAdminAuth.deleteUsers(ids).catch((error) => {
+    if (error instanceof FirebaseAuthError) {
+      throw createHTTPError(500, "Failed to delete users from Firebase");
+    }
+    throw createHTTPError(500, "Internal Server Error");
+  });
+
   try {
     await UserModel.deleteMany({ _id: { $in: ids } });
     res.status(200).json({ message: "Users deleted successfully" });
