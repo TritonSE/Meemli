@@ -212,17 +212,8 @@ export default function Programs() {
                     const deleted = deletingSection;
                     setSections((prev) => prev.filter((s) => s._id !== deleted._id));
                     setDeletingSection(null);
-
-                    let cancelled = false;
-                    const timer = setTimeout(() => {
-                      if (!cancelled) void deleteSection(deleted._id);
-                    }, 4000);
-
-                    showToast(`${deleted.code} Successfully Deleted!`, () => {
-                      cancelled = true;
-                      clearTimeout(timer);
-                      setSections((prev) => [...prev, deleted]);
-                    });
+                    void deleteSection(deleted._id);
+                    showToast(`${deleted.code} Successfully Deleted!`);
                   }}
                 >
                   Yes, I&apos;m sure.

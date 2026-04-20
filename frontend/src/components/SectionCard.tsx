@@ -85,7 +85,9 @@ export const SectionCard = function SectionCard({
       </div>
 
       <div className={styles.cardBody}>
-        <h3>{code}</h3>
+        <h3 className={styles.classTitle} tabIndex={0} title={code}>
+          {code}
+        </h3>
         <p>
           {days.join(", ")} {startTime} - {endTime}
         </p>

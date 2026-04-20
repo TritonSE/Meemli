@@ -78,6 +78,12 @@
   letter-spacing: -0.02em;
   color: #231f20;
   margin: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
 }
 
 .cardBody p {
