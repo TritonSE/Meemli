@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import type { Document, Types } from "mongoose";
+import type { Document, Types } from "mongoose"; // Types still used for ObjectId arrays in teachers/enrolledStudents
 
 // Type definition for Section documents
 export type SectionDoc = Document & {
@@ -31,13 +31,12 @@ const sectionSchema = new mongoose.Schema(
     },
     enrolledStudents: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: "Student", // Reference to the Student model
-      required: false, // Not required at creation
-      default: [], // Default to an empty array if no students are enrolled
+      ref: "Student",
+      default: [],
     },
     startTime: {
       type: String,
-      required: true, // Start time must be provided
+      required: true,
     },
     endTime: {
       type: String,
@@ -60,7 +59,7 @@ const sectionSchema = new mongoose.Schema(
     },
     days: {
       type: [String],
-      required: true, // Must provide an array of days
+      required: true,
     },
   },
   {

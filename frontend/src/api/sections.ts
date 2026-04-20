@@ -1,4 +1,4 @@
-import { get, handleAPIError, post, put } from "./requests";
+import { del, get, handleAPIError, post, put } from "./requests";
 
 import type { APIResult } from "./requests";
 
@@ -14,10 +14,11 @@ export type Section = {
   archived: boolean;
   color: string;
   days: string[];
+  createdAt: string;
 };
 
-export type CreateSectionRequest = Omit<Section, "_id">;
-export type UpdateSectionRequest = Section;
+export type CreateSectionRequest = Omit<Section, "_id" | "createdAt">;
+export type UpdateSectionRequest = Omit<Section, "createdAt">;
 
 export async function getAllSections(): Promise<APIResult<Section[]>> {
   try {
@@ -50,9 +51,19 @@ export async function updateSection(section: UpdateSectionRequest): Promise<APIR
   }
 }
 
-export async function createSection(student: CreateSectionRequest): Promise<APIResult<Section>> {
+export async function createSection(section: CreateSectionRequest): Promise<APIResult<Section>> {
   try {
-    const response = await post(`/sections`, student);
+    const response = await post(`/sections`, section);
+    const json = (await response.json()) as Section;
+    return { success: true, data: json };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+export async function deleteSection(id: string): Promise<APIResult<Section>> {
+  try {
+    const response = await del(`/sections/${id}`);
     const json = (await response.json()) as Section;
 
     return { success: true, data: json };

@@ -143,3 +143,6 @@ vite.config.ts.timestamp-*
 
 # System specific files
 .DS_Store
+
+.bash_profile
+src/env (1).backend_new
