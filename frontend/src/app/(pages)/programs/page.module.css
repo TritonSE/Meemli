@@ -1,0 +1,331 @@
+.pageWrapper {
+  padding: 64px 128px 60px;
+  background: #fcfbfb;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.headerSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 48px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.titleSection h1 {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 38px;
+  letter-spacing: -0.02em;
+  color: #231f20;
+  margin: 0 0 4px;
+}
+
+.titleSection p {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  color: #6c6a6b;
+  margin: 0;
+}
+
+.createButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #3f8d7c;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  height: 44px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.createButton:hover {
+  background-color: var(--primary-600);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.tabs {
+  display: flex;
+  gap: 16px;
+}
+
+.tabButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  height: 40px;
+  border-radius: 8px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  border: 1px solid #cdcfd0;
+  background: #ffffff;
+  color: #494445;
+}
+
+.tabButton:hover {
+  background: var(--grey-25);
+}
+
+.tabActive {
+  background-color: #3f8d7c;
+  color: #ffffff;
+  border-color: #3f8d7c;
+}
+
+.tabActive:hover {
+  background-color: var(--primary-600);
+  border-color: var(--primary-600);
+  color: #ffffff;
+}
+
+.rightControls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sortButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  height: 40px;
+  border-radius: 8px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  border: 1px solid #cdcfd0;
+  background: #ffffff;
+  color: #494445;
+  white-space: nowrap;
+}
+
+.sortButton:hover {
+  background: var(--grey-25);
+}
+
+.searchWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  color: #9b9d9f;
+  pointer-events: none;
+}
+
+.searchInput {
+  padding: 8px 6px 8px 38px;
+  border: 1px solid #cdcfd0;
+  border-radius: 8px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  color: #231f20;
+  outline: none;
+  width: 240px;
+  height: 40px;
+}
+
+.searchInput::placeholder {
+  color: #9b9d9f;
+}
+
+.searchInput:focus {
+  border-color: var(--primary-500);
+}
+
+/* ── Confirm dialog ───────────────────────────── */
+
+.confirmDialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.confirmContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.confirmTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 38px;
+  letter-spacing: -0.02em;
+  color: #231f20;
+  margin: 0;
+}
+
+.confirmBody {
+  font-family: "Montserrat", sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  color: #231f20;
+  margin: 0;
+}
+
+.confirmFooter {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 16px;
+  width: 100%;
+}
+
+.confirmCancel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 16px;
+  gap: 8px;
+  height: 44px;
+  background: #3f8d7c;
+  border-radius: 8px;
+  border: none;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.confirmCancel:hover {
+  background-color: var(--primary-600);
+}
+
+.confirmDelete {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 16px;
+  gap: 8px;
+  height: 44px;
+  background: #ffffff;
+  border: 1px solid #fda29b;
+  border-radius: 8px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  color: #f04438;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.confirmDelete:hover {
+  background: #fff5f5;
+}
+
+/* ── Sort dropdown ────────────────────────────── */
+
+.sortContainer {
+  position: relative;
+}
+
+.sortDropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: white;
+  border: 1px solid #cdcfd0;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  z-index: 50;
+  min-width: 200px;
+  padding: 6px;
+}
+
+.sortOption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #494445;
+  cursor: pointer;
+  text-align: left;
+  gap: 8px;
+}
+
+.sortOption:hover {
+  background: var(--grey-25);
+}
+
+.sortDivider {
+  border: none;
+  border-top: 1px solid #e3e2e2;
+  margin: 4px 0;
+}
+
+/* ── Grid ─────────────────────────────────────── */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
