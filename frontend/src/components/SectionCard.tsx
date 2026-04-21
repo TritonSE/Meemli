@@ -16,6 +16,7 @@ export const SectionCard = function SectionCard({
   archived,
   color,
   days,
+  isAdmin,
   onEdit,
   onArchive,
   onDelete,
@@ -29,6 +30,7 @@ export const SectionCard = function SectionCard({
   color: string;
   archived: boolean;
   days: string[];
+  isAdmin: boolean;
   onEdit: () => void;
   onArchive: () => void | Promise<void>;
   onDelete: () => void | Promise<void>;
@@ -50,37 +52,40 @@ export const SectionCard = function SectionCard({
   return (
     <div className={styles.cardWrapper}>
       <div className={styles.topBar} style={{ backgroundColor: color }} ref={menuRef}>
-        <button className={styles.menuButton} onClick={toggleMenu}>
-          ...
-        </button>
-        {menuOpen && (
-          <div className={styles.dropdown}>
-            <button
-              onClick={() => {
-                onEdit();
-                setMenuOpen(false);
-              }}
-            >
-              Edit
+        {isAdmin && (
+          <>
+            <button className={styles.menuButton} onClick={toggleMenu}>
+              ...
             </button>
-            <button
-              onClick={() => {
-                void onArchive();
-                setMenuOpen(false);
-              }}
-            >
-              {!archived && "Archive"}
-              {archived && "Unarchive"}
-            </button>
-            <button
-              onClick={() => {
-                void onDelete();
-                setMenuOpen(false);
-              }}
-            >
-              Delete
-            </button>
-          </div>
+            {menuOpen && (
+              <div className={styles.dropdown}>
+                <button
+                  onClick={() => {
+                    onEdit();
+                    setMenuOpen(false);
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => {
+                    void onArchive();
+                    setMenuOpen(false);
+                  }}
+                >
+                  {!archived ? "Archive" : "Unarchive"}
+                </button>
+                <button
+                  onClick={() => {
+                    void onDelete();
+                    setMenuOpen(false);
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 

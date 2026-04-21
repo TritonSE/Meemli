@@ -21,6 +21,7 @@ import { SectionCard } from "@/src/components/SectionCard";
 import { CreateSectionFlow } from "@/src/components/SectionForm/SectionForm";
 import { Toast } from "@/src/components/Toast";
 import { useToast } from "@/src/hooks/useToast";
+import { useAuth } from "@/src/context/AuthContext";
 
 // next steps : fetch data, render actual data, filter by active archived, search bar
 
@@ -40,6 +41,7 @@ export default function Programs() {
   const [sortOpen, setSortOpen] = useState(false);
   const sortMenuRef = useRef<HTMLDivElement>(null);
   const { toast, showToast, dismissToast } = useToast();
+  const { isAdmin } = useAuth();
 
   const fetchData = async () => {
     const result = await getAllSections();
@@ -97,10 +99,13 @@ export default function Programs() {
             <h1>Classes</h1>
             <p>Take attendance, add notes, and see trends</p>
           </div>
-          <button className={styles.createButton} onClick={() => setShowCreateModal(true)}>
-            <Plus size={16} />
-            Create New Class
-          </button>
+          {/* Create new class - admin only */}
+          {isAdmin && (
+            <button className={styles.createButton} onClick={() => setShowCreateModal(true)}>
+              <Plus size={16} />
+              Create New Class
+            </button>
+          )}
         </div>
 
         <div className={styles.controls}>
@@ -178,17 +183,16 @@ export default function Programs() {
           </div>
         </div>
       </div>
-      {/* Create new section! */}
-      <CreateSectionFlow
-        active={showCreateModal}
-        onClose={() => {
-          setShowCreateModal(false);
-          void fetchData();
-        }}
-      />
+      {/* Create new section! - admin only */}
+      {isAdmin && (
+        <button className={styles.createButton} onClick={() => setShowCreateModal(true)}>
+          <Plus size={16} />
+          Create New Class
+        </button>
+      )}
 
-      {/* pop up for deleting section */}
-      {deletingSection && (
+      {/* pop up for deleting section - admin only*/}
+      {isAdmin && deletingSection && (
         <Modal
           wrapperStyle={{ maxWidth: "640px", padding: "48px" }}
           child={
@@ -225,15 +229,17 @@ export default function Programs() {
         />
       )}
 
-      {/* Edit section modal! */}
-      <CreateSectionFlow
-        active={!!editingSection}
-        sectionId={editingSection?._id}
-        onClose={() => {
-          setEditingSection(null);
-          void fetchData();
-        }}
-      />
+      {/* Edit section modal! - admin only*/}
+      {isAdmin && (
+        <CreateSectionFlow
+          active={!!editingSection}
+          sectionId={editingSection?._id}
+          onClose={() => {
+            setEditingSection(null);
+            void fetchData();
+          }}
+        />
+      )}
 
       <div className={styles.grid}>
         {visibleSections.map((section) => (
@@ -248,6 +254,7 @@ export default function Programs() {
             endDate={String(section.endDate)}
             color={section.color}
             archived={section.archived}
+            isAdmin={isAdmin}
             onEdit={() => setEditingSection(section)}
             onArchive={async () => {
               const result = await updateSection({ ...section, archived: !section.archived });
