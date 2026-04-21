@@ -1,4 +1,7 @@
+import createHTTPError from "http-errors";
+
 import { AUTH_BYPASS } from "../config";
+import { AuthError } from "../errors/auth";
 
 import type { NextFunction, Request, Response } from "express";
 
@@ -9,7 +12,9 @@ import type { NextFunction, Request, Response } from "express";
 const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
   if (AUTH_BYPASS) return next();
   if (!req.userContext?.admin) {
-    return res.status(403).json({ message: "Admin access required" });
+    return next(
+      createHTTPError(AuthError.UNAUTHORIZED_ERROR.status, AuthError.UNAUTHORIZED_ERROR.message),
+    );
   }
   next();
 };

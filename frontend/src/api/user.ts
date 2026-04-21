@@ -77,3 +77,13 @@ export async function updateUser(user: UpdateUserRequest): Promise<APIResult<Use
     return handleAPIError(error);
   }
 }
+
+export async function getAllUsers(): Promise<APIResult<User[]>> {
+  try {
+    const response = await get(USER_ROUTE);
+    const json = (await response.json()) as UserJSON[];
+    return { success: true, data: json.map(parseUser) };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}

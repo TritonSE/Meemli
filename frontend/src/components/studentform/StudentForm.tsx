@@ -57,19 +57,19 @@ export function StudentForm({ mode, student, onSubmit, onCancel }: StudentFormPr
     // split displayName into first and last name for easier editing
     studentFirstName: student ? student.displayName.split(" ")[0] : "",
     studentLastName: student ? student.displayName.split(" ")[1] || "" : "",
-    meemliEmail: student ? student.meemliEmail : "",
+    meemliEmail: student ? (student.meemliEmail ?? "") : "",
     grade: student ? student.grade : 0,
-    schoolName: student ? student.schoolName : "",
-    city: student ? student.city : "",
-    state: student ? student.state : "",
-    parentFirstName: student ? student.parentContact.firstName : "",
-    parentLastName: student ? student.parentContact.lastName : "",
-    parentPhoneNumber: student ? student.parentContact.phoneNumber : "",
-    parentEmail: student ? student.parentContact.email : "",
+    schoolName: student ? (student.schoolName ?? "") : "",
+    city: student ? (student.city ?? "") : "",
+    state: student ? (student.state ?? "") : "",
+    parentFirstName: student ? (student.parentContact?.firstName ?? "") : "",
+    parentLastName: student ? (student.parentContact?.lastName ?? "") : "",
+    parentPhoneNumber: student ? (student.parentContact?.phoneNumber ?? "") : "",
+    parentEmail: student ? (student.parentContact?.email ?? "") : "",
     preassessmentScore: student ? student.preassessmentScore : 0,
     postassessmentScore: student ? student.postassessmentScore : 0,
     comments: student ? student.comments : "",
-    enrolledSections: student ? student.enrolledSections : [],
+    enrolledSections: student ? (student.enrolledSections ?? []) : [],
   };
   const [isLoading, setLoading] = useState(false);
 

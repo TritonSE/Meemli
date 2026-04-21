@@ -1,6 +1,7 @@
 import express from "express";
 
 import * as StudentsController from "../controllers/students";
+import { requireAdmin } from "../middleware/requireAdmin";
 import { validateRequest } from "../middleware/validateRequest";
 import * as StudentsValidator from "../validators/students";
 
@@ -14,6 +15,7 @@ router.get("/:id", StudentsController.getStudentById);
 // POST, PUT Routes
 router.post(
   "/",
+  requireAdmin,
   StudentsValidator.validateCreateStudent,
   validateRequest,
   StudentsController.createStudent,
@@ -26,6 +28,6 @@ router.put(
 );
 
 // DELETE Routes
-router.delete("/:id", StudentsController.deleteStudentById);
+router.delete("/:id", requireAdmin, StudentsController.deleteStudentById);
 
 export default router;

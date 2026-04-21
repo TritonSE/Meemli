@@ -33,7 +33,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({ variant, data, classNa
 
   // 2. Data Preparation
   // Since we only have 'Student', we access fields directly.
-  const location = `${data.city}, ${data.state}`;
+  const location = data.city && data.state ? `${data.city}, ${data.state}` : null;
 
   // --- RENDER: MODAL VIEW ---
   if (variant === "modal") {
@@ -45,13 +45,17 @@ export const StudentCard: React.FC<StudentCardProps> = ({ variant, data, classNa
 
             <ul className={`${styles.infoItems} ${styles.profileView}`}>
               <li className={styles.name}>{data.displayName}</li>
-              <li className={styles.email}>
-                <address>{data.meemliEmail}</address>
-              </li>
-              <li className={styles.school}>
-                <span>{data.grade}th Grade</span>
-                {data.schoolName} | {location}
-              </li>
+              {data.meemliEmail && (
+                <li className={styles.email}>
+                  <address>{data.meemliEmail}</address>
+                </li>
+              )}
+              {(data.schoolName ?? location) && (
+                <li className={styles.school}>
+                  <span>{data.grade}th Grade</span>
+                  {data.schoolName}{location ? ` | ${location}` : ""}
+                </li>
+              )}
             </ul>
           </div>
         </div>
@@ -67,9 +71,11 @@ export const StudentCard: React.FC<StudentCardProps> = ({ variant, data, classNa
 
         <ul className={`${styles.infoItems} ${styles.listView}`}>
           <li className={styles.name}>{data.displayName}</li>
-          <li className={styles.email}>
-            <address>{data.meemliEmail}</address>
-          </li>
+          {data.meemliEmail && (
+            <li className={styles.email}>
+              <address>{data.meemliEmail}</address>
+            </li>
+          )}
         </ul>
       </div>
     </div>
