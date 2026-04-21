@@ -16,7 +16,7 @@ const populateSessions = async (section: SectionDoc) => {
   const sectionStartDate = new Date(section.startDate);
   const sessionDates = [];
 
-  let sessionDate = new Date(sectionStartDate);
+  let sessionDate = new Date(sectionStartDate) > today ? new Date(sectionStartDate) : today;
   while (sessionDate >= today && sessionDate <= sectionEndDate) {
     if (
       section.days.includes(
