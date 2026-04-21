@@ -29,9 +29,7 @@ export function Navbar() {
   const { logout, isAdmin } = useAuth();
 
   // Only show staff nav item if user is admin
-  const visibleNavItems = navItems.filter(
-    ({ href }) => href !== "/staff" || isAdmin
-  );
+  const visibleNavItems = navItems.filter(({ href }) => href !== "/staff" || isAdmin);
 
   const handleLogout = () => {
     logout()

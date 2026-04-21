@@ -2,6 +2,7 @@ import { FirebaseAuthError } from "firebase-admin/auth";
 import createHTTPError from "http-errors";
 import { Types } from "mongoose";
 
+import { AuthError } from "../errors/auth";
 import UserModel from "../models/user";
 import { firebaseAdminAuth } from "../util/firebase";
 
@@ -78,8 +79,16 @@ export const editUserById: RequestHandler = async (req, res, next) => {
 };
 
 // Who Am I
+// Admins: can look up any user
+// Teachers: can only look up themselves
 export const whoAmI: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
+
+  if (req.userContext && !req.userContext.admin && id !== req.userContext._id) {
+    return next(
+      createHTTPError(AuthError.UNAUTHORIZED_ERROR.status, AuthError.UNAUTHORIZED_ERROR.message),
+    );
+  }
 
   await firebaseAdminAuth.getUser(id).catch((error) => {
     if (error instanceof FirebaseAuthError && error.code === "auth/user-not-found") {
