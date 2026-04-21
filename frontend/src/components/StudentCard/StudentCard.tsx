@@ -53,7 +53,8 @@ export const StudentCard: React.FC<StudentCardProps> = ({ variant, data, classNa
               {(data.schoolName ?? location) && (
                 <li className={styles.school}>
                   <span>{data.grade}th Grade</span>
-                  {data.schoolName}{location ? ` | ${location}` : ""}
+                  {data.schoolName}
+                  {location ? ` | ${location}` : ""}
                 </li>
               )}
             </ul>

@@ -1,9 +1,8 @@
-import { Types } from "mongoose";
-
 import { Section } from "../models/sections";
 
 import type { SectionDoc } from "../models/sections";
 import type { UserContext } from "../types/express";
+import type { Types } from "mongoose";
 
 /**
  * Returns true if the user is an admin or is listed as a teacher of the section.

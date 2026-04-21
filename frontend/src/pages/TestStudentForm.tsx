@@ -49,16 +49,41 @@ function TestRow({
 }) {
   return (
     <tr style={{ borderBottom: "1px solid #e2e8f0" }}>
-      <td style={{ padding: "0.45rem 0.75rem", fontFamily: "monospace", fontSize: "0.82rem", whiteSpace: "nowrap" }}>
+      <td
+        style={{
+          padding: "0.45rem 0.75rem",
+          fontFamily: "monospace",
+          fontSize: "0.82rem",
+          whiteSpace: "nowrap",
+        }}
+      >
         {label}
-        {note && <div style={{ fontFamily: "sans-serif", color: "#94a3b8", fontSize: "0.72rem", fontStyle: "italic" }}>{note}</div>}
+        {note && (
+          <div
+            style={{
+              fontFamily: "sans-serif",
+              color: "#94a3b8",
+              fontSize: "0.72rem",
+              fontStyle: "italic",
+            }}
+          >
+            {note}
+          </div>
+        )}
       </td>
-      <td style={{ padding: "0.45rem 0.75rem", color: "#64748b", fontSize: "0.78rem" }}>{expected}</td>
+      <td style={{ padding: "0.45rem 0.75rem", color: "#64748b", fontSize: "0.78rem" }}>
+        {expected}
+      </td>
       <td style={{ padding: "0.45rem 0.75rem" }}>
         <button
           onClick={onRun}
           disabled={result.status === "running"}
-          style={{ padding: "0.2rem 0.65rem", cursor: "pointer", fontSize: "0.8rem", borderRadius: "4px" }}
+          style={{
+            padding: "0.2rem 0.65rem",
+            cursor: "pointer",
+            fontSize: "0.8rem",
+            borderRadius: "4px",
+          }}
         >
           {result.status === "running" ? "…" : "Run"}
         </button>
@@ -82,11 +107,34 @@ function TestRow({
   );
 }
 
+const thStyle: React.CSSProperties = {
+  padding: "0.4rem 0.75rem",
+  fontSize: "0.78rem",
+  color: "#475569",
+  fontWeight: 600,
+  borderBottom: "2px solid #e2e8f0",
+};
+
+const inputStyle: React.CSSProperties = {
+  padding: "0.35rem 0.6rem",
+  border: "1px solid #cbd5e1",
+  borderRadius: "6px",
+  fontSize: "0.82rem",
+  width: "280px",
+};
+
 // ---- table wrapper ----
 
 function TestTable({ children }: { children: React.ReactNode }) {
   return (
-    <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "2rem", fontSize: "0.85rem" }}>
+    <table
+      style={{
+        width: "100%",
+        borderCollapse: "collapse",
+        marginBottom: "2rem",
+        fontSize: "0.85rem",
+      }}
+    >
       <thead>
         <tr style={{ background: "#f8fafc", textAlign: "left" }}>
           <th style={thStyle}>Endpoint</th>
@@ -99,14 +147,6 @@ function TestTable({ children }: { children: React.ReactNode }) {
     </table>
   );
 }
-
-const thStyle: React.CSSProperties = {
-  padding: "0.4rem 0.75rem",
-  fontSize: "0.78rem",
-  color: "#475569",
-  fontWeight: 600,
-  borderBottom: "2px solid #e2e8f0",
-};
 
 // ---- main page ----
 
@@ -143,7 +183,10 @@ export default function TestStudentForm() {
     fn()
       .then((result) => {
         if (result.success) {
-          setResults((prev) => ({ ...prev, [key]: { status: "ok", text: onSuccess(result.data) } }));
+          setResults((prev) => ({
+            ...prev,
+            [key]: { status: "ok", text: onSuccess(result.data) },
+          }));
         } else {
           const isForbidden = result.error.includes("403");
           setResults((prev) => ({
@@ -173,7 +216,12 @@ export default function TestStudentForm() {
     city: "San Diego",
     state: "CA",
     enrolledSections: [] as string[],
-    parentContact: { firstName: "Test", lastName: "Parent", phoneNumber: "6195550000", email: "parent@test.com" },
+    parentContact: {
+      firstName: "Test",
+      lastName: "Parent",
+      phoneNumber: "6195550000",
+      email: "parent@test.com",
+    },
     preassessmentScore: 0,
     postassessmentScore: 0,
     comments: "permission test record — safe to delete",
@@ -214,7 +262,10 @@ export default function TestStudentForm() {
         {user ? (
           <>
             <span style={{ fontSize: "0.9rem" }}>
-              Signed in as <strong>{user.firstName} {user.lastName}</strong>
+              Signed in as{" "}
+              <strong>
+                {user.firstName} {user.lastName}
+              </strong>
             </span>
             <span
               style={{
@@ -260,7 +311,10 @@ export default function TestStudentForm() {
         <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
           <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "#374151" }}>
             Other User ID
-            <span style={{ fontWeight: 400, color: "#94a3b8" }}> (cross-user GET /user/:id test)</span>
+            <span style={{ fontWeight: 400, color: "#94a3b8" }}>
+              {" "}
+              (cross-user GET /user/:id test)
+            </span>
           </label>
           <input
             value={otherUserId}
@@ -276,10 +330,9 @@ export default function TestStudentForm() {
       ================================================ */}
       <h2 style={{ fontSize: "1.1rem", marginBottom: "0.25rem" }}>Student Controller</h2>
       <p style={{ color: "#64748b", fontSize: "0.8rem", marginBottom: "0.75rem" }}>
-        Admin: full access to all students and fields.&ensp;
-        Teacher: read &amp; edit only students in assigned sections;
-        editable fields limited to <code>comments</code>, <code>preassessmentScore</code>,{" "}
-        <code>postassessmentScore</code>.
+        Admin: full access to all students and fields.&ensp; Teacher: read &amp; edit only students
+        in assigned sections; editable fields limited to <code>comments</code>,{" "}
+        <code>preassessmentScore</code>, <code>postassessmentScore</code>.
       </p>
 
       <TestTable>
@@ -290,7 +343,7 @@ export default function TestStudentForm() {
           result={r("s_get_all")}
           onRun={() =>
             run("s_get_all", getAllStudents, (data) => {
-              console.log("GET /students response:", data);
+              console.info("GET /students response:", data);
               return `${data.length} student(s) returned`;
             })
           }
@@ -304,10 +357,14 @@ export default function TestStudentForm() {
           note={!sid ? "Set Student ID above first" : undefined}
           onRun={() => {
             if (!sid) return;
-            run("s_get_one", () => getStudent(sid), (data) => {
-              console.log("GET /students/:id response:", data);
-              return `"${data.displayName}"`;
-            });
+            run(
+              "s_get_one",
+              async () => getStudent(sid),
+              (data) => {
+                console.info("GET /students/:id response:", data);
+                return `"${data.displayName}"`;
+              },
+            );
           }}
         />
 
@@ -318,10 +375,14 @@ export default function TestStudentForm() {
           result={r("s_create")}
           note="Admin: may create a real record — delete it with DELETE /students below"
           onRun={() =>
-            run("s_create", () => createStudent(dummyStudent), (data) => {
-              console.log("POST /students response:", data);
-              return `Created "${data.displayName}" (${data._id})`;
-            })
+            run(
+              "s_create",
+              async () => createStudent(dummyStudent),
+              (data) => {
+                console.info("POST /students response:", data);
+                return `Created "${data.displayName}" (${data._id})`;
+              },
+            )
           }
         />
 
@@ -330,12 +391,16 @@ export default function TestStudentForm() {
           label={`PUT /students/${sid || ":id"} (allowed fields)`}
           expected={isAdmin ? "200 — updated" : "200 if in section (fields comments, scores)"}
           result={r("s_edit_allowed")}
-          note={!sid ? "Set Student ID above first" : "Sends: comments, preassessmentScore, postassessmentScore"}
+          note={
+            !sid
+              ? "Set Student ID above first"
+              : "Sends: comments, preassessmentScore, postassessmentScore"
+          }
           onRun={() => {
             if (!sid) return;
             run(
               "s_edit_allowed",
-              () =>
+              async () =>
                 updateStudent({
                   _id: sid,
                   comments: `perm_check_${Date.now()}`,
@@ -343,7 +408,7 @@ export default function TestStudentForm() {
                   postassessmentScore: 84,
                 } as Parameters<typeof updateStudent>[0]),
               (data) => {
-                console.log("PUT /students/:id (allowed fields) response:", data);
+                console.info("PUT /students/:id (allowed fields) response:", data);
                 return `OK — grade=${data.grade}, comments="${data.comments}"`;
               },
             );
@@ -359,18 +424,22 @@ export default function TestStudentForm() {
               : "200 — grade unchanged (teacher: field silently stripped)"
           }
           result={r("s_edit_restricted")}
-          note={!sid ? "Set Student ID above first" : "Sends grade=12; teacher result shows original grade"}
+          note={
+            !sid
+              ? "Set Student ID above first"
+              : "Sends grade=12; teacher result shows original grade"
+          }
           onRun={() => {
             if (!sid) return;
             run(
               "s_edit_restricted",
-              () =>
+              async () =>
                 updateStudent({
                   _id: sid,
                   grade: 12,
                 } as Parameters<typeof updateStudent>[0]),
               (data) => {
-                console.log("PUT /students/:id (restricted field) response:", data);
+                console.info("PUT /students/:id (restricted field) response:", data);
                 return `returned grade=${data.grade} ${data.grade === 999 ? "(admin — field applied)" : "(teacher — field stripped)"}`;
               },
             );
@@ -385,10 +454,14 @@ export default function TestStudentForm() {
           note={!sid ? "Set Student ID above first" : "Admin: this permanently deletes the record"}
           onRun={() => {
             if (!sid) return;
-            run("s_delete", () => deleteStudent(sid), (data) => {
-              console.log("DELETE /students/:id response:", data);
-              return data.message;
-            });
+            run(
+              "s_delete",
+              async () => deleteStudent(sid),
+              (data) => {
+                console.info("DELETE /students/:id response:", data);
+                return data.message;
+              },
+            );
           }}
         />
       </TestTable>
@@ -398,8 +471,8 @@ export default function TestStudentForm() {
       ================================================ */}
       <h2 style={{ fontSize: "1.1rem", marginBottom: "0.25rem" }}>User Controller</h2>
       <p style={{ color: "#64748b", fontSize: "0.8rem", marginBottom: "0.75rem" }}>
-        Admin: full access.&ensp;
-        Teacher: only <code>GET /user/:id</code> for their own ID (whoAmI); all other routes return 403.
+        Admin: full access.&ensp; Teacher: only <code>GET /user/:id</code> for their own ID
+        (whoAmI); all other routes return 403.
       </p>
 
       <TestTable>
@@ -410,7 +483,7 @@ export default function TestStudentForm() {
           result={r("u_get_all")}
           onRun={() =>
             run("u_get_all", getAllUsers, (data) => {
-              console.log("GET /user response:", data);
+              console.info("GET /user response:", data);
               return `${data.length} user(s) returned`;
             })
           }
@@ -424,10 +497,14 @@ export default function TestStudentForm() {
           note={!user ? "Sign in first" : undefined}
           onRun={() => {
             if (!user) return;
-            run("u_get_self", () => getUser(user._id), (data) => {
-              console.log("GET /user/:id (self) response:", data);
-              return `"${data.firstName} ${data.lastName}", admin=${String(data.admin)}`;
-            });
+            run(
+              "u_get_self",
+              async () => getUser(user._id),
+              (data) => {
+                console.info("GET /user/:id (self) response:", data);
+                return `"${data.firstName} ${data.lastName}", admin=${String(data.admin)}`;
+              },
+            );
           }}
         />
 
@@ -439,10 +516,14 @@ export default function TestStudentForm() {
           note={!otherUserId ? "Set Other User ID above first" : undefined}
           onRun={() => {
             if (!otherUserId) return;
-            run("u_get_other", () => getUser(otherUserId), (data) => {
-              console.log("GET /user/:id (other) response:", data);
-              return `"${data.firstName} ${data.lastName}"`;
-            });
+            run(
+              "u_get_other",
+              async () => getUser(otherUserId),
+              (data) => {
+                console.info("GET /user/:id (other) response:", data);
+                return `"${data.firstName} ${data.lastName}"`;
+              },
+            );
           }}
         />
 
@@ -453,10 +534,14 @@ export default function TestStudentForm() {
           result={r("u_create")}
           note="Admin: creates a real Firebase + DB user record"
           onRun={() =>
-            run("u_create", () => createUser(dummyUser), (data) => {
-              console.log("POST /user response:", data);
-              return `Created "${data.firstName} ${data.lastName}" (${data._id})`;
-            })
+            run(
+              "u_create",
+              async () => createUser(dummyUser),
+              (data) => {
+                console.info("POST /user response:", data);
+                return `Created "${data.firstName} ${data.lastName}" (${data._id})`;
+              },
+            )
           }
         />
 
@@ -465,14 +550,18 @@ export default function TestStudentForm() {
           label={`PUT /user/${user?._id ?? ":id"} (self)`}
           expected={isAdmin ? "200 — updated" : "403 Forbidden"}
           result={r("u_edit_self")}
-          note={!user ? "Sign in first" : "Sends a no-op update (same phoneNumber) to avoid real changes"}
+          note={
+            !user
+              ? "Sign in first"
+              : "Sends a no-op update (same phoneNumber) to avoid real changes"
+          }
           onRun={() => {
             if (!user) return;
             run(
               "u_edit_self",
-              () => updateUser({ ...user, phoneNumber: user.phoneNumber }),
+              async () => updateUser({ ...user, phoneNumber: user.phoneNumber }),
               (data) => {
-                console.log("PUT /user/:id (self) response:", data);
+                console.info("PUT /user/:id (self) response:", data);
                 return `"${data.firstName} ${data.lastName}" updated`;
               },
             );
@@ -482,11 +571,3 @@ export default function TestStudentForm() {
     </div>
   );
 }
-
-const inputStyle: React.CSSProperties = {
-  padding: "0.35rem 0.6rem",
-  border: "1px solid #cbd5e1",
-  borderRadius: "6px",
-  fontSize: "0.82rem",
-  width: "280px",
-};

@@ -13,7 +13,19 @@ router.get("/", requireAdmin, UserController.getAllUsers);
 router.get("/:id", UserController.whoAmI); // teachers may call this for themselves only (enforced in controller)
 
 // POST, PUT Routes
-router.post("/", requireAdmin, UserValidator.validateCreateUser, validateRequest, UserController.createUser);
-router.put("/:id", requireAdmin, UserValidator.validateEditUser, validateRequest, UserController.editUserById);
+router.post(
+  "/",
+  requireAdmin,
+  UserValidator.validateCreateUser,
+  validateRequest,
+  UserController.createUser,
+);
+router.put(
+  "/:id",
+  requireAdmin,
+  UserValidator.validateEditUser,
+  validateRequest,
+  UserController.editUserById,
+);
 
 export default router;

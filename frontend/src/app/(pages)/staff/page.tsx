@@ -3,9 +3,9 @@
 import { useState } from "react";
 
 import { AddStaffForm } from "@/src/components/AddStaff/AddStaffForm";
+import AdminRoute from "@/src/components/AdminRoute/AdminRoute";
 import { Button } from "@/src/components/Button";
 import { Modal } from "@/src/components/Modal";
-import AdminRoute from "@/src/components/AdminRoute/AdminRoute";
 
 export default function Staff() {
   const [addOpen, setAddOpen] = useState(false);

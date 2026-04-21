@@ -14,6 +14,7 @@ export type UserContext = {
 
 declare global {
   namespace Express {
+    // eslint-disable-next-line ts/consistent-type-definitions
     interface Request {
       userId?: string;
       userContext?: UserContext;

@@ -1,9 +1,9 @@
 import express from "express";
 
 import * as AttendanceController from "../controllers/attendance";
+import { requireAdmin } from "../middleware/requireAdmin";
 import { validateRequest } from "../middleware/validateRequest";
 import * as AttendanceValidator from "../validators/attendance";
-import { requireAdmin } from "../middleware/requireAdmin";
 
 const router = express.Router();
 

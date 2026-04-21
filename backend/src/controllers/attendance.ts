@@ -1,12 +1,13 @@
 import createHTTPError from "http-errors";
 import { Types } from "mongoose";
-import createHttpError from "http-errors";
 
 import { AttendanceModel } from "../models/attendance";
 import { Section } from "../models/sections";
 import { SessionModel } from "../models/session";
 
 import type { RequestHandler } from "express";
+
+const createHttpError = createHTTPError;
 
 type CreateAttendanceBody = {
   session: string;
@@ -19,7 +20,7 @@ export const createAttendance: RequestHandler = async (req, res, next) => {
   try {
     if (!req.userContext?.admin)
       throw new createHttpError.Forbidden("Admin privileges required to create attendance record");
-    
+
     const { session, student, status, notes } = req.body as CreateAttendanceBody;
 
     const attendance = await AttendanceModel.create({

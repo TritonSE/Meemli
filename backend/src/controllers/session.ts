@@ -1,8 +1,8 @@
 import createHTTPError from "http-errors";
 
 import { AttendanceModel } from "../models/attendance";
-import { SessionModel } from "../models/session";
 import { Section } from "../models/sections";
+import { SessionModel } from "../models/session";
 
 import { ensureAttendanceForSession } from "./attendance";
 
@@ -41,9 +41,9 @@ type UpdateSessionBody = Partial<{
 export const editSessionById: RequestHandler = async (req, res, next) => {
   try {
     if (!req.userContext?.admin) {
-      throw  createHTTPError(403,"Admin privileges required to edit session");
+      throw createHTTPError(403, "Admin privileges required to edit session");
     }
-   
+
     const { id } = req.params;
     const updateData: UpdateSessionBody = req.body as UpdateSessionBody;
     const updatedSession = await SessionModel.findByIdAndUpdate(id, updateData, { new: true });

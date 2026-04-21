@@ -1,13 +1,13 @@
 import createHTTPError from "http-errors";
 import { Types } from "mongoose";
 
-import StudentModel from "../models/student";
-import { Section } from "../models/sections";
 import {
   hasStudentAccess,
   TEACHER_EDITABLE_STUDENT_FIELDS,
   TEACHER_STUDENT_PROJECTION,
 } from "../middleware/permissions";
+import { Section } from "../models/sections";
+import StudentModel from "../models/student";
 
 import type { RequestHandler } from "express";
 
@@ -93,7 +93,9 @@ export const getStudentById: RequestHandler = async (req, res, next) => {
     if (!isAdmin) {
       const { _id, displayName, grade, preassessmentScore, postassessmentScore, comments } =
         student.toObject();
-      return res.status(200).json({ _id, displayName, grade, preassessmentScore, postassessmentScore, comments });
+      return res
+        .status(200)
+        .json({ _id, displayName, grade, preassessmentScore, postassessmentScore, comments });
     }
 
     res.status(200).json(student);
@@ -141,7 +143,9 @@ export const editStudentById: RequestHandler = async (req, res, next) => {
     if (!req.userContext?.admin) {
       const { _id, displayName, grade, preassessmentScore, postassessmentScore, comments } =
         student.toObject();
-      return res.status(200).json({ _id, displayName, grade, preassessmentScore, postassessmentScore, comments });
+      return res
+        .status(200)
+        .json({ _id, displayName, grade, preassessmentScore, postassessmentScore, comments });
     }
 
     res.status(200).json(student);
