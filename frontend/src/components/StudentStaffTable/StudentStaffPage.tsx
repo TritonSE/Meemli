@@ -657,15 +657,6 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
   const renderOptions = () => {
     const ascItems: DropdownItem[] = [
       {
-        content: (
-          <>
-            <ArrowUpDown />
-            <p>Sort By</p>
-          </>
-        ),
-        onClick: () => {},
-      },
-      {
         content: <p>Ascending</p>,
         onClick: () => setAsc(true),
       },
@@ -696,7 +687,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
           )}
         </div>
         <div className={styles.headerContainer}>
-          <Dropdown items={ascItems} placeholder={true} />
+          <Dropdown items={ascItems} placeholder={false} />
           <div className={styles.searchWrapper}>
             <Search className={styles.searchIcon} />
             <input
