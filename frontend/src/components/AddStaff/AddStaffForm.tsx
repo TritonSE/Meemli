@@ -389,7 +389,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
           inputId="role"
           options={roleOptions}
           value={role}
-          onChange={(opt) => setRole(opt as Option | null)}
+          onChange={(opt) => setRole(opt)}
           placeholder="Select"
           isClearable
           isSearchable={false}

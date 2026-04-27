@@ -1,5 +1,5 @@
 "use client";
-import { ArchiveIcon, ArrowUpDown, PlusIcon, Search, Trash2, TriangleAlert } from "lucide-react";
+import { ArchiveIcon, PlusIcon, Search, Trash2, TriangleAlert } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 
 import type { Section } from "@/src/api/sections";
