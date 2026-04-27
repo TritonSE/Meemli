@@ -4,9 +4,14 @@ import { useState } from "react";
 
 import type { Student } from "@/src/api/students";
 
+import BookIcon from "@/public/icons/nav/programs.svg"
+
+
 import { getAllSections } from "@/src/api/sections";
 // API & Types
 import { getStudent } from "@/src/api/students";
+import { MultiSelect } from "@/src/components/MultiSelect/MultiSelect";
+import { MultiSelectNew } from "@/src/components/MultiSelectNew/MultiSelectNew";
 import { CreateSectionFlow } from "@/src/components/SectionForm/SectionForm";
 // Components
 import { StudentCard } from "@/src/components/StudentCard/StudentCard";
@@ -124,10 +129,34 @@ export default function Test() {
     } catch (err) {
       setError("Network or Server Error");
       console.error(err);
-    } finally {
+  } finally {
       setLoading(false);
     }
   };
+
+  const roleOptions: Option[] = [
+    { id: "admin", label: "Admin", colorBg: "var(--secondary-100)", colorText: "var(--secondary-800)" },
+    { id: "teacher", label: "Teacher", colorBg: "var(--tertiary-100)", colorText: "var(--tertiary-800)" },
+    { id: "student", label: "Student", colorBg: "var(--primary-100)", colorText: "var(--primary-800)" },
+  ];
+
+  const coloredSectionOptions: Option[] = [
+    { id: "s1", label: "CS101 - Intro", colorBg: "#D8EFE8", colorText: "#233E3A" },
+    { id: "s2", label: "CS102 - Data Structs", colorBg: "#FDE4D7", colorText: "#771817" },
+    { id: "s3", label: "CS201 - Algorithms", colorBg: "#E7F5FE", colorText: "#1B3A4B" },
+    { id: "s4", label: "CS301 - OS", colorBg: "#FAFBC6", colorText: "#6C4917" },
+  ];
+
+  const attendanceSectionOptions: Option[] = [
+    { id: "sec_a", label: "Section A" },
+    { id: "sec_b", label: "Section B" },
+    { id: "sec_c", label: "Section C" },
+  ];
+
+  const [baseValue, setBaseValue] = useState<string[]>([]);
+  const [role, setRole] = useState<string>("");
+  const [studentSections, setStudentSections] = useState<string[]>(["s1", "s2"]);
+  const [attendanceSection, setAttendanceSection] = useState<string>("sec_a");
 
   return (
     <div>
@@ -135,6 +164,77 @@ export default function Test() {
         <h1> Create Class Form</h1>
 
         <h1>Test Page</h1>
+
+        <h2> New MultiSelect</h2>
+        {/* 0. BASELINE: The standard original multiselect (Multi-select, standard default chips) */}
+        <section>
+          <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>0. Standard Baseline</h3>
+          <MultiSelectNew
+            mode="multiple"
+            label="Tags"
+            options={roleOptions}
+            value={baseValue}
+            onChange={setBaseValue}
+            withChips={true}
+            placeholder="Select tags..."
+          />
+        </section>
+
+        <hr style={{ borderColor: "#eee" }} />
+
+        {/* 1. REPLACING: react-select (Role Dropdown) */}
+        {/* Characteristics: Single select, NO search bar, NO chips */}
+        <section>
+          <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>1. Role Select (Replaces react-select)</h3>
+          <MultiSelectNew
+            mode="single"
+            label="Role"
+            options={roleOptions}
+            value={role}
+            onChange={setRole}
+            searchable={false} // Matches isSearchable={false}
+            placeholder="Select"
+            withChips={true}
+          />
+          <p style={{ fontSize: 12, color: "gray", marginTop: 4 }}>Value: {role || "null"}</p>
+        </section>
+
+        {/* 2. REPLACING: MultiSelectDropdown (Student Page Sections) */}
+        {/* Characteristics: Multi select, Colored Chips, loading state supported */}
+        <section>
+          <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>2. Student Sections (Replaces MultiSelectDropdown)</h3>
+          <MultiSelectNew
+            mode="multiple"
+            label="Assigned Program(s)"
+            options={coloredSectionOptions}
+            value={studentSections}
+            onChange={setStudentSections}
+            withChips={true}
+            required={true}
+            placeholder="Select programs..."
+            // isLoading={true} // Uncomment to test loading state
+          />
+          <p style={{ fontSize: 12, color: "gray", marginTop: 4 }}>Value: [{studentSections.join(", ")}]</p>
+        </section>
+
+        {/* 3. REPLACING: SectionSelect (Attendance Page) */}
+        {/* Characteristics: Single select, NO chips, specific default placeholder logic */}
+        <section>
+          <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>3. Attendance Section (Replaces SectionSelect from MUI)</h3>
+          <MultiSelectNew
+            mode="single"
+            label="Select Section"
+            options={attendanceSectionOptions}
+            value={attendanceSection}
+            onChange={setAttendanceSection}
+            withChips={false}
+            searchable={true} // Usually good to have for long section lists, but can be false
+            leftIcon={<BookIcon/>}
+            boldenContent={true}
+          />
+          <p style={{ fontSize: 12, color: "gray", marginTop: 4 }}>Value: {attendanceSection || "null"}</p>
+        </section>
+
         {/* <SectionForm> */}
 
         {/* --- TEST REAL ID --- */}
@@ -243,6 +343,7 @@ export default function Test() {
       </div>
 
       <TestStudentForm />
+
     </div>
   );
 }

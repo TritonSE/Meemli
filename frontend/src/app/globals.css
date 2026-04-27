@@ -70,6 +70,30 @@
     --primary-800: #254a43;
     --primary-900: #233e3a;
 
+    --secondary-25: #fff8f5;
+    --secondary-50: #fef3ee;
+    --secondary-100: #fde4d7;
+    --secondary-200: #fac4ae;
+    --secondary-300: #f69b7b;
+    --secondary-400: #f15f3a;
+    --secondary-500: #ee4221;
+    --secondary-600: #df2917;
+    --secondary-700: #b91c15;
+    --secondary-800: #931919;
+    --secondary-900: #771817;
+
+    --tertiary-25: #fefeee;
+    --tertiary-50: #fdfde9;
+    --tertiary-100: #fafbc6;
+    --tertiary-200: #f7f791;
+    --tertiary-300: #f3ec51;
+    --tertiary-400: #eddc21;
+    --tertiary-500: #ddc415;
+    --tertiary-600: #bf9b0f;
+    --tertiary-700: #987010;
+    --tertiary-800: #7e5915;
+    --tertiary-900: #6c4917;
+
     --error-700: #b42318;
   }
 

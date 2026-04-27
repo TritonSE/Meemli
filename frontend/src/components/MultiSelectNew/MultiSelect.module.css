@@ -1,0 +1,216 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  gap: 8px;
+  font-family: "Inter", sans-serif;
+  color: var(--grey-500);
+
+  .label {
+    font-size: 1rem;
+    color: var(--grey-700);
+    font-weight: 500;
+
+    .required {
+      color: var(--error-700);
+      margin-left: 2px;
+    }
+  }
+
+  .optionLabelWrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between option icon and text */
+  }
+
+  .optionIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+  }
+
+  .control {
+    display: flex;
+
+    overflow-x: scroll;
+    scrollbar-width: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border: 1.5px solid var(--grey-100);
+    border-radius: 8px;
+    cursor: pointer;
+    min-height: 48px;
+    transition: border-color 0.2s;
+
+    .leftIcon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--grey-400);
+      margin-right: 8px; /* space between icon and the selected values */
+      flex-shrink: 0;
+    }
+
+    &:focus-within {
+      /* Changed to primary-700 as requested */
+      outline: 2px solid var(--primary-700);
+      border-color: var(--primary-700);
+    }
+
+    .values {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      flex: 1;
+
+      .placeholder {
+        color: var(--grey-400);
+      }
+    }
+
+    .chevron {
+      color: var(--grey-200);
+      width: 16px;
+      transition: transform 0.2s;
+
+      &.chevronOpen {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  .popover {
+    /* Required native resets for popover elements */
+    margin: 0;
+    border: none;
+    inset: auto;
+
+    /* Anchor Positioning Magic */
+    position: absolute;
+    top: calc(anchor(bottom) + 4px);
+    left: anchor(left);
+    width: anchor-size(width);
+
+    /* Your existing styling */
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    padding: 8px;
+
+    .searchInput {
+      width: calc(100% - 16px);
+      margin: 4px 8px 12px 8px;
+      padding: 10px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      outline: none;
+      font-size: 14px;
+      box-sizing: border-box;
+
+      &:focus {
+        border-color: var(--primary-100);
+      }
+    }
+
+    .listContainer {
+      max-height: 200px;
+      overflow-y: auto;
+
+      /* custom scrollbar */
+      &::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: var(--grey-100);
+        border-radius: 10px;
+        border: 2px solid white;
+      }
+
+      .option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.2s;
+        margin-bottom: 4px;
+
+        white-space: normal;
+        word-break: break-word;
+        min-height: 40px;
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        &.optionSelected {
+          background-color: var(--primary-100);
+
+          &:hover {
+            filter: brightness(0.92); /* subtle darkening */
+          }
+        }
+
+        .checkIcon {
+          font-size: 12px;
+          color: var(--primary-700);
+        }
+      }
+
+      .noResults {
+        padding: 16px;
+        font-size: 13px;
+        color: var(--grey-400);
+        text-align: center;
+      }
+    }
+  }
+}
+
+/* reusable chip style inside and outside dropdown */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--primary-100, #d1e7e2);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary-700);
+  height: auto;
+  width: fit-content;
+  white-space: nowrap;
+}
+
+.fitContent {
+  min-width: 9rem;
+  max-width: 5rem;
+}
+
+.boldenIcon {
+  color: var(
+    --grey-800
+  ) !important; /* Forces the SVG to take the darker grey if it uses currentColor */
+  filter: brightness(0.65); /* Adds the slightly darker filter you asked for */
+}
+
+.boldenText {
+  color: var(--grey-700);
+  font-weight: 600; /* Optional: Since the prop is called "bolden", a slight font weight bump looks nice, but you can remove this line! */
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.fullWidth .control {
+  width: 100%;
+}
