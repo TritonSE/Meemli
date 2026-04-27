@@ -1,5 +1,5 @@
+import { getChipColors } from "./ChipColor";
 import styles from "./ColorInput.module.css";
-
 type ColorInputProps = {
   colors: string[];
   value: string;
@@ -24,7 +24,7 @@ export function ColorInput({ colors, value, onChange, error, required }: ColorIn
             // controlled by the parent form now
             checked={value === color}
             onChange={() => onChange(color)}
-            style={{ backgroundColor: color }}
+            style={{ backgroundColor: getChipColors(color).backgroundColor }}
             aria-label={`Select color ${color}`}
             required={required}
           />

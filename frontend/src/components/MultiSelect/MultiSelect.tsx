@@ -106,7 +106,7 @@ export const MultiSelect: React.FC<{
         role="combobox"
         aria-expanded={isOpen}
         onClick={() => setIsOpen(!isOpen)}
-        style={{ anchorName } as React.CSSProperties}
+        style={{ anchorName }}
       >
         <div
           className={styles.values}
@@ -148,7 +148,7 @@ export const MultiSelect: React.FC<{
         role="listbox"
         popover="manual"
         ref={popoverRef}
-        style={{ positionAnchor: anchorName } as React.CSSProperties}
+        style={{ positionAnchor: anchorName }}
       >
         {isOpen && (
           <>

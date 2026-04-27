@@ -1,0 +1,73 @@
+.secondary {
+  color: var(--grey-700);
+  border: 1px solid var(--grey-300);
+  border-radius: 8px;
+  background-color: white;
+}
+
+.secondary:hover {
+  transition: 0.2s ease;
+  background-color: var(--grey-50);
+}
+
+.dropdownMenu {
+  position: relative;
+  display: inline-block;
+  width: 130px; /* or 100% if inside a flex/grid container */
+  border-radius: 8px;
+  height: 40px;
+  padding: 24px 14px;
+}
+
+/* Button fills container width */
+.dropdownMenu {
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Dropdown container */
+.dropdownPanel {
+  position: absolute;
+  top: calc(100% + 6px); /* slight gap */
+  left: 0;
+  width: 100%; /* MATCH BUTTON WIDTH */
+
+  background: white;
+  border-radius: 10px;
+  border: 1px solid var(--grey-200);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  max-height: 220px;
+  overflow-y: auto;
+
+  padding: 4px 0;
+  z-index: 1000;
+}
+
+/* Individual option */
+.dropdownItem {
+  padding: 10px 14px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Hover state */
+.dropdownItem:hover {
+  background: var(--grey-50);
+}
+.dropdownPanel::-webkit-scrollbar {
+  width: 8px;
+}
+.dropdownPanel::-webkit-scrollbar-thumb {
+  background: var(--grey-200);
+  border-radius: 6px;
+}
+.dropdownPanel::-webkit-scrollbar-thumb:hover {
+  background: var(--grey-300);
+}
