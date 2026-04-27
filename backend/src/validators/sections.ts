@@ -147,6 +147,6 @@ export const updateSectionValidator = [
   makeEndDateValidator(),
   makeDateOrderValidator(),
   makeArchivedValidator(),
-  makeColorValidator(),
+  makeColorValidator().optional(),
   ...validateTeachers.map((v) => v.optional()),
 ];
