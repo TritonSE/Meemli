@@ -40,6 +40,7 @@ export const createStudent: RequestHandler = async (req, res, next) => {
     const student = await StudentModel.create({
       ...studentData,
       enrolledSections: enrolledSectionsIds,
+      archived: false,
     });
 
     const populatedStudent = await student.populate("enrolledSections");
@@ -137,7 +138,7 @@ export const editStudentById: RequestHandler = async (req, res, next) => {
       "enrolledSections",
     );
     if (!student) {
-      return res.status(404).json({ message: "Student not found" });
+      throw createHTTPError(404, "Student not found");
     }
 
     if (!req.userContext?.admin) {
@@ -149,6 +150,25 @@ export const editStudentById: RequestHandler = async (req, res, next) => {
     }
 
     res.status(200).json(student);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// Mass edits so there arent a bunch of separate requests
+export const archiveStudentsByIds: RequestHandler = async (req, res, next) => {
+  const { ids, flag } = req.body as { ids: string[]; flag: boolean };
+  const validIds = ids
+    .filter((id) => Types.ObjectId.isValid(id))
+    .map((id) => new Types.ObjectId(id));
+  if (validIds.length === 0) {
+    throw createHTTPError(400, "No valid student IDs provided");
+  }
+
+  try {
+    await StudentModel.updateMany({ _id: { $in: validIds } }, { $set: { archived: flag } });
+    const updatedStudents = await StudentModel.find({ _id: { $in: validIds } });
+    res.status(200).json(updatedStudents);
   } catch (error) {
     return next(error);
   }
@@ -167,6 +187,23 @@ export const deleteStudentById: RequestHandler = async (req, res, next) => {
       throw createHTTPError(404, "Student not found");
     }
     res.status(200).json({ message: "Student deleted successfully" });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const deleteStudentsByIds: RequestHandler = async (req, res, next) => {
+  const { ids } = req.body as { ids: string[] };
+  const validIds = ids
+    .filter((id) => Types.ObjectId.isValid(id))
+    .map((id) => new Types.ObjectId(id));
+  if (validIds.length === 0) {
+    throw createHTTPError(400, "No valid student IDs provided");
+  }
+  try {
+    await StudentModel.deleteMany({ _id: { $in: validIds } });
+    const remainingStudents = await StudentModel.find();
+    res.status(200).json(remainingStudents);
   } catch (error) {
     return next(error);
   }

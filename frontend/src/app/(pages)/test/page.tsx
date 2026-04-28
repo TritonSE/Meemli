@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 
 import type { Student } from "@/src/api/students";
@@ -17,7 +18,7 @@ const EDIT_SECTION_ID_EXAMPLE = "69afa73190beaafad01125f3";
 
 export default function Test() {
   // --- FAKE DATA for testing student profile view ---
-  const FAKE_STUDENTS = [
+  const FAKE_STUDENTS: Student[] = [
     {
       _id: "1",
       displayName: "Alice Johnson",
@@ -36,6 +37,7 @@ export default function Test() {
       postassessmentScore: 0,
       enrolledSections: [],
       comments: "",
+      archived: false,
     },
     {
       _id: "2",
@@ -55,6 +57,7 @@ export default function Test() {
       postassessmentScore: 0,
       enrolledSections: [],
       comments: "",
+      archived: false,
     },
     {
       _id: "3",
@@ -74,6 +77,7 @@ export default function Test() {
       postassessmentScore: 0,
       enrolledSections: [],
       comments: "",
+      archived: false,
     },
   ];
 

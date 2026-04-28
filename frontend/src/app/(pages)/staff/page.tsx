@@ -6,26 +6,23 @@ import { AddStaffForm } from "@/src/components/AddStaff/AddStaffForm";
 import AdminRoute from "@/src/components/AdminRoute/AdminRoute";
 import { Button } from "@/src/components/Button";
 import { Modal } from "@/src/components/Modal";
+import StudentStaffPage from "@/src/components/StudentStaffTable/StudentStaffPage";
+import { useAuth } from "@/src/context/AuthContext";
 
 export default function Staff() {
-  const [addOpen, setAddOpen] = useState(false);
+  const { user, loading } = useAuth();
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  if (!user) {
+    return <div>You must be logged in to view this page.</div>;
+  }
+  const state: "admin" | "teacher" = user.admin ? "admin" : "teacher";
+  const disabled = user.archived;
   return (
     <AdminRoute>
-      <section>
-        <h1>Staff</h1>
-        <Button label="Add Staff" kind="primary" onClick={() => setAddOpen(!addOpen)} />
-        {addOpen && (
-          <Modal
-            onExit={() => setAddOpen(!addOpen)}
-            child={
-              <>
-                <AddStaffForm onExit={() => setAddOpen(false)} />
-              </>
-            }
-          />
-        )}
-      </section>
+      <StudentStaffPage type="staff" state={state} disabled={disabled} />
     </AdminRoute>
   );
 }

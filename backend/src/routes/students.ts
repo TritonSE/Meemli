@@ -20,6 +20,10 @@ router.post(
   validateRequest,
   StudentsController.createStudent,
 );
+
+// Update archived status for multiple students (must be before /:id)
+router.put("/archive", requireAdmin, StudentsController.archiveStudentsByIds);
+
 router.put(
   "/:id",
   StudentsValidator.validateEditStudent,
@@ -27,7 +31,10 @@ router.put(
   StudentsController.editStudentById,
 );
 
-// DELETE Routes
+// Batch delete Students by IDs
+router.delete("/delete", requireAdmin, StudentsController.deleteStudentsByIds);
+
+// Delete Student by ID
 router.delete("/:id", requireAdmin, StudentsController.deleteStudentById);
 
 export default router;

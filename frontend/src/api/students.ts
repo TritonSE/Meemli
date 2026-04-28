@@ -26,6 +26,7 @@ export type Student = {
   state?: string;
   parentContact?: ParentContact;
   enrolledSections?: string[]; // ObjectId[] → string[] on the frontend
+  archived: boolean;
 };
 
 export type StudentJSON = {
@@ -48,7 +49,9 @@ export type StudentJSON = {
     phoneNumber: string;
     email: string;
   };
-  enrolledSections?: string[];
+
+  enrolledSections: string[]; // ObjectId → string (populated section IDs)
+  archived?: boolean;
 };
 
 const STUDENTS_ROUTE = "/students";
@@ -75,6 +78,7 @@ function parseStudent(student: StudentJSON): Student {
         email: student.parentContact.email,
       },
     }),
+    archived: student.archived ?? false,
   };
 }
 
@@ -130,6 +134,31 @@ export async function deleteStudent(id: string): Promise<APIResult<{ message: st
     const response = await del(studentByIdRoute(id));
     const json = (await response.json()) as { message: string };
     return { success: true, data: json };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+export async function archiveStudents(
+  ids: string[],
+  archived: boolean,
+): Promise<APIResult<Student[]>> {
+  try {
+    const response = await put(`${STUDENTS_ROUTE}/archive`, { ids, flag: archived });
+    const json = (await response.json()) as StudentJSON[];
+    const students = json.map(parseStudent);
+    return { success: true, data: students };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+export async function deleteStudents(ids: string[]): Promise<APIResult<Student[]>> {
+  try {
+    const response = await del(`${STUDENTS_ROUTE}/delete`, {}, { ids });
+    const json = (await response.json()) as StudentJSON[];
+    const students = json.map(parseStudent);
+    return { success: true, data: students };
   } catch (error) {
     return handleAPIError(error);
   }

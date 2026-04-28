@@ -7,12 +7,8 @@ import * as UserValidator from "../validators/user";
 
 const router = express.Router();
 
-// ---------------------- ROUTES ----------------------
-// GET Routes
-router.get("/", requireAdmin, UserController.getAllUsers);
-router.get("/:id", UserController.whoAmI); // teachers may call this for themselves only (enforced in controller)
-
 // POST, PUT Routes
+// Create User
 router.post(
   "/",
   requireAdmin,
@@ -20,6 +16,11 @@ router.post(
   validateRequest,
   UserController.createUser,
 );
+
+// Batch archive Users
+router.put("/archive", requireAdmin, UserController.archiveUsersByIds);
+
+// Edit User by ID
 router.put(
   "/:id",
   requireAdmin,
@@ -27,5 +28,12 @@ router.put(
   validateRequest,
   UserController.editUserById,
 );
+
+// Get All Users
+router.get("/", requireAdmin, UserController.getAllUsers);
+router.get("/:id", UserController.whoAmI); // teachers may call this for themselves only (enforced in controller)
+
+// Batch delete users
+router.delete("/delete", requireAdmin, UserController.deleteUsersByIds);
 
 export default router;
