@@ -1,8 +1,8 @@
-import { validationResult } from "express-validator";
+import createHTTPError from "http-errors";
 import { Types } from "mongoose";
 
 import StudentModel from "../models/student";
-import validationErrorParser from "../util/validationErrorParser";
+import { handleEnrollment, handleFullDeletion, handleUnenrollment } from "../util/attendanceLogic";
 
 import type { RequestHandler } from "express";
 
@@ -27,45 +27,22 @@ type CreateStudentBody = {
 };
 
 export const createStudent: RequestHandler = async (req, res, next) => {
-  const errors = validationResult(req);
-
-  const {
-    parentContact: { firstName, lastName, phoneNumber, email },
-    displayName,
-    meemliEmail,
-    grade,
-    schoolName,
-    city,
-    state,
-    preassessmentScore,
-    postassessmentScore,
-    enrolledSections,
-    comments,
-  } = req.body as CreateStudentBody;
-
+  const { enrolledSections, ...studentData } = req.body as CreateStudentBody;
   const enrolledSectionsIds = enrolledSections.map((section) => new Types.ObjectId(section));
 
   try {
-    validationErrorParser(errors);
-
     const student = await StudentModel.create({
-      parentContact: {
-        firstName,
-        lastName,
-        phoneNumber,
-        email,
-      },
-      displayName,
-      meemliEmail,
-      grade,
-      schoolName,
-      city,
-      state,
-      preassessmentScore,
-      postassessmentScore,
+      ...studentData,
       enrolledSections: enrolledSectionsIds,
-      comments,
     });
+
+    if (enrolledSections && enrolledSections.length > 0) {
+      await Promise.all(
+        enrolledSections.map(async (sectionId) =>
+          handleEnrollment(student._id.toString(), sectionId),
+        ),
+      );
+    }
 
     const populatedStudent = await student.populate("enrolledSections");
     res.status(201).json(populatedStudent);
@@ -88,13 +65,13 @@ export const getAllStudents: RequestHandler = async (req, res, next) => {
 export const getStudentById: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
   if (!Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: "Invalid student ID" });
+    throw createHTTPError(400, "Invalid student ID");
   }
 
   try {
     const student = await StudentModel.findById(id).populate("enrolledSections");
     if (!student) {
-      return res.status(404).json({ message: "Student not found" });
+      throw createHTTPError(404, "Student not found");
     }
     res.status(200).json(student);
   } catch (error) {
@@ -106,17 +83,19 @@ export const getStudentById: RequestHandler = async (req, res, next) => {
 type EditStudentBody = Partial<CreateStudentBody>;
 
 export const editStudentById: RequestHandler = async (req, res, next) => {
-  const errors = validationResult(req);
-
   const { id } = req.params;
   if (!Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: "Invalid student ID" });
+    throw createHTTPError(400, "Invalid student ID");
   }
 
   const updates: EditStudentBody = req.body as EditStudentBody;
 
   try {
-    validationErrorParser(errors);
+    // Fetch BEFORE update so we can diff enrolledSections
+    const existingStudent = await StudentModel.findById(id);
+    if (!existingStudent) {
+      return res.status(404).json({ message: "Student not found" });
+    }
 
     const student = await StudentModel.findByIdAndUpdate(id, updates, { new: true }).populate(
       "enrolledSections",
@@ -124,6 +103,22 @@ export const editStudentById: RequestHandler = async (req, res, next) => {
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
+
+    if (updates.enrolledSections) {
+      const oldSectionIds = existingStudent.enrolledSections.map((s) => s.toString());
+      const newSectionIds = updates.enrolledSections;
+
+      const added = newSectionIds.filter((s) => !oldSectionIds.includes(s));
+      const removed = oldSectionIds.filter((s) => !newSectionIds.includes(s));
+
+      if (added.length > 0) {
+        await Promise.all(added.map(async (sectionId) => handleEnrollment(id, sectionId)));
+      }
+      if (removed.length > 0) {
+        await Promise.all(removed.map(async (sectionId) => handleUnenrollment(id, sectionId)));
+      }
+    }
+
     res.status(200).json(student);
   } catch (error) {
     return next(error);
@@ -134,13 +129,15 @@ export const editStudentById: RequestHandler = async (req, res, next) => {
 export const deleteStudentById: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
   if (!Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: "Invalid student ID" });
+    throw createHTTPError(400, "Invalid student ID");
   }
 
   try {
+    await handleFullDeletion(id);
+
     const student = await StudentModel.findByIdAndDelete(id);
     if (!student) {
-      return res.status(404).json({ message: "Student not found" });
+      throw createHTTPError(404, "Student not found");
     }
     res.status(200).json({ message: "Student deleted successfully" });
   } catch (error) {

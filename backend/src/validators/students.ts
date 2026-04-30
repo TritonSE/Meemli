@@ -75,7 +75,7 @@ const makeCityValidator = (): ValidationChain => {
     .isString()
     .withMessage("city must be a string")
     .bail()
-    .isLength({ min: 3 })
+    .isLength({ min: 2 })
     .withMessage("city must be at least 3 characters long");
 };
 
@@ -87,7 +87,7 @@ const makeStateValidator = (): ValidationChain => {
     .isString()
     .withMessage("state must be a string")
     .bail()
-    .isLength({ min: 3 })
+    .isLength({ min: 2 })
     .withMessage("state must be at least 3 characters long");
 };
 

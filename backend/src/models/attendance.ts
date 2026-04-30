@@ -7,7 +7,12 @@ import type { InferSchemaType } from "mongoose";
 const attendanceSchema = new Schema({
   session: { type: Schema.Types.ObjectId, ref: "Session", required: true },
   student: { type: Schema.Types.ObjectId, ref: "Student", required: true },
-  status: { type: String, enum: ["LATE", "ABSENT", "PRESENT"], default: "PRESENT", required: true },
+  status: {
+    type: String,
+    enum: ["LATE", "ABSENT", "PRESENT", "UNMARKED"],
+    default: "UNMARKED",
+    required: true,
+  },
   notes: { type: String },
 });
 
