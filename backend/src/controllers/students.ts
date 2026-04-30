@@ -84,6 +84,7 @@ type EditStudentBody = Partial<CreateStudentBody>;
 
 export const editStudentById: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
+
   if (!Types.ObjectId.isValid(id)) {
     throw createHTTPError(400, "Invalid student ID");
   }
@@ -100,6 +101,7 @@ export const editStudentById: RequestHandler = async (req, res, next) => {
     const student = await StudentModel.findByIdAndUpdate(id, updates, { new: true }).populate(
       "enrolledSections",
     );
+
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
@@ -139,6 +141,7 @@ export const deleteStudentById: RequestHandler = async (req, res, next) => {
     if (!student) {
       throw createHTTPError(404, "Student not found");
     }
+
     res.status(200).json({ message: "Student deleted successfully" });
   } catch (error) {
     return next(error);

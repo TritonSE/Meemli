@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 
 import styles from "./Modal.module.css";
 
@@ -7,8 +7,16 @@ import type { ReactNode } from "react";
 type ModalProps = {
   child: ReactNode;
   onExit: () => void;
+  fitContent?: boolean;
+  wrapperStyle?: React.CSSProperties;
 };
-export const Modal = function Modal({ child, onExit }: ModalProps) {
+
+export const Modal = function Modal({
+  child,
+  onExit,
+  fitContent = false,
+  wrapperStyle,
+}: ModalProps) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -17,15 +25,17 @@ export const Modal = function Modal({ child, onExit }: ModalProps) {
     };
 
     window.addEventListener("keydown", handleKeyDown);
-
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [onExit]);
 
+  // Dynamically build the wrapper class string
+  const wrapperClass = `${styles.wrapper} ${fitContent ? styles.fitContent : ""}`.trim();
+
   return (
     <div className={styles.overlay} onClick={onExit}>
-      <div className={styles.wrapper} onClick={(e) => e.stopPropagation()}>
+      <div className={wrapperClass} style={wrapperStyle} onClick={(e) => e.stopPropagation()}>
         {child}
       </div>
     </div>

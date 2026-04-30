@@ -1,4 +1,3 @@
-import { sendPasswordResetEmail } from "firebase/auth";
 import Image from "next/image";
 import { useState } from "react";
 import Select, {
@@ -10,7 +9,7 @@ import Select, {
 
 import { getAllSections, getSectionById, updateSection } from "../../api/sections";
 import { createUser } from "../../api/user";
-import { auth } from "../../util/firebase";
+import { auth, sendMeemliActivationEmail } from "../../util/firebase";
 import { Button } from "../Button";
 import { ErrorMessage } from "../ErrorMessage";
 import { TextField } from "../TextField";
@@ -141,6 +140,11 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
   const [programs, setPrograms] = useState<Option[]>([]);
   const [programOptions, setProgramOptions] = useState<Option[]>([]);
 
+  const currentUser = auth.currentUser;
+  const inviterName = currentUser
+    ? currentUser.displayName || currentUser.email || "An Admin"
+    : "An Admin";
+
   // TODO: replace these with API calls
   const roleOptions: Option[] = [
     { value: "STAFF", label: "Staff" },
@@ -239,16 +243,24 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
       phoneNumber: phoneNumber.trim(),
       admin: isAdmin,
       assignedSections: programs.map((program) => program.value),
+      archived: false,
     })
       .then((result) => {
         if (result.success) {
-          sendPasswordResetEmail(auth, meemliEmail.trim())
+          // sendPasswordResetEmail(auth, meemliEmail.trim())
+          //   .then(() => {})
+          //   .catch((error) => {
+          //     setFormErrors({
+          //       passwordReset: "Failed to send password reset email",
+          //     });
+          //     console.error("Error sending password reset email:", error);
+          //   });
+
+          // Send custom activation link.
+          sendMeemliActivationEmail(personalEmail.trim(), inviterName)
             .then(() => {})
             .catch((error) => {
-              setFormErrors({
-                passwordReset: "Failed to send password reset email",
-              });
-              console.error("Error sending password reset email:", error);
+              console.error("Error sending activation email:", error);
             });
 
           const userId = result.data._id;
@@ -377,7 +389,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
           inputId="role"
           options={roleOptions}
           value={role}
-          onChange={(opt) => setRole(opt as Option | null)}
+          onChange={(opt) => setRole(opt)}
           placeholder="Select"
           isClearable
           isSearchable={false}

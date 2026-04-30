@@ -20,6 +20,16 @@ export const createSection: RequestHandler = async (req, res) => {
   try {
     const section = new Section(req.body);
     await section.save();
+
+    // If section is created with students, trigger enrollment records
+    if (section.enrolledStudents && section.enrolledStudents.length > 0) {
+      await Promise.all(
+        section.enrolledStudents.map(async (studentId) =>
+          handleEnrollment(studentId.toString(), section._id.toString()),
+        ),
+      );
+    }
+
     res.status(201).json(section);
   } catch (error: unknown) {
     handleError(res, error instanceof Error ? error.message : "Unknown error");
@@ -29,10 +39,18 @@ export const createSection: RequestHandler = async (req, res) => {
 // Only keep the fields clients can update
 export type UpdateSectionBody = Pick<
   SectionDoc,
-  "code" | "program" | "teachers" | "enrolledStudents" | "startTime" | "endTime" | "days"
+  | "code"
+  | "teachers"
+  | "enrolledStudents"
+  | "startTime"
+  | "endTime"
+  | "startDate"
+  | "endDate"
+  | "archived"
+  | "color"
+  | "days"
 >;
 
-// ---------------------- UPDATE ----------------------
 export const updateSection: RequestHandler<{ id: string }, unknown, UpdateSectionBody> = async (
   req,
   res,
@@ -72,8 +90,6 @@ export const updateSection: RequestHandler<{ id: string }, unknown, UpdateSectio
         );
       }
     }
-
-    res.json(section);
   } catch (error: unknown) {
     handleError(res, error instanceof Error ? error.message : "Unknown error");
   }

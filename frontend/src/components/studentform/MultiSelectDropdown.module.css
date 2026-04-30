@@ -46,6 +46,9 @@
   display: flex;
   flex-direction: row;
   gap: 2px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
 
   color: #9b9d9f;
 }
@@ -90,6 +93,8 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+
+  font-size: 14px;
 }
 
 .listItemSelected {
@@ -101,13 +106,23 @@
   padding: 8px 12px;
   border-radius: 8px;
   margin-right: auto;
-
-  font-size: 12px;
 }
 
 .chosen {
   padding: 8px 12px;
   border-radius: 8px;
 
-  font-size: 12px;
+  font-size: 14px;
+}
+
+.selectedIcon {
+  color: var(--primary-500);
+  width: 20px;
+  height: 20px;
+  margin-right: 15px;
+}
+
+.rootDisabled {
+  opacity: 0.5;
+  pointer-events: none;
 }

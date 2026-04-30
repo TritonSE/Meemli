@@ -1,0 +1,35 @@
+.blockItems {
+  display: flex;
+  gap: 6px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+.blockItem {
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  width: auto;
+  padding: 10px;
+  border-radius: 8px;
+  align-items: center;
+  color: white;
+  font-weight: 600;
+}
+.moreItem {
+  background: var(--grey-100);
+  color: var(--grey-700);
+}
+
+.blockMeasure {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  height: 0;
+  overflow: hidden;
+  display: flex;
+  gap: 6px;
+  white-space: nowrap;
+}

@@ -9,11 +9,11 @@ import styles from "./select.module.css";
 export function DateSelect({
   value,
   onChange,
-  availableDates,
+  availableDates, // Now optional
 }: {
   value: string;
   onChange: (d: string) => void;
-  availableDates: string[];
+  availableDates?: string[]; // Added the '?' for optionality
 }) {
   const parsedValue = value ? parse(value, "yyyy-MM-dd", new Date()) : new Date();
   const validValue = isValid(parsedValue) ? parsedValue : new Date();
@@ -22,10 +22,15 @@ export function DateSelect({
   const [tempDate, setTempDate] = useState<Date | undefined>(undefined);
   const [currentMonth, setCurrentMonth] = useState<Date>(validValue);
 
-  // Disable any day that isn't in the availableDates list
+  // Disable logic updated to handle undefined availableDates
   const isDisabled = (date: Date) => {
-    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-    const todayStr = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(new Date().getDate()).padStart(2, "0")}`;
+    // If availableDates is not provided, don't disable any dates
+    if (!availableDates) return false;
+
+    const dateStr = format(date, "yyyy-MM-dd");
+    const todayStr = format(new Date(), "yyyy-MM-dd");
+
+    // Disable if it's not today AND not in the allowed list
     return dateStr !== todayStr && !availableDates.includes(dateStr);
   };
 

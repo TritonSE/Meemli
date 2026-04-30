@@ -1,0 +1,59 @@
+.banner {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 12px;
+  border-radius: 10px;
+
+  color: white;
+  background-color: white;
+  font-size: 14px;
+  font-weight: 500;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+
+  animation: slideDownFade 0.2s ease;
+}
+
+.bannerSuccess {
+  color: var(--success-700);
+}
+
+.bannerError {
+  color: var(--error-500);
+}
+
+.bannerNeutral {
+  color: var(--grey-700);
+}
+
+.bannerUndoButton {
+  border-radius: 6px;
+  background-color: white;
+  color: var(--primary-500);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 10px;
+}
+
+.bannerUndoButton:hover {
+  background-color: var(--grey-50);
+}
+
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
