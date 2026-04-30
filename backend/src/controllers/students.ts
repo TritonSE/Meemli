@@ -127,6 +127,24 @@ export const editStudentById: RequestHandler = async (req, res, next) => {
   }
 };
 
+// Mass edits so there arent a bunch of separate requests
+export const archiveStudentsByIds: RequestHandler = async (req, res, next) => {
+  const { ids, flag } = req.body as { ids: string[]; flag: boolean };
+  const validIds = ids
+    .filter((id) => Types.ObjectId.isValid(id))
+    .map((id) => new Types.ObjectId(id));
+  if (validIds.length === 0) {
+    throw createHTTPError(400, "No valid student IDs provided");
+  }
+
+  try {
+    await StudentModel.updateMany({ _id: { $in: validIds } }, { $set: { archived: flag } });
+    res.status(200).json({ message: `Students ${flag ? "archived" : "unarchived"} successfully` });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 // Delete by ID
 export const deleteStudentById: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
@@ -143,6 +161,25 @@ export const deleteStudentById: RequestHandler = async (req, res, next) => {
     }
 
     res.status(200).json({ message: "Student deleted successfully" });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const deleteStudentsByIds: RequestHandler = async (req, res, next) => {
+  const { ids } = req.body as { ids: string[] };
+  const validIds = ids
+    .filter((id) => Types.ObjectId.isValid(id))
+    .map((id) => new Types.ObjectId(id));
+
+  if (validIds.length === 0) {
+    throw createHTTPError(400, "No valid student IDs provided");
+  }
+
+  try {
+    await Promise.all(validIds.map(async (id) => handleFullDeletion(id)));
+    await StudentModel.deleteMany({ _id: { $in: validIds } });
+    res.status(200).json({ message: "Students deleted successfully" });
   } catch (error) {
     return next(error);
   }
