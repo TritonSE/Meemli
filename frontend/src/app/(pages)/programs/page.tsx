@@ -254,7 +254,6 @@ export default function Programs() {
             endDate={String(section.endDate)}
             color={section.color}
             archived={section.archived}
-            isAdmin={isAdmin}
             onEdit={() => setEditingSection(section)}
             onArchive={async () => {
               const result = await updateSection({ ...section, archived: !section.archived });

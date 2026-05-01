@@ -12,7 +12,5 @@ export default function Students() {
   if (!user) {
     return <div>You must be logged in to view this page.</div>;
   }
-  const state: "admin" | "teacher" = user.admin ? "admin" : "teacher";
-  const disabled = user.archived;
-  return <StudentStaffPage type="student" state={state} disabled={disabled} />;
+  return <StudentStaffPage type="student" />;
 }

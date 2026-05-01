@@ -3,6 +3,7 @@ import { Calendar, GraduationCap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import styles from "./SectionCard.module.css";
+import { useAuth } from "@/src/context/AuthContext";
 
 // To check -- day is string, days is string[], are we going to accept multiple days for one card? or just one day per card.
 
@@ -16,7 +17,6 @@ export const SectionCard = function SectionCard({
   archived,
   color,
   days,
-  isAdmin,
   onEdit,
   onArchive,
   onDelete,
@@ -30,11 +30,11 @@ export const SectionCard = function SectionCard({
   color: string;
   archived: boolean;
   days: string[];
-  isAdmin: boolean;
   onEdit: () => void;
   onArchive: () => void | Promise<void>;
   onDelete: () => void | Promise<void>;
 }) {
+  const { isAdmin } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = () => setMenuOpen((prev) => !prev);
   const menuRef = useRef<HTMLDivElement>(null);

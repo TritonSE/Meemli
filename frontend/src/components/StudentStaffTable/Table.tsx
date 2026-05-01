@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 import styles from "./Table.module.css";
 
@@ -21,13 +21,13 @@ import { StudentForm } from "@/src/components/studentform/StudentForm";
 import { StudentProfileModal } from "@/src/components/StudentProfileView/StudentProfileView";
 import { StudentEditForm } from "@/src/components/StudentStaffTable/StudentEditForm";
 import { UserEditForm } from "@/src/components/StudentStaffTable/UserEditForm";
+import { useAuth } from "@/src/context/AuthContext";
 
 export type TableProps = {
   data: Student[] | User[];
   setData: Dispatch<SetStateAction<any>>;
   sections: Section[];
   type: "staff" | "student";
-  state: "admin" | "teacher";
   isEdit: boolean;
   onEdit?: () => void;
   selected: Set<string>;
@@ -39,13 +39,13 @@ export function Table({
   data,
   setData,
   type,
-  state,
   sections,
   isEdit,
   onEdit,
   selected,
   setSelected,
 }: TableProps) {
+  const { isAdmin } = useAuth();
   const [isLoading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -191,7 +191,7 @@ export function Table({
             <StudentCard data={input} variant="list" />
             {renderHoverBtn(input)}
           </td>
-          <td className={styles.textItem}>{input.parentContact?.email ?? "N/A"}</td>
+          {isAdmin && <td className={styles.textItem}>{input.parentContact?.email ?? "N/A"}</td>}
           <td className={styles.programsItem}>
             <DynamicBlockDisplay labels={sortedLabels} colors={sectionColors} />
           </td>
@@ -281,7 +281,9 @@ export function Table({
     titleBar = (
       <>
         <th className={`${styles.nameCol} ${styles.headerItem}`}>Name</th>
-        <th className={`${styles.emailCol} ${styles.headerItem}`}>Parent E-mail Address</th>
+        {isAdmin && (
+          <th className={`${styles.emailCol} ${styles.headerItem}`}>Parent E-mail Address</th>
+        )}
         <th className={`${styles.programsCol} ${styles.headerItem}`}>Assigned Programs</th>
         <th className={`${styles.notesCol} ${styles.headerItem}`}>Notes</th>
       </>
@@ -316,7 +318,7 @@ export function Table({
         </table>
       </div>
       {renderNavigation()}
-      {isStudent(editData) && editOpen && state === "admin" && (
+      {isStudent(editData) && editOpen && isAdmin && (
         <Modal
           onExit={() => setEditOpen(false)}
           child={
@@ -346,7 +348,7 @@ export function Table({
           }
         />
       )}
-      {isStudent(editData) && editOpen && state !== "admin" && (
+      {isStudent(editData) && editOpen && !isAdmin && (
         <Modal
           onExit={() => setEditOpen(false)}
           child={

@@ -18,6 +18,7 @@ import styles from "@/src/components/StudentStaffTable/Page.module.css";
 import { ProgramSelect } from "@/src/components/StudentStaffTable/ProgramSelect";
 import { Table } from "@/src/components/StudentStaffTable/Table";
 import { Toast } from "@/src/components/Toast/Toast";
+import { useAuth } from "@/src/context/AuthContext";
 
 type ToastState = {
   type: "success" | "error" | "neutral";
@@ -29,11 +30,12 @@ type ToastState = {
 
 type StudentStaffPageProps = {
   type: "student" | "staff";
-  state: "admin" | "teacher";
-  disabled?: boolean;
 };
 
-export default function StudentStaffPage({ type, state, disabled }: StudentStaffPageProps) {
+export default function StudentStaffPage({ type }: StudentStaffPageProps) {
+  const { isAdmin, user } = useAuth();
+  const disabled = user?.archived ?? false;
+
   if (disabled) {
     return (
       <div className={styles.disabledContainer}>
@@ -607,7 +609,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
                 <EditIcon className={styles.editIcon} />
                 <p>{type === "student" ? "Edit Students" : "Edit Staff"}</p>
               </button>
-              {state === "admin" && (
+              {isAdmin && (
                 <button
                   className={`${styles.primary} ${styles.headerButton}`}
                   onClick={() => setAddOpen(!addOpen)}
@@ -629,7 +631,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
               >
                 Cancel
               </button>
-              {state === "admin" && (
+              {isAdmin && (
                 <>
                   <button
                     className={`${styles.archive} ${styles.headerButton}`}
@@ -668,7 +670,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
     return (
       <div className={`${styles.headerBar}`}>
         <div className={styles.headerContainer}>
-          {state === "admin" && (
+          {isAdmin && (
             <>
               <button
                 className={`${activeView ? styles.primary : styles.secondary} ${styles.headerButton}`}
@@ -797,7 +799,6 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
         setData={setRoot}
         sections={sections}
         type={type}
-        state={state}
         isEdit={isEdit}
         selected={selected}
         setSelected={setSelected}
