@@ -53,16 +53,16 @@ export function StudentEditForm({ student, onCancel, onSubmit }: StudentEditForm
       city: student.city,
       state: student.state,
       parentContact: {
-        firstName: student.parentContact.firstName,
-        lastName: student.parentContact.lastName,
-        phoneNumber: student.parentContact.phoneNumber,
-        email: student.parentContact.email,
+        firstName: student.parentContact?.firstName ?? "",
+        lastName: student.parentContact?.lastName ?? "",
+        phoneNumber: student.parentContact?.phoneNumber ?? "",
+        email: student.parentContact?.email ?? "",
       },
       preassessmentScore: Number(preassessmentScore),
       postassessmentScore: Number(postassessmentScore),
       comments,
       archived: student.archived,
-      enrolledSections: student.enrolledSections,
+      enrolledSections: student.enrolledSections ?? [],
     })
       .then((result) => {
         if (result.success) {

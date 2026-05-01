@@ -122,7 +122,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
       // filter by sections if any are selected.
       if (sortBy.length > 0) {
         base = base.filter((s) =>
-          s.enrolledSections.some((sectionId) => sortBy.includes(sectionId)),
+          (s.enrolledSections ?? []).some((sectionId) => sortBy.includes(sectionId)),
         );
       }
 
@@ -155,7 +155,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
 
       if (sortBy.length > 0) {
         base = base.filter((s) =>
-          s.assignedSections.some((sectionId) => sortBy.includes(sectionId)),
+          (s.assignedSections ?? []).some((sectionId) => sortBy.includes(sectionId)),
         );
       }
 

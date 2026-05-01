@@ -68,7 +68,7 @@ export function Table({
    * @returns boolean value
    */
   const isStudent = (input: Student | User | null): input is Student => {
-    return typeof input === "object" && input !== null && "parentContact" in input;
+    return type === "student" && input !== null;
   };
 
   const clampedSetPage = (next: number) => {
@@ -167,7 +167,7 @@ export function Table({
 
   const renderRow = (input: Student | User) => {
     if (isStudent(input)) {
-      const sortedSections = input.enrolledSections
+      const sortedSections = (input.enrolledSections ?? [])
         .map((cid) => {
           const res = sections.find((obj) => obj._id === cid);
           return {
@@ -191,7 +191,7 @@ export function Table({
             <StudentCard data={input} variant="list" />
             {renderHoverBtn(input)}
           </td>
-          <td className={styles.textItem}>{input.parentContact.email}</td>
+          <td className={styles.textItem}>{input.parentContact?.email ?? "N/A"}</td>
           <td className={styles.programsItem}>
             <DynamicBlockDisplay labels={sortedLabels} colors={sectionColors} />
           </td>
@@ -199,7 +199,7 @@ export function Table({
         </>
       );
     } else {
-      const sortedSections = input.assignedSections
+      const sortedSections = (input.assignedSections ?? [])
         .map((cid) => {
           const res = sections.find((obj) => obj._id === cid);
           return {

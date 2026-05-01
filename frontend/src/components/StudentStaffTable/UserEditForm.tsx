@@ -37,7 +37,7 @@ export function UserEditForm({ user, sections: _sections, onCancel, onSubmit }: 
   const [lastName, setLastName] = useState(user.lastName);
   const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
   const [role, setRole] = useState(user.admin ? "Admin" : "Staff");
-  const [assignedSections, setAssignedSections] = useState(user.assignedSections);
+  const [assignedSections, setAssignedSections] = useState(user.assignedSections ?? []);
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
   const [phoneNumberError, setPhoneNumberError] = useState("");
