@@ -1,6 +1,22 @@
 import { useEffect, useState } from "react";
 
+import { getAttendanceBySessionId, updateAttendanceBulk } from "../api/attendance";
 import {
+  createSection,
+  deleteSection,
+  getAllSections,
+  getSectionById,
+  updateSection,
+} from "../api/sections";
+import {
+  createSession,
+  deleteSession,
+  getAllSessions,
+  getSessionById,
+  updateSession,
+} from "../api/session";
+import {
+  archiveStudents,
   createStudent,
   deleteStudent,
   getAllStudents,
@@ -155,9 +171,13 @@ export default function TestStudentForm() {
 
   // auto-filled from GET /students on load
   const [autoStudentId, setAutoStudentId] = useState("");
+  const [autoSectionId, setAutoSectionId] = useState("");
+  const [autoSessionId, setAutoSessionId] = useState("");
 
   // user-editable IDs for single-resource tests
   const [studentId, setStudentId] = useState("");
+  const [sectionId, setSectionId] = useState("");
+  const [sessionId, setSessionId] = useState("");
   const [otherUserId, setOtherUserId] = useState("Yn4vNEddw2UrUR4nFyJMZRPvoHp1");
 
   // all test results keyed by test name
@@ -169,6 +189,20 @@ export default function TestStudentForm() {
         const id = r.data[0]._id;
         setAutoStudentId(id);
         setStudentId((prev) => prev || id);
+      }
+    });
+    void getAllSections().then((r) => {
+      if (r.success && r.data.length > 0) {
+        const id = r.data[0]._id;
+        setAutoSectionId(id);
+        setSectionId((prev) => prev || id);
+      }
+    });
+    void getAllSessions().then((r) => {
+      if (r.success && r.data.length > 0) {
+        const id = r.data[0]._id;
+        setAutoSessionId(id);
+        setSessionId((prev) => prev || id);
       }
     });
   }, []);
@@ -301,11 +335,32 @@ export default function TestStudentForm() {
             placeholder={autoStudentId || "paste a student ObjectId"}
             style={inputStyle}
           />
-          {autoStudentId && (
-            <span style={{ color: "#94a3b8", fontSize: "0.72rem" }}>
-              Auto-filled from GET /students
-            </span>
-          )}
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+          <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "#374151" }}>
+            Section ID
+            <span style={{ fontWeight: 400, color: "#94a3b8" }}> (section tests)</span>
+          </label>
+          <input
+            value={sectionId}
+            onChange={(e) => setSectionId(e.target.value)}
+            placeholder={autoSectionId || "paste a section ObjectId"}
+            style={inputStyle}
+          />
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+          <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "#374151" }}>
+            Session ID
+            <span style={{ fontWeight: 400, color: "#94a3b8" }}> (session/attendance tests)</span>
+          </label>
+          <input
+            value={sessionId}
+            onChange={(e) => setSessionId(e.target.value)}
+            placeholder={autoSessionId || "paste a session ObjectId"}
+            style={inputStyle}
+          />
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
@@ -354,7 +409,13 @@ export default function TestStudentForm() {
           label={`GET /students/${sid || ":id"}`}
           expected={isAdmin ? "200 — any student" : "200 if in section, 403 otherwise"}
           result={r("s_get_one")}
-          note={!sid ? "Set Student ID above first" : undefined}
+          note={
+            !sid
+              ? "Set Student ID above first"
+              : !isAdmin
+                ? "Teacher: verified restricted fields (displayName, grade, scores, comments, archived, enrolledSections)"
+                : undefined
+          }
           onRun={() => {
             if (!sid) return;
             run(
@@ -362,7 +423,19 @@ export default function TestStudentForm() {
               async () => getStudent(sid),
               (data) => {
                 console.info("GET /students/:id response:", data);
-                return `"${data.displayName}"`;
+                const keys = Object.keys(data);
+                const restrictedKeys = [
+                  "_id",
+                  "displayName",
+                  "grade",
+                  "preassessmentScore",
+                  "postassessmentScore",
+                  "comments",
+                  "archived",
+                  "enrolledSections",
+                ];
+                const hasExtra = keys.some((k) => !restrictedKeys.includes(k));
+                return `"${data.displayName}" ${!isAdmin && hasExtra ? "(FAILED: extra fields)" : !isAdmin ? "(PASSED: restricted)" : ""}`;
               },
             );
           }}
@@ -459,6 +532,283 @@ export default function TestStudentForm() {
               async () => deleteStudent(sid),
               (data) => {
                 console.info("DELETE /students/:id response:", data);
+                return data.message;
+              },
+            );
+          }}
+        />
+
+        {/* PUT /students/archive */}
+        <TestRow
+          label="PUT /students/archive"
+          expected={isAdmin ? "200 — archived" : "403 Forbidden"}
+          result={r("s_archive")}
+          onRun={() => {
+            if (!sid) return;
+            run(
+              "s_archive",
+              async () => archiveStudents([sid], true),
+              (data) => {
+                console.info("PUT /students/archive response:", data);
+                return `Archived ${data.length} student(s)`;
+              },
+            );
+          }}
+        />
+      </TestTable>
+
+      {/* ================================================
+          SECTION CONTROLLER
+      ================================================ */}
+      <h2 style={{ fontSize: "1.1rem", marginBottom: "0.25rem" }}>Section Controller</h2>
+      <p style={{ color: "#64748b", fontSize: "0.8rem", marginBottom: "0.75rem" }}>
+        Admin: full access.&ensp; Teacher: GET actions on assigned sections only; all mutating
+        operations return 403.
+      </p>
+
+      <TestTable>
+        {/* GET /sections */}
+        <TestRow
+          label="GET /sections"
+          expected={isAdmin ? "200 — all sections" : "200 — assigned sections only"}
+          result={r("sec_get_all")}
+          onRun={() =>
+            run("sec_get_all", getAllSections, (data) => {
+              console.info("GET /sections response:", data);
+              return `${data.length} section(s) returned`;
+            })
+          }
+        />
+
+        {/* GET /sections/:id */}
+        <TestRow
+          label={`GET /sections/${sectionId || ":id"}`}
+          expected={isAdmin ? "200 — any section" : "200 if assigned, 403 otherwise"}
+          result={r("sec_get_one")}
+          onRun={() => {
+            if (!sectionId) return;
+            run(
+              "sec_get_one",
+              async () => getSectionById(sectionId),
+              (data) => {
+                console.info("GET /sections/:id response:", data);
+                return `"${data.code}"`;
+              },
+            );
+          }}
+        />
+
+        {/* POST /sections */}
+        <TestRow
+          label="POST /sections"
+          expected={isAdmin ? "201 created" : "403 Forbidden"}
+          result={r("sec_create")}
+          onRun={() =>
+            run(
+              "sec_create",
+              async () =>
+                createSection({
+                  code: "PERM_TEST",
+                  teachers: [],
+                  enrolledStudents: [],
+                  startTime: "09:00",
+                  endTime: "10:00",
+                  startDate: "2026-05-01",
+                  endDate: "2026-06-01",
+                  archived: false,
+                  color: "#ff00ff",
+                  days: ["Monday"],
+                }),
+              (data) => {
+                console.info("POST /sections response:", data);
+                return `Created "${data.code}" (${data._id})`;
+              },
+            )
+          }
+        />
+
+        {/* PUT /sections/:id */}
+        <TestRow
+          label={`PUT /sections/${sectionId || ":id"}`}
+          expected={isAdmin ? "200 — updated" : "403 Forbidden"}
+          result={r("sec_edit")}
+          onRun={() => {
+            if (!sectionId) return;
+            run(
+              "sec_edit",
+              async () =>
+                updateSection({
+                  _id: sectionId,
+                  code: "UPDATED",
+                } as any),
+              (data) => {
+                console.info("PUT /sections/:id response:", data);
+                return `"${data.code}" updated`;
+              },
+            );
+          }}
+        />
+
+        {/* DELETE /sections/:id */}
+        <TestRow
+          label={`DELETE /sections/${sectionId || ":id"}`}
+          expected={isAdmin ? "204 — deleted" : "403 Forbidden"}
+          result={r("sec_delete")}
+          onRun={() => {
+            if (!sectionId) return;
+            run(
+              "sec_delete",
+              async () => deleteSection(sectionId),
+              (data) => {
+                console.info("DELETE /sections/:id response:", data);
+                return "Deleted";
+              },
+            );
+          }}
+        />
+      </TestTable>
+
+      {/* ================================================
+          SESSION CONTROLLER
+      ================================================ */}
+      <h2 style={{ fontSize: "1.1rem", marginBottom: "0.25rem" }}>Session Controller</h2>
+      <p style={{ color: "#64748b", fontSize: "0.8rem", marginBottom: "0.75rem" }}>
+        Admin: full access.&ensp; Teacher: GET actions on assigned sessions only; all mutating
+        operations return 403.
+      </p>
+
+      <TestTable>
+        {/* GET /sessions */}
+        <TestRow
+          label="GET /sessions"
+          expected={isAdmin ? "200 — all sessions" : "200 — assigned sessions only"}
+          result={r("ses_get_all")}
+          onRun={() =>
+            run("ses_get_all", getAllSessions, (data) => {
+              console.info("GET /sessions response:", data);
+              return `${data.length} session(s) returned`;
+            })
+          }
+        />
+
+        {/* GET /sessions/:id */}
+        <TestRow
+          label={`GET /sessions/${sessionId || ":id"}`}
+          expected={isAdmin ? "200 — any session" : "200 if assigned, 403 otherwise"}
+          result={r("ses_get_one")}
+          onRun={() => {
+            if (!sessionId) return;
+            run(
+              "ses_get_one",
+              async () => getSessionById(sessionId),
+              (data) => {
+                console.info("GET /sessions/:id response:", data);
+                return `Session on ${data.sessionDate}`;
+              },
+            );
+          }}
+        />
+
+        {/* POST /sessions */}
+        <TestRow
+          label="POST /sessions"
+          expected={isAdmin ? "201 created" : "403 Forbidden"}
+          result={r("ses_create")}
+          onRun={() =>
+            run(
+              "ses_create",
+              async () =>
+                createSession({
+                  section: sectionId,
+                  sessionDate: "2026-05-01",
+                }),
+              (data) => {
+                console.info("POST /sessions response:", data);
+                return `Created session (${data._id})`;
+              },
+            )
+          }
+        />
+
+        {/* PUT /sessions/:id */}
+        <TestRow
+          label={`PUT /sessions/${sessionId || ":id"}`}
+          expected={isAdmin ? "200 — updated" : "403 Forbidden"}
+          result={r("ses_edit")}
+          onRun={() => {
+            if (!sessionId) return;
+            run(
+              "ses_edit",
+              async () =>
+                updateSession({
+                  _id: sessionId,
+                  sessionDate: "2026-05-02",
+                } as any),
+              (data) => {
+                console.info("PUT /sessions/:id response:", data);
+                return "Updated";
+              },
+            );
+          }}
+        />
+
+        {/* DELETE /sessions/:id */}
+        <TestRow
+          label={`DELETE /sessions/${sessionId || ":id"}`}
+          expected={isAdmin ? "204 — deleted" : "403 Forbidden"}
+          result={r("ses_delete")}
+          onRun={() => {
+            if (!sessionId) return;
+            run(
+              "ses_delete",
+              async () => deleteSession(sessionId),
+              (data) => {
+                console.info("DELETE /sessions/:id response:", data);
+                return "Deleted";
+              },
+            );
+          }}
+        />
+      </TestTable>
+
+      {/* ================================================
+          ATTENDANCE CONTROLLER
+      ================================================ */}
+      <h2 style={{ fontSize: "1.1rem", marginBottom: "0.25rem" }}>Attendance Controller</h2>
+      <p style={{ color: "#64748b", fontSize: "0.8rem", marginBottom: "0.75rem" }}>
+        Admin: full access.&ensp; Teacher: full permissions on attendances for assigned sections.
+      </p>
+
+      <TestTable>
+        {/* GET /attendance/session/:sessionId */}
+        <TestRow
+          label={`GET /attendance/session/${sessionId || ":id"}`}
+          expected={isAdmin ? "200 — any session" : "200 if assigned, 403 otherwise"}
+          result={r("att_get")}
+          onRun={() => {
+            if (!sessionId) return;
+            run(
+              "att_get",
+              async () => getAttendanceBySessionId(sessionId),
+              (data) => {
+                console.info("GET /attendance response:", data);
+                return `${data.length} records`;
+              },
+            );
+          }}
+        />
+
+        {/* PUT /attendance/bulk-update */}
+        <TestRow
+          label="PUT /attendance/bulk-update"
+          expected={isAdmin ? "200 — updated" : "200 if assigned, 403 otherwise"}
+          result={r("att_edit")}
+          onRun={() => {
+            run(
+              "att_edit",
+              async () => updateAttendanceBulk([]),
+              (data) => {
+                console.info("PUT /attendance/bulk-update response:", data);
                 return data.message;
               },
             );

@@ -20,8 +20,8 @@ import { Modal } from "@/src/components/Modal";
 import { SectionCard } from "@/src/components/SectionCard";
 import { CreateSectionFlow } from "@/src/components/SectionForm/SectionForm";
 import { Toast } from "@/src/components/Toast";
-import { useToast } from "@/src/hooks/useToast";
 import { useAuth } from "@/src/context/AuthContext";
+import { useToast } from "@/src/hooks/useToast";
 
 // next steps : fetch data, render actual data, filter by active archived, search bar
 

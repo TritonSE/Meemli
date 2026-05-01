@@ -2,7 +2,6 @@ import React from "react";
 
 import { ProfilePicture } from "../ProfilePicture/ProfilePicture";
 
-import { NameCard } from "./NameCard";
 import styles from "./StudentCard.module.css";
 
 import type { Student } from "@/src/api/students";
