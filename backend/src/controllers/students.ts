@@ -6,7 +6,6 @@ import {
   TEACHER_EDITABLE_STUDENT_FIELDS,
   TEACHER_STUDENT_PROJECTION,
 } from "../middleware/permissions";
-import { Section } from "../models/sections";
 import StudentModel from "../models/student";
 
 import type { RequestHandler } from "express";
@@ -56,13 +55,24 @@ export const createStudent: RequestHandler = async (req, res, next) => {
 export const getAllStudents: RequestHandler = async (req, res, next) => {
   try {
     if (!req.userContext?.admin) {
-      const teacherSections = await Section.find({ teachers: req.userContext?._id }, "_id");
-      const teacherSectionIds = teacherSections.map((s) => s._id);
+      const teacherSectionIds = (req.userContext?.assignedSections ?? []).map((id) =>
+        id.toString(),
+      );
       const students = await StudentModel.find(
         { enrolledSections: { $in: teacherSectionIds } },
         TEACHER_STUDENT_PROJECTION,
       );
-      return res.status(200).json(students);
+
+      // Filter enrolledSections to only show what this teacher teaches
+      const filteredStudents = students.map((student) => {
+        const studentObj = student.toObject();
+        studentObj.enrolledSections = (studentObj.enrolledSections ?? []).filter((id: any) =>
+          teacherSectionIds.includes(id.toString()),
+        );
+        return studentObj;
+      });
+
+      return res.status(200).json(filteredStudents);
     }
     const students = await StudentModel.find();
     res.status(200).json(students);
@@ -87,16 +97,28 @@ export const getStudentById: RequestHandler = async (req, res, next) => {
       throw createHTTPError(404, "Student not found");
     }
 
-    if (req.userContext && !(await hasStudentAccess(req.userContext, student.enrolledSections))) {
+    if (req.userContext && !hasStudentAccess(req.userContext, student.enrolledSections)) {
       throw createHTTPError(403, "Forbidden");
     }
 
     if (!isAdmin) {
-      const { _id, displayName, grade, preassessmentScore, postassessmentScore, comments } =
-        student.toObject();
-      return res
-        .status(200)
-        .json({ _id, displayName, grade, preassessmentScore, postassessmentScore, comments });
+      const studentObj = student.toObject();
+      const teacherSectionIds = new Set(
+        (req.userContext?.assignedSections ?? []).map((sid) => sid.toString()),
+      );
+
+      return res.status(200).json({
+        _id: studentObj._id,
+        displayName: studentObj.displayName,
+        grade: studentObj.grade,
+        preassessmentScore: studentObj.preassessmentScore,
+        postassessmentScore: studentObj.postassessmentScore,
+        comments: studentObj.comments,
+        archived: studentObj.archived,
+        enrolledSections: (studentObj.enrolledSections ?? []).filter((s: any) =>
+          teacherSectionIds.has(s._id?.toString() || s.toString()),
+        ),
+      });
     }
 
     res.status(200).json(student);
@@ -125,7 +147,7 @@ export const editStudentById: RequestHandler = async (req, res, next) => {
         return res.status(404).json({ message: "Student not found" });
       }
 
-      if (req.userContext && !(await hasStudentAccess(req.userContext, student.enrolledSections))) {
+      if (req.userContext && !hasStudentAccess(req.userContext, student.enrolledSections)) {
         throw createHTTPError(403, "Forbidden");
       }
 
@@ -142,11 +164,23 @@ export const editStudentById: RequestHandler = async (req, res, next) => {
     }
 
     if (!req.userContext?.admin) {
-      const { _id, displayName, grade, preassessmentScore, postassessmentScore, comments } =
-        student.toObject();
-      return res
-        .status(200)
-        .json({ _id, displayName, grade, preassessmentScore, postassessmentScore, comments });
+      const studentObj = student.toObject();
+      const teacherSectionIds = new Set(
+        (req.userContext?.assignedSections ?? []).map((sid) => sid.toString()),
+      );
+
+      return res.status(200).json({
+        _id: studentObj._id,
+        displayName: studentObj.displayName,
+        grade: studentObj.grade,
+        preassessmentScore: studentObj.preassessmentScore,
+        postassessmentScore: studentObj.postassessmentScore,
+        comments: studentObj.comments,
+        archived: studentObj.archived,
+        enrolledSections: (studentObj.enrolledSections ?? []).filter((s: any) =>
+          teacherSectionIds.has(s._id?.toString() || s.toString()),
+        ),
+      });
     }
 
     res.status(200).json(student);

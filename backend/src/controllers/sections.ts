@@ -114,7 +114,10 @@ export const getSection: RequestHandler<{ id: string }> = async (req, res) => {
     const section = await Section.findById(req.params.id);
     if (!section) return handleError(res, `Section ${req.params.id} not found`, 404);
 
-    if (!req.userContext?.admin && !section.teachers.includes(req.userId!)) {
+    if (
+      !req.userContext?.admin &&
+      !(req.userContext?.assignedSections ?? []).some((id) => id.toString() === req.params.id)
+    ) {
       return handleError(res, "Forbidden", 403);
     }
 
@@ -126,10 +129,12 @@ export const getSection: RequestHandler<{ id: string }> = async (req, res) => {
 
 // ---------------------- GET ALL ----------------------
 // Admins: all sections
-// Teachers: only sections where their UID is in the teachers array
+// Teachers: only sections assigned to them in their user profile
 export const getAllSections: RequestHandler = async (req, res) => {
   try {
-    const filter = req.userContext?.admin ? {} : { teachers: req.userId };
+    const filter = req.userContext?.admin
+      ? {}
+      : { _id: { $in: req.userContext?.assignedSections ?? [] } };
     const sections = await Section.find(filter);
     res.json(sections);
   } catch (error: unknown) {

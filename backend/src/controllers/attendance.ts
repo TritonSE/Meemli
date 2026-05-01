@@ -47,8 +47,10 @@ export const updateAttendanceById: RequestHandler = async (req, res, next) => {
 
     if (!req.userContext?.admin) {
       const session = await SessionModel.findById(attendance.session);
-      const section = await Section.findById(session?.section);
-      if (!section?.teachers.some((t) => t.toString() === req.userId)) {
+      const isTeacher = (req.userContext?.assignedSections ?? []).some(
+        (id) => id.toString() === session?.section.toString(),
+      );
+      if (!isTeacher) {
         throw new createHttpError.Forbidden("You are not the teacher of this section");
       }
     }
@@ -106,9 +108,11 @@ export const getAttendanceBySessionId: RequestHandler = async (req, res, next) =
 
     if (!req.userContext?.admin) {
       const session = await SessionModel.findById(sessionId);
-      const section = await Section.findById(session?.section);
+      const isTeacher = (req.userContext?.assignedSections ?? []).some(
+        (id) => id.toString() === session?.section.toString(),
+      );
 
-      if (!section?.teachers.some((t) => t.toString() === req.userId)) {
+      if (!isTeacher) {
         throw new createHttpError.Forbidden();
       }
     }
@@ -144,10 +148,14 @@ export const updateBulkAttendance: RequestHandler = async (req, res, next) => {
       const records = await AttendanceModel.find({ _id: { $in: attendanceIds } });
       const sessionIds = [...new Set(records.map((r) => r.session.toString()))];
       const sessions = await SessionModel.find({ _id: { $in: sessionIds } });
-      const sectionIds = [...new Set(sessions.map((s) => s.section.toString()))];
-      const sections = await Section.find({ _id: { $in: sectionIds }, teachers: req.userId });
+      const sectionIds = sessions.map((s) => s.section.toString());
 
-      if (sections.length !== sectionIds.length) throw new createHttpError.Forbidden();
+      const teacherSectionIds = new Set(
+        (req.userContext?.assignedSections ?? []).map((id) => id.toString()),
+      );
+
+      const isAuthorized = sectionIds.every((id) => teacherSectionIds.has(id));
+      if (!isAuthorized) throw new createHttpError.Forbidden();
     }
 
     // filter out any items missing an 'attendanceId' to prevent crashes

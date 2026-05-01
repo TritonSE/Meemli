@@ -1,13 +1,11 @@
 import createHTTPError from "http-errors";
 
 import { AttendanceModel } from "../models/attendance";
-import { Section } from "../models/sections";
 import { SessionModel } from "../models/session";
 
 import { ensureAttendanceForSession } from "./attendance";
 
 import type { RequestHandler } from "express";
-import type { Types } from "mongoose";
 
 type CreateSessionBody = {
   section: string;
@@ -70,8 +68,10 @@ export const getSession: RequestHandler = async (req, res, next) => {
 
     // Non-admins can only view sessions for sections they teach
     if (!req.userContext?.admin) {
-      const section = await Section.findById(session.section);
-      if (!section || !section.teachers.includes(req.userId!)) {
+      const isTeacher = (req.userContext?.assignedSections ?? []).some(
+        (id) => id.toString() === session.section.toString(),
+      );
+      if (!isTeacher) {
         throw createHTTPError(403, "You do not have permission to view this session");
       }
     }
@@ -91,8 +91,10 @@ export const getSessionsBySectionId: RequestHandler = async (req, res, next) => 
 
   try {
     if (!req.userContext?.admin) {
-      const section = await Section.findById(sectionId);
-      if (!section || !section.teachers.includes(req.userId!)) {
+      const isTeacher = (req.userContext?.assignedSections ?? []).some(
+        (id) => id.toString() === sectionId,
+      );
+      if (!isTeacher) {
         throw createHTTPError(403, "You do not have permission to view sessions for this section");
       }
     }
@@ -113,10 +115,9 @@ export const getAllSessions: RequestHandler = async (req, res, next) => {
     }
 
     // Non-admins: find only sections they teach, then return sessions for those
-    const assignedSections = await Section.find({ teachers: req.userId });
-    const assignedSectionIds = assignedSections.map((s: { _id: Types.ObjectId }) => s._id);
+    const teacherSectionIds = req.userContext?.assignedSections ?? [];
 
-    const sessions = await SessionModel.find({ section: { $in: assignedSectionIds } }).populate(
+    const sessions = await SessionModel.find({ section: { $in: teacherSectionIds } }).populate(
       "section",
     );
     res.status(200).json(sessions);

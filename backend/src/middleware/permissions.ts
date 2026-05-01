@@ -1,5 +1,3 @@
-import { Section } from "../models/sections";
-
 import type { SectionDoc } from "../models/sections";
 import type { UserContext } from "../types/express";
 import type { Types } from "mongoose";
@@ -14,13 +12,14 @@ export const hasSectionAccess = (userContext: UserContext, section: SectionDoc):
  * Returns true if the user is an admin or the student is enrolled in at least
  * one section that the user teaches.
  */
-export const hasStudentAccess = async (
+export const hasStudentAccess = (
   userContext: UserContext,
   studentEnrolledSections: Types.ObjectId[],
-): Promise<boolean> => {
+): boolean => {
   if (userContext.admin) return true;
-  const teacherSections = await Section.find({ teachers: userContext._id }, "_id");
-  const teacherSectionIds = new Set(teacherSections.map((s) => s._id.toString()));
+  const teacherSectionIds = new Set(
+    (userContext.assignedSections ?? []).map((id) => id.toString()),
+  );
   return studentEnrolledSections.some((s) => teacherSectionIds.has(s.toString()));
 };
 
@@ -38,4 +37,4 @@ export const TEACHER_EDITABLE_STUDENT_FIELDS = new Set([
  * are returned on student documents.
  */
 export const TEACHER_STUDENT_PROJECTION =
-  "displayName grade preassessmentScore postassessmentScore comments";
+  "displayName grade preassessmentScore postassessmentScore comments archived enrolledSections";
