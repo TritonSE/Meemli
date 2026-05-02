@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
+
 import { getAllSections } from "../../api/sections";
-import { MultiSelectNew, type Option } from "../MultiSelectNew/MultiSelectNew"; 
+import { MultiSelectNew, type Option } from "../MultiSelectNew/MultiSelectNew";
 
 // Types
-import type { Section } from "../../api/sections";
 
 type SectionLike = {
   _id: string;
@@ -66,30 +66,23 @@ export function MultiSelectDropdown({
       setLoading(true);
       setError(null);
       try {
-        console.log("1. Starting to fetch sections..."); // <-- DEBUG LOG
         const res = await getAllSections();
-        console.log("2. API Response:", res); // <-- DEBUG LOG
 
         if (!cancelled && res.success) {
           const data = res.data;
-          
-          // Re-added the safety check from your original file!
+
           if (Array.isArray(data)) {
             const normalized = data.filter(
-              (x) => x && typeof x === "object" && typeof x._id === "string"
+              (x) => x && typeof x === "object" && typeof x._id === "string",
             );
-            console.log("3. Normalized Data:", normalized); // <-- DEBUG LOG
             setSections(normalized);
           } else {
-            console.error("API did not return an array!", data);
             setError("Invalid data format received.");
           }
         } else if (!cancelled && !res.success) {
-          console.error("API returned success: false");
           setError("Failed to load sections from server.");
         }
       } catch (e) {
-        console.error("Fetch threw an error:", e);
         if (!cancelled) setError((e as Error).message);
       } finally {
         if (!cancelled) setLoading(false);
@@ -111,14 +104,14 @@ export function MultiSelectDropdown({
       return {
         id: s._id,
         // Fallback to _id if code is missing, just like your old getLabel function
-        label: (typeof s.code === "string" && s.code) || s._id, 
+        label: (typeof s.code === "string" && s.code) || s._id,
         colorBg: colors.bg,
         colorText: colors.text,
       };
     });
   }, [sections]);
 
-  // If there's an error fetching, you could return an error UI here, 
+  // If there's an error fetching, you could return an error UI here,
   // or pass an empty array to the select.
   if (error) {
     return <div style={{ color: "red", fontSize: 12 }}>Error loading sections: {error}</div>;

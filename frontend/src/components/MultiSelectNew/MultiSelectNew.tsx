@@ -1,4 +1,5 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
+
 import styles from "./MultiSelect.module.css";
 
 export type Option = {
@@ -75,14 +76,12 @@ export const MultiSelectNew: React.FC<Props> = (props) => {
   }, [options, internalValue]);
 
   const filteredOptions = useMemo(() => {
-    return options.filter((opt) =>
-      opt.label.toLowerCase().includes(search.toLowerCase())
-    );
+    return options.filter((opt) => opt.label.toLowerCase().includes(search.toLowerCase()));
   }, [options, search]);
 
   // Feature detection for Popover & Anchor API
   useEffect(() => {
-    const hasPopover = HTMLElement.prototype.hasOwnProperty("popover");
+    const hasPopover = "popover" in HTMLElement.prototype;
     const hasAnchor = CSS.supports("anchor-name: --test");
     setSupportsPopover(hasPopover && hasAnchor);
   }, []);
@@ -90,19 +89,17 @@ export const MultiSelectNew: React.FC<Props> = (props) => {
   // Sync React state with the native HTML popover API (if supported)
   useEffect(() => {
     if (!supportsPopover) return;
-    
+
     const popover = popoverRef.current;
     if (!popover) return;
 
     try {
       if (isOpen) {
-        // @ts-ignore
         if (!popover.matches(":popover-open")) popover.showPopover();
       } else {
-        // @ts-ignore
         popover.hidePopover();
       }
-    } catch (e) {
+    } catch (_e) {
       console.warn("Native popover failed, falling back to standard rendering.");
       setSupportsPopover(false);
     }
@@ -126,19 +123,24 @@ export const MultiSelectNew: React.FC<Props> = (props) => {
   }, [isOpen]);
 
   const toggleOption = (option: Option) => {
-    if (disabled || !props.onChange) return;
+    if (disabled) return;
 
     if (props.mode === "single") {
-      props.onChange(option.id);
+      if (props.onChange) {
+        props.onChange(option.id);
+      }
       setIsOpen(false);
-      return;
-    }
-
-    const isCurrentlySelected = internalValue.includes(option.id);
-    if (isCurrentlySelected) {
-      props.onChange(internalValue.filter((id) => id !== option.id));
     } else {
-      props.onChange([...internalValue, option.id]);
+      if (props.onChange) {
+        const values = props.value || [];
+        const isCurrentlySelected = values.includes(option.id);
+
+        if (isCurrentlySelected) {
+          props.onChange(values.filter((id) => id !== option.id));
+        } else {
+          props.onChange([...values, option.id]);
+        }
+      }
     }
   };
 
@@ -160,7 +162,6 @@ export const MultiSelectNew: React.FC<Props> = (props) => {
         aria-expanded={isOpen}
         onClick={handleToggleOpen}
         tabIndex={disabled ? -1 : 0}
-        // @ts-ignore
         style={supportsPopover ? { anchorName } : {}}
       >
         {leftIcon && (
@@ -186,7 +187,7 @@ export const MultiSelectNew: React.FC<Props> = (props) => {
                 </span>
               ))
             ) : (
-              <span className={`${styles.selectedText} ${boldenContent ? styles.boldenText : ""}`} >
+              <span className={`${styles.selectedText} ${boldenContent ? styles.boldenText : ""}`}>
                 {selectedOptions.map((s) => s.label).join(", ")}
               </span>
             )
@@ -213,7 +214,6 @@ export const MultiSelectNew: React.FC<Props> = (props) => {
           ref={popoverRef}
           // Only apply native popover attributes if fully supported
           {...(supportsPopover ? { popover: "manual" } : {})}
-          // @ts-ignore
           style={supportsPopover ? { positionAnchor: anchorName } : {}}
         >
           {isOpen && (
@@ -243,17 +243,19 @@ export const MultiSelectNew: React.FC<Props> = (props) => {
                       >
                         <span
                           className={withChips ? styles.chip : ""}
-                          style={withChips ? {
-                            backgroundColor: option.colorBg || undefined,
-                            color: option.colorText || undefined,
-                          } : {}}
+                          style={
+                            withChips
+                              ? {
+                                  backgroundColor: option.colorBg || undefined,
+                                  color: option.colorText || undefined,
+                                }
+                              : {}
+                          }
                         >
                           {option.icon && <span className={styles.optionIcon}>{option.icon}</span>}
                           {option.label}
                         </span>
-                        {isSelected && (
-                          <span className={styles.checkIcon}>✓</span>
-                        )}
+                        {isSelected && <span className={styles.checkIcon}>✓</span>}
                       </div>
                     );
                   })

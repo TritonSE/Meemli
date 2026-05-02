@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 
 import { Button } from "../Button";
-import { MultiSelectNew } from "../MultiSelectNew/MultiSelectNew";
 import { ProgressBar } from "../ProgressBar";
 import { TextField } from "../TextField";
 

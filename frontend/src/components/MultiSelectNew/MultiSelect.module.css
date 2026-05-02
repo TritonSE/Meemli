@@ -43,6 +43,7 @@
     border-radius: 8px;
     cursor: pointer;
     min-height: 48px;
+    min-width: 12rem;
     transition: border-color 0.2s;
 
     .leftIcon {
@@ -94,7 +95,6 @@
     left: anchor(left);
     width: anchor-size(width);
 
-    /* Your existing styling */
     background: white;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);

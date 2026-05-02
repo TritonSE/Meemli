@@ -4,14 +4,11 @@ import { useState } from "react";
 
 import type { Student } from "@/src/api/students";
 
-import BookIcon from "@/public/icons/nav/programs.svg"
-
-
+import BookIcon from "@/public/icons/nav/programs.svg";
 import { getAllSections } from "@/src/api/sections";
 // API & Types
 import { getStudent } from "@/src/api/students";
-import { MultiSelect } from "@/src/components/MultiSelect/MultiSelect";
-import { MultiSelectNew } from "@/src/components/MultiSelectNew/MultiSelectNew";
+import { MultiSelectNew, type Option } from "@/src/components/MultiSelectNew/MultiSelectNew";
 import { CreateSectionFlow } from "@/src/components/SectionForm/SectionForm";
 // Components
 import { StudentCard } from "@/src/components/StudentCard/StudentCard";
@@ -129,15 +126,30 @@ export default function Test() {
     } catch (err) {
       setError("Network or Server Error");
       console.error(err);
-  } finally {
+    } finally {
       setLoading(false);
     }
   };
 
   const roleOptions: Option[] = [
-    { id: "admin", label: "Admin", colorBg: "var(--secondary-100)", colorText: "var(--secondary-800)" },
-    { id: "teacher", label: "Teacher", colorBg: "var(--tertiary-100)", colorText: "var(--tertiary-800)" },
-    { id: "student", label: "Student", colorBg: "var(--primary-100)", colorText: "var(--primary-800)" },
+    {
+      id: "admin",
+      label: "Admin",
+      colorBg: "var(--secondary-100)",
+      colorText: "var(--secondary-800)",
+    },
+    {
+      id: "teacher",
+      label: "Teacher",
+      colorBg: "var(--tertiary-100)",
+      colorText: "var(--tertiary-800)",
+    },
+    {
+      id: "student",
+      label: "Student",
+      colorBg: "var(--primary-100)",
+      colorText: "var(--primary-800)",
+    },
   ];
 
   const coloredSectionOptions: Option[] = [
@@ -185,7 +197,9 @@ export default function Test() {
         {/* 1. REPLACING: react-select (Role Dropdown) */}
         {/* Characteristics: Single select, NO search bar, NO chips */}
         <section>
-          <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>1. Role Select (Replaces react-select)</h3>
+          <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>
+            1. Role Select (Replaces react-select)
+          </h3>
           <MultiSelectNew
             mode="single"
             label="Role"
@@ -202,7 +216,9 @@ export default function Test() {
         {/* 2. REPLACING: MultiSelectDropdown (Student Page Sections) */}
         {/* Characteristics: Multi select, Colored Chips, loading state supported */}
         <section>
-          <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>2. Student Sections (Replaces MultiSelectDropdown)</h3>
+          <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>
+            2. Student Sections (Replaces MultiSelectDropdown)
+          </h3>
           <MultiSelectNew
             mode="multiple"
             label="Assigned Program(s)"
@@ -214,13 +230,17 @@ export default function Test() {
             placeholder="Select programs..."
             // isLoading={true} // Uncomment to test loading state
           />
-          <p style={{ fontSize: 12, color: "gray", marginTop: 4 }}>Value: [{studentSections.join(", ")}]</p>
+          <p style={{ fontSize: 12, color: "gray", marginTop: 4 }}>
+            Value: [{studentSections.join(", ")}]
+          </p>
         </section>
 
         {/* 3. REPLACING: SectionSelect (Attendance Page) */}
         {/* Characteristics: Single select, NO chips, specific default placeholder logic */}
         <section>
-          <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>3. Attendance Section (Replaces SectionSelect from MUI)</h3>
+          <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>
+            3. Attendance Section (Replaces SectionSelect from MUI)
+          </h3>
           <MultiSelectNew
             mode="single"
             label="Select Section"
@@ -229,10 +249,12 @@ export default function Test() {
             onChange={setAttendanceSection}
             withChips={false}
             searchable={true} // Usually good to have for long section lists, but can be false
-            leftIcon={<BookIcon/>}
+            leftIcon={<BookIcon />}
             boldenContent={true}
           />
-          <p style={{ fontSize: 12, color: "gray", marginTop: 4 }}>Value: {attendanceSection || "null"}</p>
+          <p style={{ fontSize: 12, color: "gray", marginTop: 4 }}>
+            Value: {attendanceSection || "null"}
+          </p>
         </section>
 
         {/* <SectionForm> */}
@@ -343,7 +365,6 @@ export default function Test() {
       </div>
 
       <TestStudentForm />
-
     </div>
   );
 }
