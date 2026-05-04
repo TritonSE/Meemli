@@ -1,28 +1,18 @@
 "use client";
 
-import { useState } from "react";
-
-import { AddStaffForm } from "@/src/components/AddStaff/AddStaffForm";
-import { Button } from "@/src/components/Button";
-import { Modal } from "@/src/components/Modal";
+import StudentStaffPage from "@/src/components/StudentStaffTable/StudentStaffPage";
+import { useAuth } from "@/src/context/AuthContext";
 
 export default function Staff() {
-  const [addOpen, setAddOpen] = useState(false);
+  const { user, loading } = useAuth();
 
-  return (
-    <section>
-      <h1>Staff</h1>
-      <Button label="Add Staff" kind="primary" onClick={() => setAddOpen(!addOpen)} />
-      {addOpen && (
-        <Modal
-          onExit={() => setAddOpen(!addOpen)}
-          child={
-            <>
-              <AddStaffForm onExit={() => setAddOpen(false)} />
-            </>
-          }
-        />
-      )}
-    </section>
-  );
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  if (!user) {
+    return <div>You must be logged in to view this page.</div>;
+  }
+  const state: "admin" | "teacher" = user.admin ? "admin" : "teacher";
+  const disabled = user.archived;
+  return <StudentStaffPage type="staff" state={state} disabled={disabled} />;
 }

@@ -33,7 +33,7 @@
 
   .control {
     display: flex;
-
+    box-sizing: border-box; /* Added to prevent overflow when 100% width is applied */
     overflow-x: scroll;
     scrollbar-width: none;
     align-items: center;
@@ -43,7 +43,6 @@
     border-radius: 8px;
     cursor: pointer;
     min-height: 48px;
-    min-width: 12rem;
     transition: border-color 0.2s;
 
     .leftIcon {
@@ -56,20 +55,32 @@
     }
 
     &:focus-within {
-      /* Changed to primary-700 as requested */
       outline: 2px solid var(--primary-700);
       border-color: var(--primary-700);
     }
 
     .values {
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 6px;
       flex: 1;
+      overflow-x: auto; /* Allow horizontal scrolling */
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       .placeholder {
         color: var(--grey-400);
+        white-space: nowrap; /* Keep placeholder on one line */
       }
+    }
+
+    .selectedText {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .chevron {
@@ -196,15 +207,13 @@
 }
 
 .boldenIcon {
-  color: var(
-    --grey-800
-  ) !important; /* Forces the SVG to take the darker grey if it uses currentColor */
-  filter: brightness(0.65); /* Adds the slightly darker filter you asked for */
+  color: var(--grey-900) !important;
+  filter: brightness(0.45);
+  font-weight: 300;
 }
 
 .boldenText {
-  color: var(--grey-700);
-  font-weight: 600; /* Optional: Since the prop is called "bolden", a slight font weight bump looks nice, but you can remove this line! */
+  color: var(--grey-800);
 }
 
 .fullWidth {
@@ -213,4 +222,5 @@
 
 .fullWidth .control {
   width: 100%;
+  max-width: none; /* Ensures any straggling max-width rules don't block the stretch */
 }

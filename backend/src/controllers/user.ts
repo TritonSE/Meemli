@@ -16,6 +16,7 @@ type CreateUserBody = {
   phoneNumber: string;
   admin: boolean;
   assignedSections?: string[];
+  archived: false;
 };
 
 export const createUser: RequestHandler = async (req, res, next) => {
@@ -42,6 +43,7 @@ export const createUser: RequestHandler = async (req, res, next) => {
       phoneNumber,
       admin,
       assignedSections: assignedSectionsIds,
+      archived: false,
     });
 
     res.status(201).json(user);
@@ -80,7 +82,6 @@ export const editUserById: RequestHandler = async (req, res, next) => {
 // Who Am I
 export const whoAmI: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
-
   await firebaseAdminAuth.getUser(id).catch((error) => {
     if (error instanceof FirebaseAuthError && error.code === "auth/user-not-found") {
       throw createHTTPError(404, "User not found");
@@ -104,6 +105,41 @@ export const getAllUsers: RequestHandler = async (req, res, next) => {
   try {
     const users = await UserModel.find();
     res.status(200).json(users);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const archiveUsersByIds: RequestHandler = async (req, res, next) => {
+  const { ids, flag } = req.body as { ids: string[]; flag: boolean };
+  if (ids.length === 0) {
+    throw createHTTPError(400, "No valid user IDs provided");
+  }
+
+  try {
+    await UserModel.updateMany({ _id: { $in: ids } }, { archived: flag });
+    res.status(200).json({ message: `Users ${flag ? "archived" : "unarchived"} successfully` });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const deleteUsersByIds: RequestHandler = async (req, res, next) => {
+  const { ids } = req.body as { ids: string[] };
+  if (ids.length === 0) {
+    throw createHTTPError(400, "No valid user IDs provided");
+  }
+
+  await firebaseAdminAuth.deleteUsers(ids).catch((error) => {
+    if (error instanceof FirebaseAuthError) {
+      throw createHTTPError(500, "Failed to delete users from Firebase");
+    }
+    throw createHTTPError(500, "Internal Server Error");
+  });
+
+  try {
+    await UserModel.deleteMany({ _id: { $in: ids } });
+    res.status(200).json({ message: "Users deleted successfully" });
   } catch (error) {
     return next(error);
   }

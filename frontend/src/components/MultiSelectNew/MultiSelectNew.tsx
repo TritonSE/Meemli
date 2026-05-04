@@ -23,7 +23,13 @@ type BaseProps = {
   leftIcon?: React.ReactNode;
   boldenContent?: boolean;
   fullWidth?: boolean;
+  width?: number; // Replaced 'shorter' with 'width'
 };
+
+type ExtendedCSSProperties = {
+  anchorName?: string;
+  positionAnchor?: string;
+} & React.CSSProperties;
 
 type SingleSelectProps = BaseProps & {
   mode: "single";
@@ -54,6 +60,7 @@ export const MultiSelectNew: React.FC<Props> = (props) => {
     leftIcon,
     boldenContent = false,
     fullWidth = false,
+    width, // Destructure the new width prop
   } = props;
 
   const [isOpen, setIsOpen] = useState(false);
@@ -148,6 +155,20 @@ export const MultiSelectNew: React.FC<Props> = (props) => {
     if (!disabled) setIsOpen(!isOpen);
   };
 
+  // Dynamically set control styles based on fullWidth and width props
+  const controlStyle: ExtendedCSSProperties = {
+    ...(supportsPopover ? { anchorName } : {}),
+  };
+
+  if (fullWidth) {
+    controlStyle.width = "100%";
+    controlStyle.minWidth = "100%";
+  } else if (width !== undefined) {
+    controlStyle.width = `${width}rem`;
+    controlStyle.minWidth = `${width}rem`;
+    controlStyle.maxWidth = `${width}rem`;
+  }
+
   return (
     <div className={`${styles.container} ${fullWidth ? styles.fullWidth : ""}`} ref={containerRef}>
       {label && (
@@ -157,12 +178,12 @@ export const MultiSelectNew: React.FC<Props> = (props) => {
       )}
 
       <div
-        className={`${styles.control} ${fitContent ? styles.fitContent : ""}`}
+        className={`${styles.control} ${fitContent ? styles.fitContent : ""}`} // removed styles.shorter
         role="combobox"
         aria-expanded={isOpen}
         onClick={handleToggleOpen}
         tabIndex={disabled ? -1 : 0}
-        style={supportsPopover ? { anchorName } : {}}
+        style={controlStyle} // Applying the dynamic styles here
       >
         {leftIcon && (
           <span className={`${styles.leftIcon} ${boldenContent ? styles.boldenIcon : ""}`}>
@@ -192,11 +213,13 @@ export const MultiSelectNew: React.FC<Props> = (props) => {
               </span>
             )
           ) : (
-            <span className={styles.placeholder}>{placeholder}</span>
+            <span className={`${styles.placeholder} ${boldenContent ? styles.boldenIcon : ""}`}>
+              {placeholder}
+            </span>
           )}
         </div>
         <svg
-          className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ""}`}
+          className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ""} ${styles.boldenIcon}`}
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -206,15 +229,13 @@ export const MultiSelectNew: React.FC<Props> = (props) => {
         </svg>
       </div>
 
-      {/* Conditionally render the popover based on support and open state */}
       {(!supportsPopover ? isOpen : true) && (
         <div
           className={`${styles.popover} ${supportsPopover ? "" : styles.popoverFallback}`}
           role="listbox"
           ref={popoverRef}
-          // Only apply native popover attributes if fully supported
           {...(supportsPopover ? { popover: "manual" } : {})}
-          style={supportsPopover ? { positionAnchor: anchorName } : {}}
+          style={supportsPopover ? ({ positionAnchor: anchorName } as ExtendedCSSProperties) : {}}
         >
           {isOpen && (
             <>

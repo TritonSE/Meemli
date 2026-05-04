@@ -20,7 +20,7 @@ const EDIT_SECTION_ID_EXAMPLE = "69afa73190beaafad01125f3";
 
 export default function Test() {
   // --- FAKE DATA for testing student profile view ---
-  const FAKE_STUDENTS = [
+  const FAKE_STUDENTS: Student[] = [
     {
       _id: "1",
       displayName: "Alice Johnson",
@@ -39,6 +39,7 @@ export default function Test() {
       postassessmentScore: 0,
       enrolledSections: [],
       comments: "",
+      archived: false,
     },
     {
       _id: "2",
@@ -58,6 +59,7 @@ export default function Test() {
       postassessmentScore: 0,
       enrolledSections: [],
       comments: "",
+      archived: false,
     },
     {
       _id: "3",
@@ -77,6 +79,7 @@ export default function Test() {
       postassessmentScore: 0,
       enrolledSections: [],
       comments: "",
+      archived: false,
     },
   ];
 
@@ -251,6 +254,29 @@ export default function Test() {
             searchable={true} // Usually good to have for long section lists, but can be false
             leftIcon={<BookIcon />}
             boldenContent={true}
+          />
+          <p style={{ fontSize: 12, color: "gray", marginTop: 4 }}>
+            Value: {attendanceSection || "null"}
+          </p>
+        </section>
+
+        {/* 4. REPLACING: SectionSelect (Attendance Page) */}
+        {/* Characteristics:  */}
+        <section>
+          <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>
+            3. Attendance Section (Replaces SectionSelect from MUI)
+          </h3>
+          <MultiSelectNew
+            mode="single"
+            label="Select Section"
+            options={attendanceSectionOptions}
+            value={attendanceSection}
+            onChange={setAttendanceSection}
+            withChips={false}
+            searchable={true} // Usually good to have for long section lists, but can be false
+            leftIcon={<BookIcon />}
+            boldenContent={true}
+            width={10}
           />
           <p style={{ fontSize: 12, color: "gray", marginTop: 4 }}>
             Value: {attendanceSection || "null"}

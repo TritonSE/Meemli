@@ -2,7 +2,6 @@
  * Handle the multi-step student form pages, updating data, and navigation.
  */
 import { useEffect, useState } from "react";
-import Select from "react-select";
 
 import { Button } from "../Button";
 import { ProgressBar } from "../ProgressBar";
@@ -13,6 +12,8 @@ import { MultiSelectDropdown } from "./MultiSelectDropdown";
 import styles from "./StudentForm.module.css";
 
 import type { ValuesType } from "./StudentForm";
+
+import { MultiSelectNew, type Option } from "@/src/components/MultiSelectNew/MultiSelectNew";
 
 // Constants declaration
 // NOTES_MAX is the maximum number of characters for the notes section of the form
@@ -38,6 +39,11 @@ type StudentFormErrors = {
   enrolledSections?: boolean;
   comments?: boolean;
 };
+
+const stateOptions: Option[] = options.map((opt) => ({
+  id: opt.value, // "AL"
+  label: opt.label, // "Alabama"
+}));
 
 type Draft = {
   grade: string;
@@ -420,16 +426,18 @@ export function StudentFormPages({
           <label className={styles.selectLabel}>
             State<span className={styles.required}>*</span>
           </label>
-          <Select
-            aria-label="State"
-            name="state"
-            className={styles.stateSelect}
-            classNamePrefix="stateSelect"
-            value={options.find((option) => option.label === draft.state) ?? null}
-            options={options}
-            isSearchable={true}
+          <MultiSelectNew
+            mode="single"
+            options={stateOptions}
+            value={stateOptions.find((opt) => opt.label === draft.state)?.id ?? ""}
+            onChange={(id) => {
+              // Translate the ID back into the full state name ("Alabama") to save in your draft
+              const selectedLabel = stateOptions.find((opt) => opt.id === id)?.label ?? "";
+              handleDraftChange(selectedLabel, "state");
+            }}
+            searchable={true}
             placeholder="Search for a state..."
-            onChange={(option) => handleDraftChange(option?.label ?? "", "state")}
+            width={18.5} // Add a custom width if you need it to match your form layout
           />
         </div>
       </div>

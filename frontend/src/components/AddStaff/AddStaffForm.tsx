@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import { getAllSections, getSectionById, updateSection } from "../../api/sections";
+import { getSectionById, updateSection } from "../../api/sections";
 import { createUser } from "../../api/user";
 import { auth, sendMeemliActivationEmail } from "../../util/firebase";
 import { Button } from "../Button";
 import { ErrorMessage } from "../ErrorMessage";
 import { MultiSelectNew, type Option } from "../MultiSelectNew/MultiSelectNew";
+import { MultiSelectDropdown } from "../studentform/MultiSelectDropdown";
 import { TextField } from "../TextField";
 
 import styles from "./AddStaffForm.module.css";
@@ -33,7 +34,6 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
   // Cleaned up state specifically for the new MultiSelect
   const [role, setRole] = useState<string>("");
   const [programs, setPrograms] = useState<string[]>([]);
-  const [programOptions, setProgramOptions] = useState<Option[]>([]);
 
   const currentUser = auth.currentUser;
   const inviterName = currentUser
@@ -62,26 +62,6 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
     },
   ];
 
-  // Fetch sections on component mount
-  useEffect(() => {
-    getAllSections()
-      .then((result) => {
-        if (result.success) {
-          const sections = result.data;
-          setProgramOptions(
-            sections.map((section) => ({
-              id: section._id,
-              label: section.code,
-              colorBg: "#D8EFE8", // Applies the original programBadgeColor automatically
-            })),
-          );
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching sections:", error);
-      });
-  }, []);
-
   // Form state
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -106,8 +86,9 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
     // Updated validation to check the string state directly
     if (!role) {
       errors.role = "Role is required";
-    } else if (!["STAFF", "ADMINISTRATOR", "OWNER"].includes(role)) {
-      errors.role = "Role must be one of: staff, administrator, or owner";
+    } else if (!["teacher", "admin", "student"].includes(role)) {
+      // Must match the exact 'id' strings in your roleOptions array
+      errors.role = "Role must be one of: teacher, admin, or student";
     }
 
     if (!personalEmail.trim()) {
@@ -143,7 +124,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
     setFormErrors({});
 
     // Updated role check
-    const isAdmin = role === "ADMINISTRATOR" || role === "OWNER";
+    const isAdmin = role === "admin";
 
     createUser({
       firstName: firstName.trim(),
@@ -153,6 +134,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
       phoneNumber: phoneNumber.trim(),
       admin: isAdmin,
       assignedSections: programs, // Now directly passes the string array
+      archived: false,
     })
       .then((result) => {
         if (result.success) {
@@ -296,20 +278,17 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
           searchable={false}
           withChips={true}
           placeholder="Select"
+          fullWidth={true}
         />
         <ErrorMessage message={formErrors.role} />
       </div>
 
       {/* Assigned Programs Select (Multiple Mode) */}
       <div className={styles.selectField}>
-        <MultiSelectNew
-          mode="multiple"
-          label="Assigned Program(s)"
-          options={programOptions}
+        <MultiSelectDropdown
+          label="Assigned Progra(s)"
           value={programs}
           onChange={setPrograms}
-          searchable={true}
-          withChips={true}
           placeholder="Select"
         />
       </div>

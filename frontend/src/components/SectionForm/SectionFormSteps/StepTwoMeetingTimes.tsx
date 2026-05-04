@@ -2,7 +2,7 @@ import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
 import { DateSelect } from "../../dateSelect";
-import { MultiSelect } from "../../MultiSelect/MultiSelect";
+import { MultiSelectNew } from "../../MultiSelectNew/MultiSelectNew";
 
 import styles from "./StepTwoMeetingTimes.module.css";
 
@@ -86,14 +86,15 @@ export function StepTwoMeetingTimes() {
               name="days"
               control={control}
               render={({ field }) => (
-                <MultiSelect
+                <MultiSelectNew
                   options={WEEKDAYS}
                   placeholder="Days"
                   mode="multiple"
-                  value={field.value}
+                  value={field.value || []}
                   onChange={field.onChange}
                   required={true}
                   fitContent={true}
+                  width={9}
                 />
               )}
             />
@@ -105,14 +106,14 @@ export function StepTwoMeetingTimes() {
               name="startTime"
               control={control}
               render={({ field }) => (
-                <MultiSelect
+                <MultiSelectNew
                   options={TIME_INTERVALS}
                   placeholder="Start Time"
                   mode="single"
-                  value={field.value ? [field.value] : []}
-                  onChange={(val) => field.onChange(val[0] || "")}
+                  value={field.value || ""}
+                  onChange={field.onChange}
                   required={true}
-                  fitContent={true}
+                  width={9}
                 />
               )}
             />
@@ -124,14 +125,14 @@ export function StepTwoMeetingTimes() {
               name="endTime"
               control={control}
               render={({ field }) => (
-                <MultiSelect
+                <MultiSelectNew
                   options={TIME_INTERVALS}
                   placeholder="End Time"
                   mode="single"
-                  value={field.value ? [field.value] : []}
-                  onChange={(val) => field.onChange(val[0] || "")}
+                  value={field.value || ""}
+                  onChange={field.onChange}
                   required={true}
-                  fitContent={true}
+                  width={9}
                 />
               )}
             />

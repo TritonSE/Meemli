@@ -1,16 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import { getAllSections } from "../../api/sections";
+import { getAllSections, type Section } from "../../api/sections";
+import { getChipColors } from "../ChipColor"; // Assuming this is where you extracted the utility
 import { MultiSelectNew, type Option } from "../MultiSelectNew/MultiSelectNew";
-
-// Types
-
-type SectionLike = {
-  _id: string;
-  code?: string;
-  program?: string;
-  [key: string]: unknown;
-};
 
 type MultiSelectDropdownProps = {
   label?: string;
@@ -21,31 +13,8 @@ type MultiSelectDropdownProps = {
   placeholder?: string;
 };
 
-// Color Hashing Logic (Kept exactly the same)
-type ProgramStyle = { bg: string; text: string };
-
-const PALETTE: ProgramStyle[] = [
-  { bg: "#D8EFE8", text: "#233E3A" },
-  { bg: "#FDE4D7", text: "#771817" },
-  { bg: "#E7F5FE", text: "#1B3A4B" },
-  { bg: "#FAFBC6", text: "#6C4917" },
-];
-
-function hashToIndex(input: string, mod: number) {
-  let h = 0;
-  for (let i = 0; i < input.length; i++) {
-    h = (h * 31 + input.charCodeAt(i)) >>> 0;
-  }
-  return h % mod;
-}
-
-function programStyle(programId?: string): ProgramStyle {
-  if (!programId) return { bg: "transparent", text: "inherit" };
-  return PALETTE[hashToIndex(programId, PALETTE.length)];
-}
-
 export function MultiSelectDropdown({
-  label = "Assigned Program(s)",
+  label = "Enroll in Sections",
   value,
   onChange,
   required,
@@ -53,11 +22,10 @@ export function MultiSelectDropdown({
   placeholder = "Select sections...",
 }: MultiSelectDropdownProps) {
   // State for fetching
-  const [sections, setSections] = useState<SectionLike[]>([]);
+  const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch sections once on mount
   // Fetch sections once on mount
   useEffect(() => {
     let cancelled = false;
@@ -95,29 +63,26 @@ export function MultiSelectDropdown({
     };
   }, []);
 
-  // Convert your API Section data into the clean Option[] format our new UI expects
+  // Convert API Section data into the clean Option[] format with dynamic chip colors
   const formattedOptions: Option[] = useMemo(() => {
     return sections.map((s) => {
-      const prog = typeof s.program === "string" ? s.program : undefined;
-      const colors = programStyle(prog);
+      // Use the actual section color from the backend, fallback if missing
+      const hex = typeof s.color === "string" && s.color ? s.color : "#008080";
+      const { backgroundColor, textColor } = getChipColors(hex);
 
       return {
         id: s._id,
-        // Fallback to _id if code is missing, just like your old getLabel function
-        label: (typeof s.code === "string" && s.code) || s._id,
-        colorBg: colors.bg,
-        colorText: colors.text,
+        label: s.code || s._id,
+        colorBg: backgroundColor,
+        colorText: textColor,
       };
     });
   }, [sections]);
 
-  // If there's an error fetching, you could return an error UI here,
-  // or pass an empty array to the select.
   if (error) {
     return <div style={{ color: "red", fontSize: 12 }}>Error loading sections: {error}</div>;
   }
 
-  // Return the new UI component, feeding it the formatted data!
   return (
     <MultiSelectNew
       mode="multiple"
