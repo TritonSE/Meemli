@@ -62,12 +62,12 @@ export default function Attendance() {
     void load();
   }, [activeSectionId]);
 
-  // Derive available dates using local time
+  // Derive available dates using UTC time
   const availableDates = sessionList.map((s) => {
     const d = new Date(s.sessionDate);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
+    const year = d.getUTCFullYear();
+    const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(d.getUTCDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   });
 
@@ -88,12 +88,12 @@ export default function Attendance() {
 
     const match = sessionList.find((s) => {
       const d = new Date(s.sessionDate);
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      const localSessionDate = `${year}-${month}-${day}`;
+      const year = d.getUTCFullYear();
+      const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+      const day = String(d.getUTCDate()).padStart(2, "0");
+      const utcSessionDate = `${year}-${month}-${day}`;
 
-      return localSessionDate === activeDate;
+      return utcSessionDate === activeDate;
     });
 
     if (match) {
@@ -138,6 +138,7 @@ export default function Attendance() {
         <div className={styles.table}>
           <AttendanceList
             initialAttendees={selectedSession?.attendees || []}
+            isSectionSelected={Boolean(activeSectionId)}
             isFilterSelected={Boolean(activeSectionId && activeDate)}
             searchQuery={searchQuery}
             sortOption={sortOption}
