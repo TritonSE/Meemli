@@ -61,12 +61,10 @@ export async function createSection(section: CreateSectionRequest): Promise<APIR
   }
 }
 
-export async function deleteSection(id: string): Promise<APIResult<Section>> {
+export async function deleteSection(id: string): Promise<APIResult<null>> {
   try {
-    const response = await del(`/sections/${id}`);
-    const json = (await response.json()) as Section;
-
-    return { success: true, data: json };
+    await del(`/sections/${id}`);
+    return { success: true, data: null };
   } catch (error) {
     return handleAPIError(error);
   }

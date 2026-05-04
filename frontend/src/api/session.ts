@@ -61,11 +61,10 @@ export async function updateSession(session: UpdateSessionRequest): Promise<APIR
   }
 }
 
-export async function deleteSession(id: string): Promise<APIResult<{ message: string }>> {
+export async function deleteSession(id: string): Promise<APIResult<null>> {
   try {
-    const response = await del(`/sessions/${id}`);
-    const json = (await response.json()) as { message: string };
-    return { success: true, data: json };
+    await del(`/sessions/${id}`);
+    return { success: true, data: null };
   } catch (error) {
     return handleAPIError(error);
   }

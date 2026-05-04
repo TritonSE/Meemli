@@ -106,6 +106,25 @@ export const getSessionsBySectionId: RequestHandler = async (req, res, next) => 
   }
 };
 
+export const deleteSession: RequestHandler = async (req, res, next) => {
+  try {
+    if (!req.userContext?.admin) {
+      throw createHTTPError(403, "Admin privileges required to delete session");
+    }
+
+    const { id } = req.params;
+    const session = await SessionModel.findByIdAndDelete(id);
+
+    if (!session) {
+      throw createHTTPError(404, "Session not found");
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getAllSessions: RequestHandler = async (req, res, next) => {
   try {
     // Admins: return all sessions

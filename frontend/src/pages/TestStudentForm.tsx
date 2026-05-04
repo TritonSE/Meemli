@@ -177,6 +177,7 @@ export default function TestStudentForm() {
   // user-editable IDs for single-resource tests
   const [studentId, setStudentId] = useState("");
   const [sectionId, setSectionId] = useState("");
+  const [sessionSectionId, setSessionSectionId] = useState("");
   const [sessionId, setSessionId] = useState("");
   const [otherUserId, setOtherUserId] = useState("Yn4vNEddw2UrUR4nFyJMZRPvoHp1");
 
@@ -196,6 +197,7 @@ export default function TestStudentForm() {
         const id = r.data[0]._id;
         setAutoSectionId(id);
         setSectionId((prev) => prev || id);
+        setSessionSectionId((prev) => prev || id);
       }
     });
     void getAllSessions().then((r) => {
@@ -345,6 +347,19 @@ export default function TestStudentForm() {
           <input
             value={sectionId}
             onChange={(e) => setSectionId(e.target.value)}
+            placeholder={autoSectionId || "paste a section ObjectId"}
+            style={inputStyle}
+          />
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+          <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "#374151" }}>
+            Session's Section ID
+            <span style={{ fontWeight: 400, color: "#94a3b8" }}> (POST /sessions — must exist)</span>
+          </label>
+          <input
+            value={sessionSectionId}
+            onChange={(e) => setSessionSectionId(e.target.value)}
             placeholder={autoSectionId || "paste a section ObjectId"}
             style={inputStyle}
           />
@@ -636,11 +651,11 @@ export default function TestStudentForm() {
             if (!sectionId) return;
             run(
               "sec_edit",
-              async () =>
-                updateSection({
-                  _id: sectionId,
-                  code: "UPDATED",
-                } as any),
+              async () => {
+                const current = await getSectionById(sectionId);
+                if (!current.success) return current;
+                return updateSection({ ...current.data, code: "UPDATED" });
+              },
               (data) => {
                 console.info("PUT /sections/:id response:", data);
                 return `"${data.code}" updated`;
@@ -719,7 +734,7 @@ export default function TestStudentForm() {
               "ses_create",
               async () =>
                 createSession({
-                  section: sectionId,
+                  section: sessionSectionId,
                   sessionDate: "2026-05-01",
                 }),
               (data) => {
@@ -739,11 +754,11 @@ export default function TestStudentForm() {
             if (!sessionId) return;
             run(
               "ses_edit",
-              async () =>
-                updateSession({
-                  _id: sessionId,
-                  sessionDate: "2026-05-02",
-                } as any),
+              async () => {
+                const current = await getSessionById(sessionId);
+                if (!current.success) return current;
+                return updateSession({ ...current.data, sessionDate: "2026-05-02" });
+              },
               (data) => {
                 console.info("PUT /sessions/:id response:", data);
                 return "Updated";

@@ -29,6 +29,6 @@ router.put(
 );
 
 // DELETE Routes
-// router.delete("/:id", SessionsController.deleteSession);
+router.delete("/:id", requireAdmin, SessionController.deleteSession);
 
 export default router;
