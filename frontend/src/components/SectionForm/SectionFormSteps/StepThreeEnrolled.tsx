@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
-import { MultiSelectNew } from "../../MultiSelectNew/MultiSelectNew";
+import { MultiSelect } from "../../MultiSelect/MultiSelect";
 
 import styles from "./StepThreeEnrolled.module.css";
 
@@ -105,7 +105,7 @@ export function StepThreeEnrolled() {
           name="teachers"
           control={control}
           render={({ field }) => (
-            <MultiSelectNew
+            <MultiSelect
               mode="multiple"
               options={teacherOptions}
               label="Teachers"
@@ -124,7 +124,7 @@ export function StepThreeEnrolled() {
           name="enrolledStudents"
           control={control}
           render={({ field }) => (
-            <MultiSelectNew
+            <MultiSelect
               mode="multiple"
               options={studentOptions}
               label="Students"

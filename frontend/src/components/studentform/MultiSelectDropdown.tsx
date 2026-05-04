@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 
 import { getAllSections, type Section } from "../../api/sections";
 import { getChipColors } from "../ChipColor"; // Assuming this is where you extracted the utility
-import { MultiSelectNew, type Option } from "../MultiSelectNew/MultiSelectNew";
+import { MultiSelect, type Option } from "../MultiSelect/MultiSelect";
 
 type MultiSelectDropdownProps = {
   label?: string;
@@ -84,7 +84,7 @@ export function MultiSelectDropdown({
   }
 
   return (
-    <MultiSelectNew
+    <MultiSelect
       mode="multiple"
       label={label}
       value={value}

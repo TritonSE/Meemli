@@ -13,7 +13,7 @@ import styles from "./StudentForm.module.css";
 
 import type { ValuesType } from "./StudentForm";
 
-import { MultiSelectNew, type Option } from "@/src/components/MultiSelectNew/MultiSelectNew";
+import { MultiSelect, type Option } from "@/src/components/MultiSelect/MultiSelect";
 
 // Constants declaration
 // NOTES_MAX is the maximum number of characters for the notes section of the form
@@ -426,7 +426,7 @@ export function StudentFormPages({
           <label className={styles.selectLabel}>
             State<span className={styles.required}>*</span>
           </label>
-          <MultiSelectNew
+          <MultiSelect
             mode="single"
             options={stateOptions}
             value={stateOptions.find((opt) => opt.label === draft.state)?.id ?? ""}

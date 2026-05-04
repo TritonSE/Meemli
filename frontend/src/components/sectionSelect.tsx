@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 
 import BookIcon from "@/public/icons/nav/programs.svg";
-import { MultiSelectNew, type Option } from "@/src/components/MultiSelectNew/MultiSelectNew";
+import { MultiSelect, type Option } from "@/src/components/MultiSelect/MultiSelect";
 
 // --- Color Utility Functions ---
 function hexToRgb(hex: string) {
@@ -109,7 +109,7 @@ export function SectionSelect({ sections, value, onChange }: SectionSelectProps)
 
   // 3. Render the multi-select
   return (
-    <MultiSelectNew
+    <MultiSelect
       mode="single"
       options={mappedOptions}
       value={value}

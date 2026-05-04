@@ -2,67 +2,120 @@ import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import styles from "./MultiSelect.module.css";
 
-type Option = {
+export type Option = {
   id: string;
   label: string;
+  colorBg?: string;
+  colorText?: string;
+  icon?: React.ReactNode;
 };
 
-export const MultiSelect: React.FC<{
+type BaseProps = {
   options: Option[];
-  value?: string[];
-  onChange?: (value: string[]) => void;
   label?: string;
   withChips?: boolean;
   required?: boolean;
   fitContent?: boolean;
   placeholder?: string;
-  mode?: "single" | "multiple";
-}> = ({
-  options,
-  value = [],
-  onChange,
-  label,
-  required,
-  withChips = false,
-  fitContent = false,
-  placeholder = "Select...",
-  mode = "multiple",
-}) => {
+  searchable?: boolean;
+  disabled?: boolean;
+  isLoading?: boolean;
+  leftIcon?: React.ReactNode;
+  boldenContent?: boolean;
+  fullWidth?: boolean;
+  width?: number;
+};
+
+type ExtendedCSSProperties = {
+  anchorName?: string;
+  positionAnchor?: string;
+} & React.CSSProperties;
+
+type SingleSelectProps = BaseProps & {
+  mode: "single";
+  value?: string;
+  onChange?: (value: string) => void;
+};
+
+type MultiSelectProps = BaseProps & {
+  mode?: "multiple";
+  value?: string[];
+  onChange?: (value: string[]) => void;
+};
+
+type Props = SingleSelectProps | MultiSelectProps;
+
+export const MultiSelect: React.FC<Props> = (props) => {
+  const {
+    options,
+    label,
+    required,
+    withChips = false,
+    fitContent = false,
+    placeholder = "Select...",
+    searchable = true,
+    disabled = false,
+    isLoading = false,
+    mode = "multiple",
+    leftIcon,
+    boldenContent = false,
+    fullWidth = false,
+    width,
+  } = props;
+
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [supportsPopover, setSupportsPopover] = useState(true);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
 
-  // Create a unique anchor ID for this specific instance of the dropdown
   const uniqueId = useId().replace(/:/g, "");
   const anchorName = `--select-anchor-${uniqueId}`;
 
+  const internalValue = useMemo(() => {
+    if (mode === "single") return props.value ? [props.value] : [];
+    return props.value || [];
+  }, [mode, props.value]);
+
   const selectedOptions = useMemo(() => {
-    return options.filter((opt) => value.includes(opt.id));
-  }, [options, value]);
+    return options.filter((opt) => internalValue.includes(opt.id));
+  }, [options, internalValue]);
 
   const filteredOptions = useMemo(() => {
     return options.filter((opt) => opt.label.toLowerCase().includes(search.toLowerCase()));
   }, [options, search]);
 
-  // Sync React state with the native HTML popover API
+  // Feature detection for Popover & Anchor API
   useEffect(() => {
+    const hasPopover = "popover" in HTMLElement.prototype;
+    const hasAnchor = CSS.supports("anchor-name: --test");
+    setSupportsPopover(hasPopover && hasAnchor);
+  }, []);
+
+  // Sync React state with the native HTML popover API (if supported)
+  useEffect(() => {
+    if (!supportsPopover) return;
+
     const popover = popoverRef.current;
     if (!popover) return;
 
-    if (isOpen) {
-      popover.showPopover();
-    } else {
-      popover.hidePopover();
+    try {
+      if (isOpen) {
+        if (!popover.matches(":popover-open")) popover.showPopover();
+      } else {
+        popover.hidePopover();
+      }
+    } catch (_e) {
+      console.warn("Native popover failed, falling back to standard rendering.");
+      setSupportsPopover(false);
     }
-  }, [isOpen]);
+  }, [isOpen, supportsPopover]);
 
   // Handle clicking outside to close
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       const target = e.target as Node;
-      // Because the popover sits in the Top Layer, we must check BOTH refs
       if (!containerRef.current?.contains(target) && !popoverRef.current?.contains(target)) {
         setIsOpen(false);
       }
@@ -77,24 +130,71 @@ export const MultiSelect: React.FC<{
   }, [isOpen]);
 
   const toggleOption = (option: Option) => {
-    if (!onChange) return;
+    if (disabled) return;
 
-    if (mode === "single") {
-      onChange([option.id]);
-      setIsOpen(false); // Auto-close dropdown on select for single mode
-      return;
-    }
-
-    const isCurrentlySelected = value.includes(option.id);
-    if (isCurrentlySelected) {
-      onChange(value.filter((id) => id !== option.id));
+    if (props.mode === "single") {
+      if (props.onChange) {
+        props.onChange(option.id);
+      }
+      setIsOpen(false);
     } else {
-      onChange([...value, option.id]);
+      if (props.onChange) {
+        const values = props.value || [];
+        const isCurrentlySelected = values.includes(option.id);
+
+        if (isCurrentlySelected) {
+          props.onChange(values.filter((id) => id !== option.id));
+        } else {
+          props.onChange([...values, option.id]);
+        }
+      }
     }
   };
 
+  const handleToggleOpen = () => {
+    if (!disabled) setIsOpen(!isOpen);
+  };
+
+  // Keyboard navigation and instant-typing search
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (disabled) return;
+
+    if (e.key === "Enter" || (e.key === " " && !isOpen)) {
+      e.preventDefault();
+      setIsOpen((prev) => !prev);
+      return;
+    }
+
+    if (e.key === "Escape") {
+      setIsOpen(false);
+      return;
+    }
+
+    // If typing a single standard character, immediately open and start searching
+    if (searchable && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      if (!isOpen) {
+        setIsOpen(true);
+      }
+      setSearch((prev) => prev + e.key);
+    }
+  };
+
+  // Dynamically set control styles based on fullWidth and width props
+  const controlStyle: ExtendedCSSProperties = {
+    ...(supportsPopover ? { anchorName } : {}),
+  };
+
+  if (fullWidth) {
+    controlStyle.width = "100%";
+    controlStyle.minWidth = "100%";
+  } else if (width !== undefined) {
+    controlStyle.width = `${width}rem`;
+    controlStyle.minWidth = `${width}rem`;
+    controlStyle.maxWidth = `${width}rem`;
+  }
+
   return (
-    <div className={styles.container} ref={containerRef}>
+    <div className={`${styles.container} ${fullWidth ? styles.fullWidth : ""}`} ref={containerRef}>
       {label && (
         <label className={styles.label}>
           {label} {required && <span className={styles.required}>*</span>}
@@ -105,89 +205,114 @@ export const MultiSelect: React.FC<{
         className={`${styles.control} ${fitContent ? styles.fitContent : ""}`}
         role="combobox"
         aria-expanded={isOpen}
-        onClick={() => setIsOpen(!isOpen)}
-        style={{ anchorName }}
+        onClick={handleToggleOpen}
+        onKeyDown={handleKeyDown} // Attached the keyboard handler here
+        tabIndex={disabled ? -1 : 0}
+        style={controlStyle}
       >
-        <div
-          className={styles.values}
-          style={{
-            display: "flex",
-            overflowX: "auto",
-            scrollbarWidth: "none",
-            whiteSpace: "nowrap",
-            maxWidth: "100%",
-            gap: "4px",
-          }}
-        >
-          {selectedOptions.length > 0 ? (
+        {leftIcon && (
+          <span className={`${styles.leftIcon} ${boldenContent ? styles.boldenIcon : ""}`}>
+            {leftIcon}
+          </span>
+        )}
+        <div className={styles.values}>
+          {isLoading ? (
+            <span className={styles.placeholder}>Loading...</span>
+          ) : selectedOptions.length > 0 ? (
             withChips ? (
               selectedOptions.map((s) => (
-                <span key={s.id} className={styles.chip}>
+                <span
+                  key={s.id}
+                  className={styles.chip}
+                  style={{
+                    backgroundColor: s.colorBg || undefined,
+                    color: s.colorText || undefined,
+                  }}
+                >
                   {s.label}
                 </span>
               ))
             ) : (
-              <span className={styles.selectedText}>
+              <span className={`${styles.selectedText} ${boldenContent ? styles.boldenText : ""}`}>
                 {selectedOptions.map((s) => s.label).join(", ")}
               </span>
             )
           ) : (
-            <span className={styles.placeholder}>{placeholder}</span>
+            <span className={`${styles.placeholder} ${boldenContent ? styles.boldenIcon : ""}`}>
+              {placeholder}
+            </span>
           )}
         </div>
         <svg
-          className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ""}`}
+          className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ""} ${styles.boldenIcon}`}
           viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
         >
-          <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2" />
+          <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
 
-      <div
-        className={styles.popover}
-        role="listbox"
-        popover="manual"
-        ref={popoverRef}
-        style={{ positionAnchor: anchorName }}
-      >
-        {isOpen && (
-          <>
-            <input
-              autoFocus
-              className={styles.searchInput}
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onClick={(e) => e.stopPropagation()}
-              tabIndex={0}
-            />
-            <div className={styles.listContainer}>
-              {filteredOptions.length > 0 ? (
-                filteredOptions.map((option) => {
-                  const isSelected = value.includes(option.id);
-                  return (
-                    <div
-                      key={option.id}
-                      className={`${styles.option} ${isSelected ? styles.optionSelected : ""}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleOption(option);
-                      }}
-                    >
-                      <span className={withChips ? styles.chip : styles.optionLabel}>
-                        {option.label}
-                      </span>
-                      {isSelected && <span className={styles.checkIcon}>✓</span>}
-                    </div>
-                  );
-                })
-              ) : (
-                <div className={styles.noResults}>No matches found</div>
+      {(!supportsPopover ? isOpen : true) && (
+        <div
+          className={`${styles.popover} ${supportsPopover ? "" : styles.popoverFallback}`}
+          role="listbox"
+          ref={popoverRef}
+          {...(supportsPopover ? { popover: "manual" } : {})}
+          style={supportsPopover ? ({ positionAnchor: anchorName } as ExtendedCSSProperties) : {}}
+        >
+          {isOpen && (
+            <>
+              {searchable && (
+                <input
+                  autoFocus
+                  className={styles.searchInput}
+                  placeholder="Search..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onClick={(e) => e.stopPropagation()}
+                />
               )}
-            </div>
-          </>
-        )}
-      </div>
+              <div className={styles.listContainer}>
+                {filteredOptions.length > 0 ? (
+                  filteredOptions.map((option) => {
+                    const isSelected = internalValue.includes(option.id);
+                    return (
+                      <div
+                        key={option.id}
+                        className={`${styles.option} ${isSelected ? styles.optionSelected : ""}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleOption(option);
+                        }}
+                      >
+                        <span
+                          className={withChips ? styles.chip : ""}
+                          style={
+                            withChips
+                              ? {
+                                  backgroundColor: option.colorBg || undefined,
+                                  color: option.colorText || undefined,
+                                }
+                              : {}
+                          }
+                        >
+                          {option.icon && <span className={styles.optionIcon}>{option.icon}</span>}
+                          {option.label}
+                        </span>
+                        {isSelected && <span className={styles.checkIcon}>✓</span>}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className={styles.noResults}>No matches found</div>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 };

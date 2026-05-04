@@ -2,7 +2,7 @@ import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
 import { DateSelect } from "../../dateSelect";
-import { MultiSelectNew } from "../../MultiSelectNew/MultiSelectNew";
+import { MultiSelect } from "../../MultiSelect/MultiSelect";
 
 import styles from "./StepTwoMeetingTimes.module.css";
 
@@ -86,7 +86,7 @@ export function StepTwoMeetingTimes() {
               name="days"
               control={control}
               render={({ field }) => (
-                <MultiSelectNew
+                <MultiSelect
                   options={WEEKDAYS}
                   placeholder="Days"
                   mode="multiple"
@@ -106,7 +106,7 @@ export function StepTwoMeetingTimes() {
               name="startTime"
               control={control}
               render={({ field }) => (
-                <MultiSelectNew
+                <MultiSelect
                   options={TIME_INTERVALS}
                   placeholder="Start Time"
                   mode="single"
@@ -125,7 +125,7 @@ export function StepTwoMeetingTimes() {
               name="endTime"
               control={control}
               render={({ field }) => (
-                <MultiSelectNew
+                <MultiSelect
                   options={TIME_INTERVALS}
                   placeholder="End Time"
                   mode="single"

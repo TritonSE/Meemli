@@ -5,7 +5,7 @@ import { createUser } from "../../api/user";
 import { auth, sendMeemliActivationEmail } from "../../util/firebase";
 import { Button } from "../Button";
 import { ErrorMessage } from "../ErrorMessage";
-import { MultiSelectNew, type Option } from "../MultiSelectNew/MultiSelectNew";
+import { MultiSelect, type Option } from "../MultiSelect/MultiSelect";
 import { MultiSelectDropdown } from "../studentform/MultiSelectDropdown";
 import { TextField } from "../TextField";
 
@@ -268,7 +268,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
 
       {/* Role Select (Single Mode) */}
       <div className={styles.selectField}>
-        <MultiSelectNew
+        <MultiSelect
           mode="single"
           label="Role"
           required

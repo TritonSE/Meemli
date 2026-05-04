@@ -6,7 +6,7 @@ import type { Section } from "@/src/api/sections";
 import type { Dispatch, SetStateAction } from "react";
 
 import BookOpen from "@/public/icons/program.svg"; // Adjust path if needed
-import { MultiSelectNew, type Option } from "@/src/components/MultiSelectNew/MultiSelectNew";
+import { MultiSelect, type Option } from "@/src/components/MultiSelect/MultiSelect";
 
 export type ProgramSelectProps = {
   items: Section[];
@@ -35,7 +35,7 @@ export function ProgramSelect({ items, selected, setSelected }: ProgramSelectPro
   }, [items]);
 
   return (
-    <MultiSelectNew
+    <MultiSelect
       mode="multiple"
       options={mappedOptions}
       value={selected}

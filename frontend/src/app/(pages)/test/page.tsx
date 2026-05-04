@@ -8,7 +8,7 @@ import BookIcon from "@/public/icons/nav/programs.svg";
 import { getAllSections } from "@/src/api/sections";
 // API & Types
 import { getStudent } from "@/src/api/students";
-import { MultiSelectNew, type Option } from "@/src/components/MultiSelectNew/MultiSelectNew";
+import { MultiSelect, type Option } from "@/src/components/MultiSelect/MultiSelect";
 import { CreateSectionFlow } from "@/src/components/SectionForm/SectionForm";
 // Components
 import { StudentCard } from "@/src/components/StudentCard/StudentCard";
@@ -184,7 +184,7 @@ export default function Test() {
         {/* 0. BASELINE: The standard original multiselect (Multi-select, standard default chips) */}
         <section>
           <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>0. Standard Baseline</h3>
-          <MultiSelectNew
+          <MultiSelect
             mode="multiple"
             label="Tags"
             options={roleOptions}
@@ -203,7 +203,7 @@ export default function Test() {
           <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>
             1. Role Select (Replaces react-select)
           </h3>
-          <MultiSelectNew
+          <MultiSelect
             mode="single"
             label="Role"
             options={roleOptions}
@@ -222,7 +222,7 @@ export default function Test() {
           <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>
             2. Student Sections (Replaces MultiSelectDropdown)
           </h3>
-          <MultiSelectNew
+          <MultiSelect
             mode="multiple"
             label="Assigned Program(s)"
             options={coloredSectionOptions}
@@ -244,7 +244,7 @@ export default function Test() {
           <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>
             3. Attendance Section (Replaces SectionSelect from MUI)
           </h3>
-          <MultiSelectNew
+          <MultiSelect
             mode="single"
             label="Select Section"
             options={attendanceSectionOptions}
@@ -266,7 +266,7 @@ export default function Test() {
           <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>
             3. Attendance Section (Replaces SectionSelect from MUI)
           </h3>
-          <MultiSelectNew
+          <MultiSelect
             mode="single"
             label="Select Section"
             options={attendanceSectionOptions}
