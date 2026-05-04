@@ -39,7 +39,7 @@ export function ProgramSelect({ items, selected, setSelected }: ProgramSelectPro
       mode="multiple"
       options={mappedOptions}
       value={selected}
-      onChange={setSelected as (value: string[]) => void}
+      onChange={setSelected}
       placeholder="Programs"
       searchable={true}
       leftIcon={<BookOpen width={24} height={24} />} // Matches your previous icon sizing

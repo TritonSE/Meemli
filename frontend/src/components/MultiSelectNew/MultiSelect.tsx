@@ -235,7 +235,7 @@ export const MultiSelectNew: React.FC<Props> = (props) => {
           role="listbox"
           ref={popoverRef}
           {...(supportsPopover ? { popover: "manual" } : {})}
-          style={supportsPopover ? ({ positionAnchor: anchorName } as ExtendedCSSProperties) : {}}
+          style={supportsPopover ? { positionAnchor: anchorName } : {}}
         >
           {isOpen && (
             <>
