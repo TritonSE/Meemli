@@ -43,6 +43,8 @@ export default function Programs() {
   const { toast, showToast, dismissToast } = useToast();
   const { isAdmin } = useAuth();
 
+
+
   const fetchData = async () => {
     const result = await getAllSections();
     if (result.success) {
@@ -232,10 +234,11 @@ export default function Programs() {
       {/* Edit section modal! - admin only*/}
       {isAdmin && (
         <CreateSectionFlow
-          active={!!editingSection}
+          active={showCreateModal || !!editingSection}
           sectionId={editingSection?._id}
           onClose={() => {
             setEditingSection(null);
+            setShowCreateModal(false);
             void fetchData();
           }}
         />

@@ -1,5 +1,6 @@
 import { Section } from "../models/sections";
 import { SessionModel } from "../models/session";
+import User from "../models/user";
 
 import type { SectionDoc } from "../models/sections";
 import type { RequestHandler, Response } from "express";
@@ -49,6 +50,13 @@ export const createSection: RequestHandler = async (req, res) => {
       }),
     );
 
+    if (section.teachers.length > 0) {
+      await User.updateMany(
+        { _id: { $in: section.teachers } },
+        { $addToSet: { assignedSections: section._id } },
+      );
+    }
+
     res.status(201).json(section);
   } catch (error: unknown) {
     handleError(res, error instanceof Error ? error.message : "Unknown error");
@@ -76,6 +84,9 @@ export const updateSection: RequestHandler<{ id: string }, unknown, UpdateSectio
   res,
 ) => {
   try {
+    const old = await Section.findById(req.params.id).lean();
+    if (!old) return handleError(res, `Section ${req.params.id} not found`, 404);
+
     const section = await Section.findByIdAndUpdate(
       req.params.id,
       { ...req.body },
@@ -85,6 +96,18 @@ export const updateSection: RequestHandler<{ id: string }, unknown, UpdateSectio
     if (!section) {
       return handleError(res, `Section ${req.params.id} not found`, 404);
     }
+
+    const oldTeacherSet = new Set(old.teachers.map((t) => t.toString()));
+    const newTeacherSet = new Set(section.teachers.map((t) => t.toString()));
+    const added = [...newTeacherSet].filter((t) => !oldTeacherSet.has(t));
+    const removed = [...oldTeacherSet].filter((t) => !newTeacherSet.has(t));
+
+    await Promise.all([
+      added.length > 0 &&
+        User.updateMany({ _id: { $in: added } }, { $addToSet: { assignedSections: section._id } }),
+      removed.length > 0 &&
+        User.updateMany({ _id: { $in: removed } }, { $pull: { assignedSections: section._id } }),
+    ]);
 
     res.json(section);
   } catch (error: unknown) {
@@ -100,6 +123,12 @@ export const deleteSection: RequestHandler<{ id: string }> = async (req, res) =>
     }
     const section = await Section.findByIdAndDelete(req.params.id);
     if (!section) return handleError(res, `Section ${req.params.id} not found`, 404);
+
+    await User.updateMany(
+      { assignedSections: section._id },
+      { $pull: { assignedSections: section._id } },
+    );
+
     res.status(204).send();
   } catch (error: unknown) {
     handleError(res, error instanceof Error ? error.message : "Unknown error");
