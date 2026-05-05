@@ -86,12 +86,6 @@ export const editUserById: RequestHandler = async (req, res, next) => {
 export const whoAmI: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
 
-  if (req.userContext && !req.userContext.admin && id !== req.userContext._id) {
-    return next(
-      createHTTPError(AuthError.UNAUTHORIZED_ERROR.status, AuthError.UNAUTHORIZED_ERROR.message),
-    );
-  }
-
   await firebaseAdminAuth.getUser(id).catch((error) => {
     if (error instanceof FirebaseAuthError && error.code === "auth/user-not-found") {
       throw createHTTPError(404, "User not found");
@@ -120,38 +114,34 @@ export const getAllUsers: RequestHandler = async (req, res, next) => {
   }
 };
 
+// Batch archive users
 export const archiveUsersByIds: RequestHandler = async (req, res, next) => {
-  const { ids, flag } = req.body as { ids: string[]; flag: boolean };
-  if (ids.length === 0) {
-    throw createHTTPError(400, "No valid user IDs provided");
-  }
+  const { ids } = req.body as { ids: string[] };
 
   try {
-    await UserModel.updateMany({ _id: { $in: ids } }, { archived: flag });
-    const updatedUsers = await UserModel.find({ _id: { $in: ids } });
-    res.status(200).json(updatedUsers);
+    if (!Array.isArray(ids) || ids.length === 0) {
+      throw createHTTPError(400, "ids must be a non-empty array");
+    }
+
+    await UserModel.updateMany({ _id: { $in: ids } }, { archived: true });
+    res.status(200).json({ message: "Users archived successfully" });
   } catch (error) {
     return next(error);
   }
 };
 
+// Batch delete users
 export const deleteUsersByIds: RequestHandler = async (req, res, next) => {
   const { ids } = req.body as { ids: string[] };
-  if (ids.length === 0) {
-    throw createHTTPError(400, "No valid user IDs provided");
-  }
-
-  await firebaseAdminAuth.deleteUsers(ids).catch((error) => {
-    if (error instanceof FirebaseAuthError) {
-      throw createHTTPError(500, "Failed to delete users from Firebase");
-    }
-    throw createHTTPError(500, "Internal Server Error");
-  });
 
   try {
+    if (!Array.isArray(ids) || ids.length === 0) {
+      throw createHTTPError(400, "ids must be a non-empty array");
+    }
+
+    await Promise.all(ids.map((id) => firebaseAdminAuth.deleteUser(id)));
     await UserModel.deleteMany({ _id: { $in: ids } });
-    const remainingUsers = await UserModel.find();
-    res.status(200).json(remainingUsers);
+    res.status(200).json({ message: "Users deleted successfully" });
   } catch (error) {
     return next(error);
   }

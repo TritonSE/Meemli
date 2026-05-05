@@ -87,12 +87,14 @@ export async function updateUser(user: UpdateUserRequest): Promise<APIResult<Use
  * @param archived - boolean flag indicating whether to archive (true) or unarchive (false) the specified users
  * @returns APIResult containing an array of the updated User objects
  */
-export async function archiveUsers(ids: string[], archived: boolean): Promise<APIResult<User[]>> {
+export async function archiveUsers(
+  ids: string[],
+  archived: boolean,
+): Promise<APIResult<{ message: string }>> {
   try {
     const response = await put(`${USER_ROUTE}/archive`, { ids, flag: archived });
-    const json = (await response.json()) as UserJSON[];
-    const users = json.map(parseUser);
-    return { success: true, data: users };
+    const json = (await response.json()) as { message: string };
+    return { success: true, data: json };
   } catch (error) {
     return handleAPIError(error);
   }

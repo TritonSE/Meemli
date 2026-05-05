@@ -1,17 +1,13 @@
 import Image from "next/image";
 import { useState } from "react";
-import Select, {
-  components,
-  type MultiValueProps,
-  type OptionProps,
-  type SingleValueProps,
-} from "react-select";
 
-import { getAllSections, getSectionById, updateSection } from "../../api/sections";
+import { getSectionById, updateSection } from "../../api/sections";
 import { createUser } from "../../api/user";
 import { auth, sendMeemliActivationEmail } from "../../util/firebase";
 import { Button } from "../Button";
 import { ErrorMessage } from "../ErrorMessage";
+import { MultiSelect, type Option } from "../MultiSelect/MultiSelect";
+import { MultiSelectDropdown } from "../studentform/MultiSelectDropdown";
 import { TextField } from "../TextField";
 
 import styles from "./AddStaffForm.module.css";
@@ -32,148 +28,40 @@ type FormErrors = {
   passwordReset?: string;
 };
 
-type Option = { value: string; label: string };
-
-const roleColorMap: Record<string, string> = {
-  STAFF: "#D8EFE8",
-  ADMINISTRATOR: "#FDE4D7",
-  OWNER: "#FAFBC6",
-};
-
-const RoleOption = (props: OptionProps<Option, false>) => {
-  const { data, isSelected, isFocused } = props;
-  const { label, value } = data;
-  const backgroundColor = roleColorMap[value] || "#f0f0f0";
-
-  return (
-    <components.Option {...props}>
-      <div
-        className={styles.optionContainer}
-        style={{
-          backgroundColor: isFocused || isSelected ? "#F7F6F6" : "transparent",
-        }}
-      >
-        <div
-          className={styles.optionBadge}
-          style={{
-            backgroundColor,
-          }}
-        >
-          {label}
-        </div>
-        {isSelected && <Image src="/icons/selected.svg" alt="Selected" width={20} height={20} />}
-      </div>
-    </components.Option>
-  );
-};
-
-const RoleSingleValue = (props: SingleValueProps<Option>) => {
-  const { data } = props;
-  const { label, value } = data;
-  const backgroundColor = roleColorMap[value] || "#f0f0f0";
-
-  return (
-    <components.SingleValue {...props}>
-      <div
-        className={styles.optionBadge}
-        style={{
-          backgroundColor,
-        }}
-      >
-        {label}
-      </div>
-    </components.SingleValue>
-  );
-};
-
-const programBadgeColor = "#D8EFE8";
-
-const ProgramOption = (props: OptionProps<Option, true>) => {
-  const { data, isSelected, isFocused } = props;
-  const { label } = data;
-
-  return (
-    <components.Option {...props}>
-      <div
-        className={styles.optionContainer}
-        style={{
-          backgroundColor: isFocused || isSelected ? "#F7F6F6" : "transparent",
-        }}
-      >
-        <div
-          className={styles.optionBadge}
-          style={{
-            backgroundColor: programBadgeColor,
-          }}
-        >
-          {label}
-        </div>
-        {isSelected && <Image src="/icons/selected.svg" alt="Selected" width={20} height={20} />}
-      </div>
-    </components.Option>
-  );
-};
-
-const ProgramSingleValue = (props: MultiValueProps<Option, true>) => {
-  const { data } = props;
-  const { label } = data;
-
-  return (
-    <components.SingleValue {...props}>
-      <div
-        className={styles.optionBadge}
-        style={{
-          backgroundColor: programBadgeColor,
-        }}
-      >
-        {label}
-      </div>
-    </components.SingleValue>
-  );
-};
-
 export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaffFormProps) {
   const [isLoading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState<FormErrors>({});
 
-  const [role, setRole] = useState<Option | null>(null);
-  const [programs, setPrograms] = useState<Option[]>([]);
-  const [programOptions, setProgramOptions] = useState<Option[]>([]);
+  // Cleaned up state specifically for the new MultiSelect
+  const [role, setRole] = useState<string>("");
+  const [programs, setPrograms] = useState<string[]>([]);
 
   const currentUser = auth.currentUser;
   const inviterName = currentUser
     ? currentUser.displayName || currentUser.email || "An Admin"
     : "An Admin";
 
-  // TODO: replace these with API calls
+  // Role options mapped with colors replacing the old custom react-select components
   const roleOptions: Option[] = [
-    { value: "STAFF", label: "Staff" },
-    { value: "ADMINISTRATOR", label: "Administrator" },
-    { value: "OWNER", label: "Owner" },
+    {
+      id: "admin",
+      label: "Admin",
+      colorBg: "var(--secondary-100)",
+      colorText: "var(--secondary-800)",
+    },
+    {
+      id: "teacher",
+      label: "Teacher",
+      colorBg: "var(--tertiary-100)",
+      colorText: "var(--tertiary-800)",
+    },
+    {
+      id: "student",
+      label: "Student",
+      colorBg: "var(--primary-100)",
+      colorText: "var(--primary-800)",
+    },
   ];
-
-  const fetchSections = () => {
-    getAllSections()
-      .then((result) => {
-        if (result.success) {
-          const sections = result.data;
-          setProgramOptions(
-            sections.map((section) => ({
-              value: section._id,
-              label: section.code,
-            })),
-          );
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching sections:", error);
-      });
-  };
-
-  // Fetch sections on component mount
-  useState(() => {
-    fetchSections();
-  });
 
   // Form state
   const [firstName, setFirstName] = useState("");
@@ -195,11 +83,15 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
     if (!phoneNumber.trim()) {
       errors.phoneNumber = "Phone number is required";
     }
-    if (!role?.value.trim()) {
+
+    // Updated validation to check the string state directly
+    if (!role) {
       errors.role = "Role is required";
-    } else if (!["staff", "administrator", "owner"].includes(role?.value.toLowerCase())) {
-      errors.role = "Role must be one of: staff, administrator, or owner";
+    } else if (!["teacher", "admin", "student"].includes(role)) {
+      // Must match the exact 'id' strings in your roleOptions array
+      errors.role = "Role must be one of: teacher, admin, or student";
     }
+
     if (!personalEmail.trim()) {
       errors.personalEmail = "Personal email is required";
     }
@@ -232,8 +124,8 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
     setLoading(true);
     setFormErrors({});
 
-    const isAdmin =
-      role?.label.toLowerCase() === "administrator" || role?.label.toLowerCase() === "owner";
+    // Updated role check
+    const isAdmin = role === "admin";
 
     createUser({
       firstName: firstName.trim(),
@@ -242,20 +134,11 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
       meemliEmail: meemliEmail.trim(),
       phoneNumber: phoneNumber.trim(),
       admin: isAdmin,
-      assignedSections: programs.map((program) => program.value),
+      assignedSections: programs, // Now directly passes the string array
       archived: false,
     })
       .then((result) => {
         if (result.success) {
-          // sendPasswordResetEmail(auth, meemliEmail.trim())
-          //   .then(() => {})
-          //   .catch((error) => {
-          //     setFormErrors({
-          //       passwordReset: "Failed to send password reset email",
-          //     });
-          //     console.error("Error sending password reset email:", error);
-          //   });
-
           // Send custom activation link.
           sendMeemliActivationEmail(personalEmail.trim(), inviterName)
             .then(() => {})
@@ -265,7 +148,8 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
 
           const userId = result.data._id;
 
-          for (const sectionId of programs.map((program) => program.value)) {
+          // Directly iterate over string array
+          for (const sectionId of programs) {
             getSectionById(sectionId)
               .then((sectionResult) => {
                 if (sectionResult.success) {
@@ -283,11 +167,12 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
                 console.error(`Error fetching section ${sectionId}:`, error);
               });
           }
+
           // Reset form
           setFirstName("");
           setLastName("");
           setPhoneNumber("");
-          setRole(null);
+          setRole("");
           setPersonalEmail("");
           setMeemliEmail("");
           setPrograms([]);
@@ -381,78 +266,31 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
           <ErrorMessage message={formErrors.phoneNumber} />
         </div>
       </div>
+
+      {/* Role Select (Single Mode) */}
       <div className={styles.selectField}>
-        <label className={styles.selectLabel}>
-          Role<span className={styles.required}>*</span>
-        </label>
-        <Select
-          inputId="role"
+        <MultiSelect
+          mode="single"
+          label="Role"
+          required
           options={roleOptions}
           value={role}
-          onChange={(opt) => setRole(opt)}
+          onChange={setRole}
+          searchable={false}
+          withChips={true}
           placeholder="Select"
-          isClearable
-          isSearchable={false}
-          className={styles.select}
-          classNamePrefix="select"
-          components={{
-            Option: RoleOption,
-            SingleValue: RoleSingleValue,
-          }}
-          styles={{
-            menuList: (base) => ({
-              ...base,
-              padding: "4px 0",
-            }),
-            option: (base) => ({
-              ...base,
-              backgroundColor: "transparent",
-              color: "#333",
-              padding: "4px 8px",
-              ":active": {
-                backgroundColor: "transparent",
-              },
-            }),
-          }}
+          fullWidth={true}
         />
         <ErrorMessage message={formErrors.role} />
       </div>
+
+      {/* Assigned Programs Select (Multiple Mode) */}
       <div className={styles.selectField}>
-        <label className={styles.selectLabel}>Assigned Program(s)</label>
-        <Select
-          inputId="assignedPrograms"
-          options={programOptions}
+        <MultiSelectDropdown
+          label="Assigned Progra(s)"
           value={programs}
-          onChange={(opts) => setPrograms((opts as Option[]) ?? [])}
+          onChange={setPrograms}
           placeholder="Select"
-          isMulti
-          closeMenuOnSelect={false}
-          menuPortalTarget={typeof document !== "undefined" ? document.body : undefined}
-          className={styles.select}
-          classNamePrefix="select"
-          components={{
-            Option: ProgramOption,
-            MultiValue: ProgramSingleValue,
-          }}
-          styles={{
-            menuPortal: (base) => ({
-              ...base,
-              zIndex: 9999,
-            }),
-            menuList: (base) => ({
-              ...base,
-              padding: "4px 0",
-            }),
-            option: (base) => ({
-              ...base,
-              backgroundColor: "transparent",
-              color: "#333",
-              padding: "4px 8px",
-              ":active": {
-                backgroundColor: "transparent",
-              },
-            }),
-          }}
         />
       </div>
 

@@ -2,6 +2,7 @@ import React from "react";
 
 import { ProfilePicture } from "../ProfilePicture/ProfilePicture";
 
+import { NameCard } from "./NameCard";
 import styles from "./StudentCard.module.css";
 
 import type { Student } from "@/src/api/students";
@@ -65,20 +66,5 @@ export const StudentCard: React.FC<StudentCardProps> = ({ variant, data, classNa
   }
 
   // --- RENDER: LIST VIEW ---
-  return (
-    <div className={`${styles.listViewContainer} ${className}`}>
-      <div className={styles.studentInfoTag}>
-        <ProfilePicture size="small" letter={data.displayName} />
-
-        <ul className={`${styles.infoItems} ${styles.listView}`}>
-          <li className={styles.name}>{data.displayName}</li>
-          {data.meemliEmail && (
-            <li className={styles.email}>
-              <address>{data.meemliEmail}</address>
-            </li>
-          )}
-        </ul>
-      </div>
-    </div>
-  );
+  return <NameCard name={data.displayName} email={data.meemliEmail} />;
 };

@@ -568,7 +568,7 @@ export default function TestStudentForm() {
               async () => archiveStudents([sid], true),
               (data) => {
                 console.info("PUT /students/archive response:", data);
-                return `Archived ${data.length} student(s)`;
+                return data.message;
               },
             );
           }}

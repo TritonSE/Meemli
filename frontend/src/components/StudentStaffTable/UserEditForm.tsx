@@ -3,7 +3,7 @@ import { useState } from "react";
 import { updateUser } from "../../api/user";
 import { Button } from "../Button";
 import { ErrorMessage } from "../ErrorMessage";
-import { MultiSelect } from "../MultiSelect/MultiSelect";
+import { MultiSelect, type Option } from "../MultiSelect/MultiSelect";
 import { MultiSelectDropdown } from "../studentform/MultiSelectDropdown";
 import { TextField } from "../TextField";
 
@@ -37,12 +37,33 @@ export function UserEditForm({ user, sections: _sections, onCancel, onSubmit }: 
   const [lastName, setLastName] = useState(user.lastName);
   const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
   const [role, setRole] = useState(user.admin ? "Admin" : "Staff");
-  const [assignedSections, setAssignedSections] = useState(user.assignedSections ?? []);
+  const [assignedSections, setAssignedSections] = useState(user.assignedSections);
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
   const [phoneNumberError, setPhoneNumberError] = useState("");
   const [roleError, setRoleError] = useState("");
   const [submitError, setSubmitError] = useState("");
+
+  const roleOptions: Option[] = [
+    {
+      id: "admin",
+      label: "Admin",
+      colorBg: "var(--secondary-100)",
+      colorText: "var(--secondary-800)",
+    },
+    {
+      id: "teacher",
+      label: "Teacher",
+      colorBg: "var(--tertiary-100)",
+      colorText: "var(--tertiary-800)",
+    },
+    {
+      id: "student",
+      label: "Student",
+      colorBg: "var(--primary-100)",
+      colorText: "var(--primary-800)",
+    },
+  ];
 
   const handleSubmit: NonNullable<React.ComponentProps<"form">["onSubmit"]> = (event) => {
     event.preventDefault();
@@ -171,18 +192,16 @@ export function UserEditForm({ user, sections: _sections, onCancel, onSubmit }: 
 
       <div className={styles.fieldGroup}>
         <MultiSelect
-          label="Role"
-          options={ROLE_OPTIONS}
-          value={role ? [role] : []}
-          onChange={(value) => {
-            setRole(value[0] ?? "");
-            if (roleError) {
-              setRoleError("");
-            }
-          }}
-          placeholder="Select role"
           mode="single"
-          required={true}
+          label="Role"
+          required
+          options={roleOptions}
+          value={role}
+          onChange={setRole}
+          searchable={false}
+          withChips={true}
+          placeholder="Select"
+          fullWidth={true}
         />
         <ErrorMessage message={roleError} />
       </div>

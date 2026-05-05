@@ -277,7 +277,7 @@ export default function StudentStaffPage({ type }: StudentStaffPageProps) {
   const getName = (ids: string[]) => {
     const entry = root.find((s) => s._id === ids[0]);
     if (!entry) return "";
-    if ("parentContact" in entry) {
+    if ("displayName" in entry) {
       return entry.displayName;
     } else {
       return `${entry.firstName} ${entry.lastName}`;
@@ -316,7 +316,7 @@ export default function StudentStaffPage({ type }: StudentStaffPageProps) {
             const message = `
             Student${multi ? "s" : ""} 
             ${name} 
-            ${multi ? ` + ${result.data.length - 1} more were` : "was"} archived.`;
+            ${multi ? ` + ${ids.length - 1} more were` : "was"} archived.`;
             // set toast with undo option
             setToast({
               type: "neutral",
@@ -342,7 +342,7 @@ export default function StudentStaffPage({ type }: StudentStaffPageProps) {
             const message = `
             Staff member${multi ? "s" : ""} 
             ${name} 
-            ${multi ? ` + ${result.data.length - 1} more were` : "was"} archived.`;
+            ${multi ? ` + ${ids.length - 1} more were` : "was"} archived.`;
             setToast({
               type: "neutral",
               message,

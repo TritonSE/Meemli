@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.css";
 
 import { deleteSection, getAllSections, type Section, updateSection } from "@/src/api/sections";
+import { getAllUsers, type User } from "@/src/api/user";
 import { Modal } from "@/src/components/Modal";
 import { SectionCard } from "@/src/components/SectionCard";
 import { CreateSectionFlow } from "@/src/components/SectionForm/SectionForm";
@@ -30,6 +31,7 @@ type Tab = "active" | "archived";
 export default function Programs() {
   const [activeTab, setActiveTab] = useState<Tab>("active");
   const [sections, setSections] = useState<Section[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [editingSection, setEditingSection] = useState<Section | null>(null);
   const [deletingSection, setDeletingSection] = useState<Section | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -49,6 +51,12 @@ export default function Programs() {
       setSections(result.data);
     } else {
       throw new Error("Data could not be fetched");
+    }
+    const teacherData = await getAllUsers();
+    if (teacherData.success) {
+      setUsers(teacherData.data);
+    } else {
+      throw new Error("User data could not be fetched");
     }
   };
 
@@ -183,13 +191,6 @@ export default function Programs() {
           </div>
         </div>
       </div>
-      {/* Create new section! - admin only */}
-      {isAdmin && (
-        <button className={styles.createButton} onClick={() => setShowCreateModal(true)}>
-          <Plus size={16} />
-          Create New Class
-        </button>
-      )}
 
       {/* pop up for deleting section - admin only*/}
       {isAdmin && deletingSection && (
@@ -250,7 +251,9 @@ export default function Programs() {
             days={section.days}
             startTime={section.startTime}
             endTime={section.endTime}
-            teachers={section.teachers}
+            teachers={users
+              .filter((teacher) => section.teachers.includes(teacher._id))
+              .map((t) => `${t.firstName} ${t.lastName}`)}
             startDate={String(section.startDate)}
             endDate={String(section.endDate)}
             color={section.color}

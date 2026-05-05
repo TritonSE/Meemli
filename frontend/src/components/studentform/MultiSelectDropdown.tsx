@@ -1,60 +1,30 @@
-/**
- * Multiselect dropdown component for the Student Create/Edit forms.
- * Fetches all sections from database and populates a multiselect dropdown bar
- * and updates important states automatically.
- *
- * // TODO: Convert program IDs to colors and show colored backgrounds for buttons
- * // TODO: Add checkmark icon for selected items
- */
+import React, { useEffect, useMemo, useState } from "react";
 
-import { Check } from "lucide-react";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-
-import { getAllSections } from "../../api/sections";
-import { getChipColors } from "../ChipColor";
-
-import styles from "./MultiSelectDropdown.module.css";
-
-import type { Section } from "../../api/sections";
-
-type SectionLike = {
-  _id: string;
-  code?: string;
-  program?: string;
-  // allow extra fields without TS errors
-  [key: string]: unknown;
-};
+import { getAllSections, type Section } from "../../api/sections";
+import { getChipColors } from "../ChipColor"; // Assuming this is where you extracted the utility
+import { MultiSelect, type Option } from "../MultiSelect/MultiSelect";
 
 type MultiSelectDropdownProps = {
   label?: string;
   value: string[];
   onChange: (next: string[]) => void;
-
   required?: boolean;
   disabled?: boolean;
   placeholder?: string;
-
-  getLabel?: (section: SectionLike) => string;
-  getValue?: (section: SectionLike) => string;
 };
 
 export function MultiSelectDropdown({
-  label = "Assigned Program(s)",
+  label = "Enroll in Sections",
   value,
   onChange,
   required,
   disabled = false,
-  placeholder,
-  getLabel = (s) => (typeof s.code === "string" && s.code) || s._id,
-  getValue = (s) => s._id,
+  placeholder = "Select sections...",
 }: MultiSelectDropdownProps) {
-  const [open, setOpen] = useState(false);
-  const [sections, setSections] = useState<SectionLike[]>([]);
+  // State for fetching
+  const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const rootRef = useRef<HTMLDivElement | null>(null);
-  const selectedSet = useMemo(() => new Set(value), [value]);
 
   // Fetch sections once on mount
   useEffect(() => {
@@ -64,16 +34,22 @@ export function MultiSelectDropdown({
       setLoading(true);
       setError(null);
       try {
-        getAllSections()
-          .then(async (res) => {
-            if (!res.success) {
-              return;
-            }
-            const data = res.data;
-            setSections(data);
-          })
-          .catch((e) => setError((e as Error).message))
-          .finally(() => setLoading(false));
+        const res = await getAllSections();
+
+        if (!cancelled && res.success) {
+          const data = res.data;
+
+          if (Array.isArray(data)) {
+            const normalized = data.filter(
+              (x) => x && typeof x === "object" && typeof x._id === "string",
+            );
+            setSections(normalized);
+          } else {
+            setError("Invalid data format received.");
+          }
+        } else if (!cancelled && !res.success) {
+          setError("Failed to load sections from server.");
+        }
       } catch (e) {
         if (!cancelled) setError((e as Error).message);
       } finally {
@@ -81,153 +57,45 @@ export function MultiSelectDropdown({
       }
     }
 
-    load().catch((e) => setError((e as Error).message));
+    void load();
     return () => {
       cancelled = true;
     };
   }, []);
 
-  // Close on outside click
-  useEffect(() => {
-    function onDocMouseDown(e: MouseEvent) {
-      const root = rootRef.current;
-      if (!root) return;
-      if (!root.contains(e.target as Node)) setOpen(false);
-    }
-    document.addEventListener("mousedown", onDocMouseDown);
-    return () => document.removeEventListener("mousedown", onDocMouseDown);
-  }, []);
+  // Convert API Section data into the clean Option[] format with dynamic chip colors
+  const formattedOptions: Option[] = useMemo(() => {
+    return sections.map((s) => {
+      // Use the actual section color from the backend, fallback if missing
+      const hex = typeof s.color === "string" && s.color ? s.color : "#008080";
+      const { backgroundColor, textColor } = getChipColors(hex);
 
-  function toggle(id: string) {
-    if (disabled) return;
-    if (selectedSet.has(id)) {
-      onChange(value.filter((v) => v !== id));
-    } else {
-      onChange([...value, id]);
-    }
+      return {
+        id: s._id,
+        label: s.code || s._id,
+        colorBg: backgroundColor,
+        colorText: textColor,
+      };
+    });
+  }, [sections]);
+
+  if (error) {
+    return <div style={{ color: "red", fontSize: 12 }}>Error loading sections: {error}</div>;
   }
 
-  const selectedLabels = useMemo(() => {
-    if (sections.length === 0) return [];
-    const map = new Map(sections.map((s) => [getValue(s), getLabel(s)]));
-    return value.map((id) => map.get(id) ?? id);
-  }, [sections, value, getLabel, getValue]);
-
-  const triggerClass = open ? `${styles.trigger} ${styles.triggerOpen}` : styles.trigger;
-
   return (
-    <div ref={rootRef} className={`${styles.root} ${disabled ? styles.rootDisabled : ""}`}>
-      {label && (
-        <div className={styles.label}>
-          {label}
-          {required && <span className={styles.required}>*</span>}
-        </div>
-      )}
-
-      <button
-        type="button"
-        className={triggerClass}
-        disabled={disabled}
-        onClick={() => setOpen((o) => !o)}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-      >
-        <span className={styles.triggerText}>
-          {loading
-            ? "Loading sections..."
-            : selectedLabels.length > 0
-              ? value.map((id, i) => {
-                  const l = selectedLabels[i] ?? id;
-                  const section = sections.find((s) => getValue(s) === id);
-                  const hex =
-                    typeof section?.color === "string" && section.color ? section.color : "#008080";
-                  const { backgroundColor, textColor } = getChipColors(hex);
-
-                  return (
-                    <div
-                      key={id}
-                      className={styles.chosen}
-                      style={{
-                        background: backgroundColor,
-                        color: textColor,
-                      }}
-                    >
-                      {l}
-                    </div>
-                  );
-                })
-              : placeholder}
-        </span>
-      </button>
-
-      {open && (
-        <div className={styles.panel} role="listbox" aria-multiselectable="true">
-          {error ? (
-            <div className={styles.errorBox}>
-              <div className={styles.errorText}>Error: {error}</div>
-              <button
-                type="button"
-                className={styles.retryBtn}
-                onClick={() => {
-                  setLoading(true);
-                  setError(null);
-                  getAllSections()
-                    .then(async (res) => {
-                      if (!res.success) throw new Error("Failed to load sections");
-                      const data = res.data;
-                      if (!Array.isArray(data))
-                        throw new Error("Invalid /api/sections response: expected an array");
-                      const normalized = data.filter(
-                        (x: Section) => x && typeof x === "object" && typeof x._id === "string",
-                      );
-                      setSections(normalized);
-                    })
-                    .catch((e) => setError((e as Error).message))
-                    .finally(() => setLoading(false));
-                }}
-              >
-                Retry
-              </button>
-            </div>
-          ) : (
-            <>
-              {sections.length === 0 && !loading ? (
-                <div className={styles.statusText}>No sections found.</div>
-              ) : (
-                <div className={styles.list}>
-                  {sections.map((s) => {
-                    const id = getValue(s);
-                    const text = getLabel(s);
-                    const checked = selectedSet.has(id);
-                    const hex = typeof s.color === "string" && s.color ? s.color : "#008080";
-                    const { backgroundColor, textColor } = getChipColors(hex);
-
-                    let className = styles.listItem;
-                    if (checked) className += ` ${styles.listItemSelected}`;
-
-                    return (
-                      <div className={className} key={id}>
-                        <button
-                          type="button"
-                          className={styles.itemBtn}
-                          onClick={() => toggle(id)}
-                          style={{
-                            background: backgroundColor,
-                            color: textColor,
-                          }}
-                        >
-                          {text}
-                        </button>
-                        {checked && <Check className={styles.selectedIcon} />}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      )}
-    </div>
+    <MultiSelect
+      mode="multiple"
+      label={label}
+      value={value}
+      onChange={onChange}
+      required={required}
+      disabled={disabled}
+      placeholder={placeholder}
+      options={formattedOptions}
+      withChips={true}
+      isLoading={loading}
+      fullWidth={true}
+    />
   );
 }

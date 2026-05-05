@@ -201,14 +201,13 @@ export const archiveStudentsByIds: RequestHandler = async (req, res, next) => {
 
   try {
     await StudentModel.updateMany({ _id: { $in: validIds } }, { $set: { archived: flag } });
-    const updatedStudents = await StudentModel.find({ _id: { $in: validIds } });
-    res.status(200).json(updatedStudents);
+    res.status(200).json({ message: `Students ${flag ? "archived" : "unarchived"} successfully` });
   } catch (error) {
     return next(error);
   }
 };
 
-// Delete by ID — admin only (enforced in route middleware)
+// Delete by ID
 export const deleteStudentById: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
   if (!Types.ObjectId.isValid(id)) {
@@ -236,8 +235,7 @@ export const deleteStudentsByIds: RequestHandler = async (req, res, next) => {
   }
   try {
     await StudentModel.deleteMany({ _id: { $in: validIds } });
-    const remainingStudents = await StudentModel.find();
-    res.status(200).json(remainingStudents);
+    res.status(200).json({ message: "Students deleted successfully" });
   } catch (error) {
     return next(error);
   }

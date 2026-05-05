@@ -13,6 +13,7 @@ import { updateAttendanceBulk } from "@/src/api/attendance";
 
 type AttendanceListProps = {
   initialAttendees: any[];
+  isSectionSelected: boolean;
   isFilterSelected: boolean;
   searchQuery?: string;
   sortOption?: SortOption;
@@ -36,6 +37,7 @@ type Attendee = {
 
 export default function AttendanceList({
   initialAttendees,
+  isSectionSelected,
   isFilterSelected,
   searchQuery = "",
   sortOption = { field: "name", order: "asc", label: "Ascending" },
@@ -195,8 +197,13 @@ export default function AttendanceList({
             ))
           ) : (
             <div className={`${styles.table} flex items-center justify-center min-h-[300px]`}>
-              {!isFilterSelected ? (
-                /* initial state - empty table w/ message */
+              {!isSectionSelected ? (
+                <div className="space-y-2 text-center">
+                  <p className={styles.sessionNotFound}>
+                    Please select a section to view attendance.
+                  </p>
+                </div>
+              ) : !isFilterSelected ? (
                 <div className="space-y-2 text-center">
                   <p className={styles.sessionNotFound}>
                     There is no class scheduled on this day. Please select a scheduled class date to
@@ -209,6 +216,11 @@ export default function AttendanceList({
                   <p className={styles.sessionNotFound}>
                     No students found matching "{searchQuery}". Try a different search term.
                   </p>
+                </div>
+              ) : attendees.length === 0 ? (
+                /* No results found for search */
+                <div className="space-y-2 text-center">
+                  <p className={styles.sessionNotFound}>No students found in this class.</p>
                 </div>
               ) : (
                 /* No session found */

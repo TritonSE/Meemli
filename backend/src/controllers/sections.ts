@@ -9,6 +9,7 @@ import type { RequestHandler, Response } from "express";
 const handleError = (res: Response, message: string, status = 400) =>
   res.status(status).json({ message });
 
+// Populate sessions list
 const populateSessions = async (section: SectionDoc) => {
   const today = new Date();
   const sectionEndDate = new Date(section.endDate);
@@ -108,6 +109,22 @@ export const updateSection: RequestHandler<{ id: string }, unknown, UpdateSectio
       removed.length > 0 &&
         User.updateMany({ _id: { $in: removed } }, { $pull: { assignedSections: section._id } }),
     ]);
+
+    await SessionModel.deleteMany({ section: section._id, sessionDate: { $gt: new Date() } });
+
+    const sessionDates = await populateSessions(section);
+
+    await Promise.all(
+      sessionDates.map(async (date: Date) => {
+        const session = await SessionModel.findOne({ section: section._id, sessionDate: date });
+        if (!session) {
+          await SessionModel.create({
+            section: section._id,
+            sessionDate: date,
+          });
+        }
+      }),
+    );
 
     res.json(section);
   } catch (error: unknown) {
