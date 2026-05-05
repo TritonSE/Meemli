@@ -90,10 +90,11 @@ export function StepTwoMeetingTimes() {
                   options={WEEKDAYS}
                   placeholder="Days"
                   mode="multiple"
-                  value={field.value}
+                  value={field.value || []}
                   onChange={field.onChange}
                   required={true}
                   fitContent={true}
+                  width={9}
                 />
               )}
             />
@@ -109,10 +110,10 @@ export function StepTwoMeetingTimes() {
                   options={TIME_INTERVALS}
                   placeholder="Start Time"
                   mode="single"
-                  value={field.value ? [field.value] : []}
-                  onChange={(val) => field.onChange(val[0] || "")}
+                  value={field.value || ""}
+                  onChange={field.onChange}
                   required={true}
-                  fitContent={true}
+                  width={9}
                 />
               )}
             />
@@ -128,10 +129,10 @@ export function StepTwoMeetingTimes() {
                   options={TIME_INTERVALS}
                   placeholder="End Time"
                   mode="single"
-                  value={field.value ? [field.value] : []}
-                  onChange={(val) => field.onChange(val[0] || "")}
+                  value={field.value || ""}
+                  onChange={field.onChange}
                   required={true}
-                  fitContent={true}
+                  width={9}
                 />
               )}
             />
