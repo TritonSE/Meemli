@@ -46,8 +46,8 @@ export function Table({
   setSelected,
 }: TableProps) {
   const { isAdmin } = useAuth();
-  const [isLoading, setLoading] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [_isLoading, setLoading] = useState<boolean>(false);
+  const [_errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // State for modals
   const [editOpen, setEditOpen] = useState<boolean>(false);

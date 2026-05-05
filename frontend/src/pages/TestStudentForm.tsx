@@ -261,6 +261,7 @@ export default function TestStudentForm() {
     preassessmentScore: 0,
     postassessmentScore: 0,
     comments: "permission test record — safe to delete",
+    archived: false,
   };
 
   const dummyUser = {
@@ -271,6 +272,7 @@ export default function TestStudentForm() {
     phoneNumber: "6195550000",
     admin: false,
     assignedSections: [] as string[],
+    archived: false,
   };
 
   if (loading) return <p style={{ padding: "1.5rem" }}>Loading auth…</p>;
@@ -764,7 +766,7 @@ export default function TestStudentForm() {
               },
               (data) => {
                 console.info("PUT /sessions/:id response:", data);
-                return "Updated";
+                return `Updated — sessionDate: ${data.sessionDate}`;
               },
             );
           }}

@@ -100,12 +100,11 @@ export async function archiveUsers(
   }
 }
 
-export async function deleteUsers(ids: string[]): Promise<APIResult<User[]>> {
+export async function deleteUsers(ids: string[]): Promise<APIResult<{ message: string }>> {
   try {
     const response = await del(`${USER_ROUTE}/delete`, {}, { ids });
-    const json = (await response.json()) as UserJSON[];
-    const users = json.map(parseUser);
-    return { success: true, data: users };
+    const json = (await response.json()) as { message: string };
+    return { success: true, data: json };
   } catch (error) {
     return handleAPIError(error);
   }

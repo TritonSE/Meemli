@@ -47,11 +47,11 @@ export function StudentEditForm({ student, onCancel, onSubmit }: StudentEditForm
     updateStudent({
       _id: student._id,
       displayName: student.displayName,
-      meemliEmail: student.meemliEmail,
+      meemliEmail: student.meemliEmail ?? "",
       grade: student.grade,
-      schoolName: student.schoolName,
-      city: student.city,
-      state: student.state,
+      schoolName: student.schoolName ?? "",
+      city: student.city ?? "",
+      state: student.state ?? "",
       parentContact: {
         firstName: student.parentContact?.firstName ?? "",
         lastName: student.parentContact?.lastName ?? "",

@@ -52,11 +52,13 @@ export default function Programs() {
     } else {
       throw new Error("Data could not be fetched");
     }
-    const teacherData = await getAllUsers();
-    if (teacherData.success) {
-      setUsers(teacherData.data);
-    } else {
-      throw new Error("User data could not be fetched");
+    if (isAdmin) {
+      const teacherData = await getAllUsers();
+      if (teacherData.success) {
+        setUsers(teacherData.data);
+      } else {
+        throw new Error("User data could not be fetched");
+      }
     }
   };
 

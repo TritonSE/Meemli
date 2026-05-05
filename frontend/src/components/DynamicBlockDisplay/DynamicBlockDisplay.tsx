@@ -9,7 +9,7 @@ import { getChipColors } from "@/src/components/ChipColor";
  * container, it will render a "+X" block at the end, where X is the number of hidden blocks.
  * @param labels array of labels to display
  * @param colors array of hex colors to display. Must have the same length as labels
- * @returns
+ * @returns the rendered block display element
  */
 export function DynamicBlockDisplay({ labels, colors }: { labels: string[]; colors: string[] }) {
   const containerRef = useRef<HTMLDivElement>(null);

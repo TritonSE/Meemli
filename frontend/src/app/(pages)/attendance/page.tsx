@@ -139,7 +139,7 @@ export default function Attendance() {
           <AttendanceList
             initialAttendees={selectedSession?.attendees || []}
             isSectionSelected={Boolean(activeSectionId)}
-            isFilterSelected={Boolean(activeSectionId && activeDate)}
+            isFilterSelected={Boolean(activeSectionId && activeDate && selectedSession)}
             searchQuery={searchQuery}
             sortOption={sortOption}
           />

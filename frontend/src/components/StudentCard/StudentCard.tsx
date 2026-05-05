@@ -66,5 +66,5 @@ export const StudentCard: React.FC<StudentCardProps> = ({ variant, data, classNa
   }
 
   // --- RENDER: LIST VIEW ---
-  return <NameCard name={data.displayName} email={data.meemliEmail} />;
+  return <NameCard name={data.displayName} email={data.meemliEmail ?? ""} />;
 };

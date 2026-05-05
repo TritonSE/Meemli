@@ -9,7 +9,7 @@ export type Session = {
 };
 
 export type CreateSessionRequest = Omit<Session, "_id">;
-export type UpdateSessionRequest = Session;
+export type UpdateSessionRequest = { _id: string; sessionDate: string };
 
 export async function getAllSessions(): Promise<APIResult<Session[]>> {
   try {
@@ -53,7 +53,7 @@ export async function createSession(session: CreateSessionRequest): Promise<APIR
 
 export async function updateSession(session: UpdateSessionRequest): Promise<APIResult<Session>> {
   try {
-    const response = await put(`/sessions/${session._id}`, session);
+    const response = await put(`/sessions/${session._id}`, { sessionDate: session.sessionDate });
     const json = (await response.json()) as Session;
     return { success: true, data: json };
   } catch (error) {

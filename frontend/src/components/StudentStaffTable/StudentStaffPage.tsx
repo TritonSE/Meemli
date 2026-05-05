@@ -48,9 +48,9 @@ export default function StudentStaffPage({ type }: StudentStaffPageProps) {
   const [root, setRoot] = useState<Student[] | User[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
 
-  const [isLoading, setLoading] = useState(false);
+  const [_isLoading, setLoading] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [_errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isEdit, setEdit] = useState<boolean>(false);
 
   // state for viewing
@@ -213,25 +213,16 @@ export default function StudentStaffPage({ type }: StudentStaffPageProps) {
       deleteStudents(ids)
         .then((result) => {
           if (result.success) {
-            setRoot((prev) => {
-              const updated = new Map(result.data.map((s) => [s._id, s]));
-              if ("parentContact" in result.data[0]) {
-                return prev.map((s) => updated.get(s._id) ?? s) as Student[];
-              } else {
-                return prev.map((s) => updated.get(s._id) ?? s) as User[];
-              }
-            });
+            setRoot((prev) => (prev as Student[]).filter((s) => !ids.includes(s._id)));
             // create toast message on successful request
             const multi = ids.length > 1;
-            const message = `${ids.length} student
-            ${multi ? "s were" : " was"} successfuly deleted.`;
+            const message = `${ids.length} student${multi ? "s were" : " was"} successfully deleted.`;
             setToast({
               type: "success",
               message,
               timestamp: getNextToastTrigger(),
             });
             setSelected(new Set());
-            setRoot(result.data);
           } else {
             setErrorMessage(result.error);
             const message = `Error: Unable to delete student(s). ${result.error}`;
@@ -248,21 +239,12 @@ export default function StudentStaffPage({ type }: StudentStaffPageProps) {
       deleteUsers(ids)
         .then((result) => {
           if (result.success) {
-            setRoot((prev) => {
-              const updated = new Map(result.data.map((s) => [s._id, s]));
-              // this check is necessary to silence TypeScript warnings
-              if ("parentContact" in result.data[0]) {
-                return prev.map((s) => updated.get(s._id) ?? s) as Student[];
-              } else {
-                return prev.map((s) => updated.get(s._id) ?? s) as User[];
-              }
-            });
+            setRoot((prev) => (prev as User[]).filter((s) => !ids.includes(s._id)));
             // create toast message on successful request
             const multi = ids.length > 1;
-            const message = `${ids.length} staff member${multi ? "s were" : " was"} successfuly deleted.`;
+            const message = `${ids.length} staff member${multi ? "s were" : " was"} successfully deleted.`;
             setToast({ type: "success", message, timestamp: getNextToastTrigger() });
             setSelected(new Set());
-            setRoot(result.data);
           } else {
             setErrorMessage(result.error);
             const message = `Error: Unable to delete staff member(s). ${result.error}`;
@@ -742,7 +724,7 @@ export default function StudentStaffPage({ type }: StudentStaffPageProps) {
     const arr = Array.from(data.filter((s) => selected.has(s._id)));
     let name;
     if (arr.length > 0) {
-      if ("parentContact" in arr[0]) {
+      if ("displayName" in arr[0]) {
         name = arr[0].displayName;
       } else {
         name = `${arr[0].firstName} ${arr[0].lastName}`;

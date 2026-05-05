@@ -69,9 +69,10 @@ export const SectionCard = function SectionCard({
     <div className={styles.cardWrapper}>
       <div className={styles.topBar} style={{ backgroundColor: color }} ref={menuRef}>
         {isAdmin && (
-        <button className={styles.menuButton} onClick={toggleMenu}>
-          <MoreHorizontal />
-        </button>)}
+          <button className={styles.menuButton} onClick={toggleMenu}>
+            <MoreHorizontal />
+          </button>
+        )}
         {menuOpen && (
           <div className={styles.dropdown}>
             <button

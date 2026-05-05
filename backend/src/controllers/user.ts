@@ -2,7 +2,6 @@ import { FirebaseAuthError } from "firebase-admin/auth";
 import createHTTPError from "http-errors";
 import { Types } from "mongoose";
 
-import { AuthError } from "../errors/auth";
 import UserModel from "../models/user";
 import { firebaseAdminAuth } from "../util/firebase";
 
@@ -139,7 +138,7 @@ export const deleteUsersByIds: RequestHandler = async (req, res, next) => {
       throw createHTTPError(400, "ids must be a non-empty array");
     }
 
-    await Promise.all(ids.map((id) => firebaseAdminAuth.deleteUser(id)));
+    await Promise.all(ids.map(async (id) => firebaseAdminAuth.deleteUser(id)));
     await UserModel.deleteMany({ _id: { $in: ids } });
     res.status(200).json({ message: "Users deleted successfully" });
   } catch (error) {

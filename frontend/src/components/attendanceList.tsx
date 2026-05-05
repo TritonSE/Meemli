@@ -218,7 +218,6 @@ export default function AttendanceList({
                   </p>
                 </div>
               ) : attendees.length === 0 ? (
-                /* No results found for search */
                 <div className="space-y-2 text-center">
                   <p className={styles.sessionNotFound}>No students found in this class.</p>
                 </div>
