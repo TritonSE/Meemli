@@ -69,7 +69,7 @@ export const getSession: RequestHandler = async (req, res, next) => {
     // Non-admins can only view sessions for sections they teach
     if (!req.userContext?.admin) {
       const isTeacher = (req.userContext?.assignedSections ?? []).some(
-        (id) => id.toString() === session.section.toString(),
+        (sectionId) => sectionId.toString() === session.section.toString(),
       );
       if (!isTeacher) {
         throw createHTTPError(403, "You do not have permission to view this session");

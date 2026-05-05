@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 import styles from "./Table.module.css";
 

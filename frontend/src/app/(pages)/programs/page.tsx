@@ -43,8 +43,6 @@ export default function Programs() {
   const { toast, showToast, dismissToast } = useToast();
   const { isAdmin } = useAuth();
 
-
-
   const fetchData = async () => {
     const result = await getAllSections();
     if (result.success) {

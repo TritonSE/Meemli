@@ -3,6 +3,7 @@ import { Calendar, GraduationCap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import styles from "./SectionCard.module.css";
+
 import { useAuth } from "@/src/context/AuthContext";
 
 // To check -- day is string, days is string[], are we going to accept multiple days for one card? or just one day per card.

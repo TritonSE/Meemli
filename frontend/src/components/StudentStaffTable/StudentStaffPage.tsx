@@ -33,9 +33,8 @@ type StudentStaffPageProps = {
 };
 
 export default function StudentStaffPage({ type }: StudentStaffPageProps) {
-  const { isAdmin, user} = useAuth();
+  const { isAdmin, user } = useAuth();
 
- 
   const disabled = user?.archived ?? false;
 
   if (disabled) {

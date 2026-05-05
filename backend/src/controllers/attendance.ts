@@ -48,7 +48,7 @@ export const updateAttendanceById: RequestHandler = async (req, res, next) => {
     if (!req.userContext?.admin) {
       const session = await SessionModel.findById(attendance.session);
       const isTeacher = (req.userContext?.assignedSections ?? []).some(
-        (id) => id.toString() === session?.section.toString(),
+        (sectionId) => sectionId.toString() === session?.section.toString(),
       );
       if (!isTeacher) {
         throw new createHttpError.Forbidden("You are not the teacher of this section");

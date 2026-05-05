@@ -355,7 +355,10 @@ export default function TestStudentForm() {
         <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
           <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "#374151" }}>
             Session's Section ID
-            <span style={{ fontWeight: 400, color: "#94a3b8" }}> (POST /sessions — must exist)</span>
+            <span style={{ fontWeight: 400, color: "#94a3b8" }}>
+              {" "}
+              (POST /sessions — must exist)
+            </span>
           </label>
           <input
             value={sessionSectionId}

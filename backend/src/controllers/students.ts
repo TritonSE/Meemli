@@ -66,8 +66,8 @@ export const getAllStudents: RequestHandler = async (req, res, next) => {
       // Filter enrolledSections to only show what this teacher teaches
       const filteredStudents = students.map((student) => {
         const studentObj = student.toObject();
-        studentObj.enrolledSections = (studentObj.enrolledSections ?? []).filter((id: any) =>
-          teacherSectionIds.includes(id.toString()),
+        studentObj.enrolledSections = (studentObj.enrolledSections ?? []).filter(
+          (id: Types.ObjectId) => teacherSectionIds.includes(id.toString()),
         );
         return studentObj;
       });
@@ -115,9 +115,9 @@ export const getStudentById: RequestHandler = async (req, res, next) => {
         postassessmentScore: studentObj.postassessmentScore,
         comments: studentObj.comments,
         archived: studentObj.archived,
-        enrolledSections: (studentObj.enrolledSections ?? []).filter((s: any) =>
-          teacherSectionIds.has(s._id?.toString() || s.toString()),
-        ),
+        enrolledSections: (
+          (studentObj.enrolledSections ?? []) as { _id?: Types.ObjectId }[]
+        ).filter((s) => teacherSectionIds.has(s._id?.toString() || s.toString())),
       });
     }
 
@@ -177,9 +177,9 @@ export const editStudentById: RequestHandler = async (req, res, next) => {
         postassessmentScore: studentObj.postassessmentScore,
         comments: studentObj.comments,
         archived: studentObj.archived,
-        enrolledSections: (studentObj.enrolledSections ?? []).filter((s: any) =>
-          teacherSectionIds.has(s._id?.toString() || s.toString()),
-        ),
+        enrolledSections: (
+          (studentObj.enrolledSections ?? []) as { _id?: Types.ObjectId }[]
+        ).filter((s) => teacherSectionIds.has(s._id?.toString() || s.toString())),
       });
     }
 
