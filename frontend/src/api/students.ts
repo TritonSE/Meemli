@@ -86,7 +86,7 @@ function parseStudent(student: StudentJSON): Student {
 type RequiredStudentFields = Required<Omit<Student, "_id">>;
 
 export type CreateStudentRequest = RequiredStudentFields;
-export type UpdateStudentRequest = { _id: string } & RequiredStudentFields;
+export type UpdateStudentRequest = { _id: string } & Partial<RequiredStudentFields>;
 
 export async function createStudent(student: CreateStudentRequest): Promise<APIResult<Student>> {
   try {
