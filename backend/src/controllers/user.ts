@@ -85,6 +85,10 @@ export const editUserById: RequestHandler = async (req, res, next) => {
 export const whoAmI: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
 
+  if (!req.userContext?.admin && req.userContext?._id !== id) {
+    return next(createHTTPError(403, "Forbidden"));
+  }
+
   await firebaseAdminAuth.getUser(id).catch((error) => {
     if (error instanceof FirebaseAuthError && error.code === "auth/user-not-found") {
       throw createHTTPError(404, "User not found");
