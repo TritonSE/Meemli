@@ -117,3 +117,7 @@
   overflow-y: hidden;
   scrollbar-width: none;
 }
+
+.dateRow {
+  height: 50px;
+}

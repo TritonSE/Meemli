@@ -103,14 +103,14 @@ export const SectionCard = function SectionCard({
         <h3 className={`${styles.classTitle} ${styles.scrollable}`} tabIndex={0} title={code}>
           {code}
         </h3>
-        <p className={styles.scrollable}>
+        <p className={styles.dateRow}>
           {days.join(", ")} {formattedStartTime} - {formattedEndTime}
         </p>
 
         <hr />
 
         <div className={`${styles.row} ${styles.scrollable}`}>
-          <GraduationCap size={16} /> {teachers && teachers[0]}
+          <GraduationCap size={16} /> {teachers && teachers.join(", ")}
         </div>
         <div className={`${styles.row} ${styles.scrollable}`}>
           <Calendar size={16} /> {formattedStartDate} - {formattedEndDate}
