@@ -499,7 +499,7 @@ export default function TestStudentForm() {
                   comments: `perm_check_${Date.now()}`,
                   preassessmentScore: 42,
                   postassessmentScore: 84,
-                } as Parameters<typeof updateStudent>[0]),
+                }),
               (data) => {
                 console.info("PUT /students/:id (allowed fields) response:", data);
                 return `OK — grade=${data.grade}, comments="${data.comments}"`;
@@ -530,7 +530,7 @@ export default function TestStudentForm() {
                 updateStudent({
                   _id: sid,
                   grade: 12,
-                } as Parameters<typeof updateStudent>[0]),
+                }),
               (data) => {
                 console.info("PUT /students/:id (restricted field) response:", data);
                 return `returned grade=${data.grade} ${data.grade === 999 ? "(admin — field applied)" : "(teacher — field stripped)"}`;
