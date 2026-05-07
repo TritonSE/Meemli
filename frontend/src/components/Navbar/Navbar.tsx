@@ -41,7 +41,7 @@ export function Navbar() {
   return (
     <nav className={style.sideNav}>
       <div className={style.navLinks}>
-        <Link href="/">
+        <Link href="/programs">
           <Image
             src="/icons/logo.png"
             className={style.logo}
