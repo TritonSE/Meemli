@@ -34,7 +34,6 @@ app.use(log);
 app.use("/api/sections", verifyAuthToken, sectionsRouter);
 app.use("/api/students", verifyAuthToken, studentsRoutes);
 app.use("/api/sessions", verifyAuthToken, sessionRoutes);
-app.use("/api/sessions", sessionRoutes);
 app.use("/api/attendance", verifyAuthToken, attendanceRoutes);
 app.use("/api/user", verifyAuthToken, userRoutes);
 
