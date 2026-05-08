@@ -5,7 +5,6 @@ import { MultiSelect } from "../../MultiSelect/MultiSelect";
 
 import styles from "./StepThreeEnrolled.module.css";
 
-// TODO: Update this import path to where your schema is defined
 import type { SectionDraft } from "../SectionForm";
 import type { Student } from "@/src/api/students";
 import type { User } from "@/src/api/users";
@@ -107,6 +106,7 @@ export function StepThreeEnrolled() {
           control={control}
           render={({ field }) => (
             <MultiSelect
+              mode="multiple"
               options={teacherOptions}
               label="Teachers"
               placeholder="Search or select teacher name"
@@ -125,13 +125,13 @@ export function StepThreeEnrolled() {
           control={control}
           render={({ field }) => (
             <MultiSelect
+              mode="multiple"
               options={studentOptions}
               label="Students"
               placeholder="Search or select student name"
               value={field.value} // Array of student ObjectIDs
               onChange={field.onChange}
               withChips={true}
-              fitContent={false}
               required={true}
             />
           )}

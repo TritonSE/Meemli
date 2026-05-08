@@ -102,6 +102,11 @@ export default function LoginPage() {
       });
   };
 
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleSignIn();
+  };
+
   // use auth card component instead of duplicating this code in activate and forgot password pages
   return (
     <AuthCard
@@ -109,7 +114,7 @@ export default function LoginPage() {
       subtitle="Sign in to Meemli Program Dashboard"
       aria-label="Sign in"
     >
-      <div className={styles.form}>
+      <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.field}>
           <TextField
             label="Email"
@@ -184,13 +189,12 @@ export default function LoginPage() {
           <Button
             kind="primary"
             label="Sign in"
-            type="button"
+            type="submit"
             className={styles.signInBtn}
-            onClick={handleSignIn}
             disabled={loading}
           />
         </div>
-      </div>
+      </form>
     </AuthCard>
   );
 }
