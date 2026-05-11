@@ -254,13 +254,11 @@ export const MultiSelect: React.FC<Props> = (props) => {
         </svg>
       </div>
 
-      {(!supportsPopover ? isOpen : true) && (
+      {isOpen && (
         <div
           className={`${styles.popover} ${supportsPopover ? "" : styles.popoverFallback}`}
           role="listbox"
           ref={popoverRef}
-          {...(supportsPopover ? { popover: "manual" } : {})}
-          style={supportsPopover ? { positionAnchor: anchorName } : {}}
         >
           {isOpen && (
             <>

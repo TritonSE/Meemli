@@ -98,13 +98,12 @@
     /* Required native resets for popover elements */
     margin: 0;
     border: none;
-    inset: auto;
 
     /* Anchor Positioning Magic */
     position: absolute;
-    top: calc(anchor(bottom) + 4px);
-    left: anchor(left);
-    width: anchor-size(width);
+    top: calc(100% + 4px);
+    left: 0;
+    width: 100%;
 
     background: white;
     border-radius: 12px;
