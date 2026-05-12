@@ -15,12 +15,13 @@ export function DateSelect({
   onChange: (d: string) => void;
   availableDates?: string[]; // Added the '?' for optionality
 }) {
-  const parsedValue = value ? parse(value, "yyyy-MM-dd", new Date()) : new Date();
-  const validValue = isValid(parsedValue) ? parsedValue : new Date();
+  const parsedValue = value ? parse(value, "yyyy-MM-dd", new Date()) : undefined;
+  const selectedValue = parsedValue && isValid(parsedValue) ? parsedValue : undefined;
+  const calendarValue = selectedValue ?? new Date();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [tempDate, setTempDate] = useState<Date | undefined>(undefined);
-  const [currentMonth, setCurrentMonth] = useState<Date>(validValue);
+  const [currentMonth, setCurrentMonth] = useState<Date>(calendarValue);
 
   // Disable logic updated to handle undefined availableDates
   const isDisabled = (date: Date) => {
@@ -35,8 +36,8 @@ export function DateSelect({
   };
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setTempDate(validValue);
-    setCurrentMonth(validValue);
+    setTempDate(selectedValue);
+    setCurrentMonth(calendarValue);
     setAnchorEl(event.currentTarget);
   };
 
@@ -81,7 +82,9 @@ export function DateSelect({
             strokeLinejoin="round"
           />
         </svg>
-        <span className={styles.textElement}>{formatDisplayDate(validValue)}</span>
+        <span className={styles.textElement}>
+          {selectedValue ? formatDisplayDate(selectedValue) : "Select date"}
+        </span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"
