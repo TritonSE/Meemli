@@ -4,7 +4,6 @@
   position: relative;
   gap: 8px;
   font-family: "Inter", sans-serif;
-  max-width: 400px;
   color: var(--grey-500);
 
   .label {
@@ -18,9 +17,23 @@
     }
   }
 
+  .optionLabelWrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between option icon and text */
+  }
+
+  .optionIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+  }
+
   .control {
     display: flex;
-
+    box-sizing: border-box; /* Added to prevent overflow when 100% width is applied */
     overflow-x: scroll;
     scrollbar-width: none;
     align-items: center;
@@ -32,18 +45,42 @@
     min-height: 48px;
     transition: border-color 0.2s;
 
+    .leftIcon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--grey-400);
+      margin-right: 8px; /* space between icon and the selected values */
+      flex-shrink: 0;
+    }
+
     &:focus-within {
-      outline: 2px solid var(--primary-100);
+      outline: 2px solid var(--primary-700);
+      border-color: var(--primary-700);
     }
 
     .values {
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 6px;
+      flex: 1;
+      overflow-x: auto; /* Allow horizontal scrolling */
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       .placeholder {
         color: var(--grey-400);
+        white-space: nowrap; /* Keep placeholder on one line */
       }
+    }
+
+    .selectedText {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .chevron {
@@ -61,15 +98,13 @@
     /* Required native resets for popover elements */
     margin: 0;
     border: none;
-    inset: auto;
 
     /* Anchor Positioning Magic */
     position: absolute;
-    top: calc(anchor(bottom) + 4px);
-    left: anchor(left);
-    width: anchor-size(width);
+    top: calc(100% + 4px);
+    left: 0;
+    width: 100%;
 
-    /* Your existing styling */
     background: white;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
@@ -98,6 +133,7 @@
       /* custom scrollbar */
       &::-webkit-scrollbar {
         width: 8px;
+        height: 8px;
       }
       &::-webkit-scrollbar-track {
         background: transparent;
@@ -118,6 +154,9 @@
         transition: background 0.2s;
         margin-bottom: 4px;
 
+        white-space: normal;
+        word-break: break-word;
+        min-height: 40px;
         &:hover {
           background-color: rgba(0, 0, 0, 0.05);
         }
@@ -148,16 +187,39 @@
 
 /* reusable chip style inside and outside dropdown */
 .chip {
+  display: inline-flex;
+  align-items: center;
   background-color: var(--primary-100, #d1e7e2);
   padding: 4px 10px;
   border-radius: 6px;
   font-size: 13px;
   font-weight: 600;
   color: var(--primary-700);
+  height: auto;
+  width: fit-content;
   white-space: nowrap;
 }
 
 .fitContent {
   min-width: 9rem;
   max-width: 5rem;
+}
+
+.boldenIcon {
+  color: var(--grey-900) !important;
+  filter: brightness(0.45);
+  font-weight: 300;
+}
+
+.boldenText {
+  color: var(--grey-800);
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.fullWidth .control {
+  width: 100%;
+  max-width: none; /* Ensures any straggling max-width rules don't block the stretch */
 }

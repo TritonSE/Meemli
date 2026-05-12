@@ -29,8 +29,6 @@
 
   /* if the form content gets tall */
   max-height: 95vh;
-  overflow-x: hidden;
-  overflow-y: scroll;
   scrollbar-width: none;
   justify-content: center;
 }

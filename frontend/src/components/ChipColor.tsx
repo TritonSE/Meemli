@@ -54,9 +54,11 @@ function hexToHsl(hex: string) {
  * @param color - The base color in hex format.
  * @returns An object containing the backgroundColor and textColor in HSL format.
  */
-export function getChipColors(color: string) {
+function getChipColors(color: string) {
   const { h, s, l } = hexToHsl(color);
   const backgroundColor = `hsl(${h}, ${s}%, ${Math.min(l + 35, 92)}%)`; // lighter
   const textColor = `hsl(${h}, ${s}%, ${Math.max(l - 35, 15)}%)`; // darker
   return { backgroundColor, textColor };
 }
+
+export { getChipColors, hexToHsl, hexToRgb };
