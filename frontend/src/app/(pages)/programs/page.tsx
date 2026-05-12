@@ -193,6 +193,7 @@ export default function Programs() {
           setShowCreateModal(false);
           void fetchData();
         }}
+        showToast={showToast}
       />
 
       {/* pop up for deleting section */}
@@ -241,6 +242,7 @@ export default function Programs() {
           setEditingSection(null);
           void fetchData();
         }}
+        showToast={showToast}
       />
 
       <div className={styles.grid}>
