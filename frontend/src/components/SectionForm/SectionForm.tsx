@@ -188,7 +188,10 @@ export function CreateSectionFlow({ active, onClose, sectionId, showToast }: Sec
         spawnSuccessDialog(successMessage);
         router.refresh(); // Optional: trigger a Next.js server component refresh to show new data
       } else {
-        showToast?.(`Failed to ${sectionId ? "update" : "create"} class: ${response.error}`, "error");
+        showToast?.(
+          `Failed to ${sectionId ? "update" : "create"} class: ${response.error}`,
+          "error",
+        );
       }
     } catch (error) {
       console.error("Submission failed:", error);

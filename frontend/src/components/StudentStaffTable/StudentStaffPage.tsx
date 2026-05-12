@@ -45,9 +45,9 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
   const [root, setRoot] = useState<Student[] | User[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
 
-  const [isLoading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [, setErrorMessage] = useState<string | null>(null);
   const [isEdit, setEdit] = useState<boolean>(false);
 
   // state for viewing

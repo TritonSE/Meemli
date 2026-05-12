@@ -46,8 +46,8 @@ export function Table({
   selected,
   setSelected,
 }: TableProps) {
-  const [isLoading, setLoading] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [, setLoading] = useState<boolean>(false);
+  const [, setErrorMessage] = useState<string | null>(null);
 
   // State for modals
   const [editOpen, setEditOpen] = useState<boolean>(false);
