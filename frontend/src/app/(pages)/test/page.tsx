@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import type { Student } from "@/src/api/students";
+import type { CSSProperties } from "react";
 
 import BookIcon from "@/public/icons/nav/programs.svg";
 import { getAllSections } from "@/src/api/sections";
@@ -174,7 +175,7 @@ export default function Test() {
   const [attendanceSection, setAttendanceSection] = useState<string>("sec_a");
 
   return (
-    <div>
+    <div style={{ paddingLeft: "128px" }}>
       <div style={{ padding: "20px" }}>
         <h1> Create Class Form</h1>
 

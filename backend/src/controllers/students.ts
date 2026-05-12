@@ -7,6 +7,7 @@ import {
   TEACHER_STUDENT_PROJECTION,
 } from "../middleware/permissions";
 import StudentModel from "../models/student";
+import { handleEnrollment, handleFullDeletion, handleUnenrollment } from "../util/attendanceLogic";
 
 import type { RequestHandler } from "express";
 
@@ -39,8 +40,15 @@ export const createStudent: RequestHandler = async (req, res, next) => {
     const student = await StudentModel.create({
       ...studentData,
       enrolledSections: enrolledSectionsIds,
-      archived: false,
     });
+
+    if (enrolledSections && enrolledSections.length > 0) {
+      await Promise.all(
+        enrolledSections.map(async (sectionId) =>
+          handleEnrollment(student._id.toString(), sectionId),
+        ),
+      );
+    }
 
     const populatedStudent = await student.populate("enrolledSections");
     res.status(201).json(populatedStudent);
@@ -141,16 +149,16 @@ export const editStudentById: RequestHandler = async (req, res, next) => {
   let updates: EditStudentBody = req.body as EditStudentBody;
 
   try {
-    if (!req.userContext?.admin) {
-      const student = await StudentModel.findById(id);
-      if (!student) {
-        return res.status(404).json({ message: "Student not found" });
-      }
+    // Fetch BEFORE update so we can diff enrolledSections
+    const existingStudent = await StudentModel.findById(id);
+    if (!existingStudent) {
+      return res.status(404).json({ message: "Student not found" });
+    }
 
-      if (req.userContext && !hasStudentAccess(req.userContext, student.enrolledSections)) {
+    if (!req.userContext?.admin) {
+      if (req.userContext && !hasStudentAccess(req.userContext, existingStudent.enrolledSections)) {
         throw createHTTPError(403, "Forbidden");
       }
-
       updates = Object.fromEntries(
         Object.entries(updates).filter(([key]) => TEACHER_EDITABLE_STUDENT_FIELDS.has(key)),
       ) as EditStudentBody;
@@ -160,7 +168,22 @@ export const editStudentById: RequestHandler = async (req, res, next) => {
       "enrolledSections",
     );
     if (!student) {
-      throw createHTTPError(404, "Student not found");
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    if (updates.enrolledSections) {
+      const oldSectionIds = existingStudent.enrolledSections.map((s) => s.toString());
+      const newSectionIds = updates.enrolledSections;
+
+      const added = newSectionIds.filter((s) => !oldSectionIds.includes(s));
+      const removed = oldSectionIds.filter((s) => !newSectionIds.includes(s));
+
+      if (added.length > 0) {
+        await Promise.all(added.map(async (sectionId) => handleEnrollment(id, sectionId)));
+      }
+      if (removed.length > 0) {
+        await Promise.all(removed.map(async (sectionId) => handleUnenrollment(id, sectionId)));
+      }
     }
 
     if (!req.userContext?.admin) {
@@ -168,7 +191,6 @@ export const editStudentById: RequestHandler = async (req, res, next) => {
       const teacherSectionIds = new Set(
         (req.userContext?.assignedSections ?? []).map((sid) => sid.toString()),
       );
-
       return res.status(200).json({
         _id: studentObj._id,
         displayName: studentObj.displayName,
@@ -215,10 +237,13 @@ export const deleteStudentById: RequestHandler = async (req, res, next) => {
   }
 
   try {
+    await handleFullDeletion(id);
+
     const student = await StudentModel.findByIdAndDelete(id);
     if (!student) {
       throw createHTTPError(404, "Student not found");
     }
+
     res.status(200).json({ message: "Student deleted successfully" });
   } catch (error) {
     return next(error);
@@ -230,10 +255,13 @@ export const deleteStudentsByIds: RequestHandler = async (req, res, next) => {
   const validIds = ids
     .filter((id) => Types.ObjectId.isValid(id))
     .map((id) => new Types.ObjectId(id));
+
   if (validIds.length === 0) {
     throw createHTTPError(400, "No valid student IDs provided");
   }
+
   try {
+    await Promise.all(validIds.map(async (id) => handleFullDeletion(id)));
     await StudentModel.deleteMany({ _id: { $in: validIds } });
     res.status(200).json({ message: "Students deleted successfully" });
   } catch (error) {

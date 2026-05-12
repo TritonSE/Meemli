@@ -86,16 +86,20 @@ export const ensureAttendanceForSession = async (sessionId: string) => {
   if (!session) throw createHTTPError(404, "Session not found");
 
   const sessionDate = new Date(session.sessionDate);
-  const today = new Date();
-  sessionDate.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
-  // Don't create attendance for future sessions
-  if (sessionDate > today) return [];
+  const now = new Date();
 
-  const students = await getStudentsInSection(session.section);
+  // Include today: only skip future sessions
+  const isCurrentOrPast = sessionDate <= now;
+  if (!isCurrentOrPast) return [];
+
+  const students = await getStudentsInSection(new Types.ObjectId(session.section.toString()));
+
   await Promise.all(
     students.map(async (studentId) =>
-      AttendanceModel.create({ session: session._id, student: studentId, status: "PRESENT" }),
+      AttendanceModel.create({
+        session: session._id,
+        student: studentId,
+      }),
     ),
   );
 
