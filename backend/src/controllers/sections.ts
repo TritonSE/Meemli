@@ -3,8 +3,8 @@ import { Types } from "mongoose";
 import { AttendanceModel } from "../models/attendance";
 import { Section } from "../models/sections";
 import { SessionModel } from "../models/session";
-import User from "../models/user";
 import StudentModel from "../models/student";
+import User from "../models/user";
 import { handleEnrollment, handleUnenrollment } from "../util/attendanceLogic";
 
 import type { SectionDoc } from "../models/sections";
@@ -62,7 +62,7 @@ export const createSection: RequestHandler = async (req, res) => {
         { $addToSet: { assignedSections: section._id } },
       );
     }
-    
+
     if (section.enrolledStudents && section.enrolledStudents.length > 0) {
       await Promise.all(
         section.enrolledStudents.map(async (studentId) =>
@@ -115,14 +115,20 @@ export const updateSection: RequestHandler<{ id: string }, unknown, UpdateSectio
 
     const oldTeacherSet = new Set(existingSection.teachers.map((t) => t.toString()));
     const newTeacherSet = new Set(section.teachers.map((t) => t.toString()));
-    const added = [...newTeacherSet].filter((t) => !oldTeacherSet.has(t));
-    const removed = [...oldTeacherSet].filter((t) => !newTeacherSet.has(t));
+    const addedTeachers = [...newTeacherSet].filter((t) => !oldTeacherSet.has(t));
+    const removedTeachers = [...oldTeacherSet].filter((t) => !newTeacherSet.has(t));
 
     await Promise.all([
-      added.length > 0 &&
-        User.updateMany({ _id: { $in: added } }, { $addToSet: { assignedSections: section._id } }),
-      removed.length > 0 &&
-        User.updateMany({ _id: { $in: removed } }, { $pull: { assignedSections: section._id } }),
+      addedTeachers.length > 0 &&
+        User.updateMany(
+          { _id: { $in: addedTeachers } },
+          { $addToSet: { assignedSections: section._id } },
+        ),
+      removedTeachers.length > 0 &&
+        User.updateMany(
+          { _id: { $in: removedTeachers } },
+          { $pull: { assignedSections: section._id } },
+        ),
     ]);
 
     await SessionModel.deleteMany({ section: section._id, sessionDate: { $gt: new Date() } });
@@ -144,17 +150,17 @@ export const updateSection: RequestHandler<{ id: string }, unknown, UpdateSectio
       const oldStudentIds = existingSection.enrolledStudents.map((s) => s.toString());
       const newStudentIds = req.body.enrolledStudents.map((s) => s.toString());
 
-      const added = newStudentIds.filter((s) => !oldStudentIds.includes(s));
-      const removed = oldStudentIds.filter((s) => !newStudentIds.includes(s));
+      const addedStudents = newStudentIds.filter((s) => !oldStudentIds.includes(s));
+      const removedStudents = oldStudentIds.filter((s) => !newStudentIds.includes(s));
 
-      if (added.length > 0) {
+      if (addedStudents.length > 0) {
         await Promise.all(
-          added.map(async (studentId) => handleEnrollment(studentId, req.params.id)),
+          addedStudents.map(async (studentId) => handleEnrollment(studentId, req.params.id)),
         );
       }
-      if (removed.length > 0) {
+      if (removedStudents.length > 0) {
         await Promise.all(
-          removed.map(async (studentId) => handleUnenrollment(studentId, req.params.id)),
+          removedStudents.map(async (studentId) => handleUnenrollment(studentId, req.params.id)),
         );
       }
     }
