@@ -287,6 +287,7 @@ export default function Programs() {
         <Toast
           id="main"
           message={toast.message}
+          type={toast.type}
           onUndo={toast.onUndo}
           onDismiss={() => dismissToast()}
         />

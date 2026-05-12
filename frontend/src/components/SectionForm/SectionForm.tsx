@@ -15,7 +15,6 @@ import type { Path } from "react-hook-form"; // Import this if available, otherw
 
 // Make sure to import getSectionById and updateSection
 import { createSection, getSectionById, updateSection } from "@/src/api/sections";
-import { getSessionsBySection } from "@/src/api/attendance";
 
 const COLOR_REGEX = /^#(?:[0-9a-f]{3}){1,2}$/i;
 
@@ -32,7 +31,7 @@ export const sectionDraftSchema = z
     enrolledStudents: z.array(z.string()),
   })
   .superRefine((data, ctx) => {
-    if (new Date(data.startDate) > new Date(data.endDate)) {
+    if (data.startDate > data.endDate) {
       ctx.addIssue({
         code: "custom",
         path: ["endDate"],
@@ -102,7 +101,7 @@ type SectionFlowProps = {
   active: boolean;
   onClose: () => void;
   sectionId?: string;
-  showToast?: (message: string, onUndo?: () => void) => void;
+  showToast?: (message: string, type?: "success" | "error" | "info", onUndo?: () => void) => void;
 };
 
 export function CreateSectionFlow({ active, onClose, sectionId, showToast }: SectionFlowProps) {
@@ -189,12 +188,12 @@ export function CreateSectionFlow({ active, onClose, sectionId, showToast }: Sec
         spawnSuccessDialog(successMessage);
         router.refresh(); // Optional: trigger a Next.js server component refresh to show new data
       } else {
-        showToast?.(`Failed to ${sectionId ? "update" : "create"} class: ${response.error}`);
+        showToast?.(`Failed to ${sectionId ? "update" : "create"} class: ${response.error}`, "error");
       }
     } catch (error) {
       console.error("Submission failed:", error);
       const message = error instanceof Error ? error.message : "Unknown error";
-      showToast?.(`Failed to ${sectionId ? "update" : "create"} class: ${message}`);
+      showToast?.(`Failed to ${sectionId ? "update" : "create"} class: ${message}`, "error");
     }
   };
 
