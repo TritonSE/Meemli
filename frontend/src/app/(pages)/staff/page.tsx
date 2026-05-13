@@ -1,5 +1,6 @@
 "use client";
 
+import AdminRoute from "@/src/components/AdminRoute/AdminRoute";
 import StudentStaffPage from "@/src/components/StudentStaffTable/StudentStaffPage";
 import { useAuth } from "@/src/context/AuthContext";
 
@@ -12,7 +13,9 @@ export default function Staff() {
   if (!user) {
     return <div>You must be logged in to view this page.</div>;
   }
-  const state: "admin" | "teacher" = user.admin ? "admin" : "teacher";
-  const disabled = user.archived;
-  return <StudentStaffPage type="staff" state={state} disabled={disabled} />;
+  return (
+    <AdminRoute>
+      <StudentStaffPage type="staff" />
+    </AdminRoute>
+  );
 }

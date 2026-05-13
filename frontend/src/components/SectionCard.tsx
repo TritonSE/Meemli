@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 
 import styles from "./SectionCard.module.css";
 
+import { useAuth } from "@/src/context/AuthContext";
+
 // To check -- day is string, days is string[], are we going to accept multiple days for one card? or just one day per card.
 
 export const SectionCard = function SectionCard({
@@ -33,6 +35,7 @@ export const SectionCard = function SectionCard({
   onArchive: () => void | Promise<void>;
   onDelete: () => void | Promise<void>;
 }) {
+  const { isAdmin } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = () => setMenuOpen((prev) => !prev);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -65,9 +68,11 @@ export const SectionCard = function SectionCard({
   return (
     <div className={styles.cardWrapper}>
       <div className={styles.topBar} style={{ backgroundColor: color }} ref={menuRef}>
-        <button className={styles.menuButton} onClick={toggleMenu}>
-          <MoreHorizontal />
-        </button>
+        {isAdmin && (
+          <button className={styles.menuButton} onClick={toggleMenu}>
+            <MoreHorizontal />
+          </button>
+        )}
         {menuOpen && (
           <div className={styles.dropdown}>
             <button
@@ -84,8 +89,7 @@ export const SectionCard = function SectionCard({
                 setMenuOpen(false);
               }}
             >
-              {!archived && "Archive"}
-              {archived && "Unarchive"}
+              {!archived ? "Archive" : "Unarchive"}
             </button>
             <button
               onClick={() => {

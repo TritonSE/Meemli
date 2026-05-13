@@ -36,22 +36,26 @@ const InfoPanel = ({ student }: { student: Student }) => {
     <div className={styles.panelContainer}>
       <div className={styles.sectionBlock}>
         <h3>Parent Information</h3>
-        <div className={styles.infoGrid}>
-          <div className={styles.infoItem}>
-            <label>Parent Name</label>
-            <p>
-              {parentContact.firstName} {parentContact.lastName}
-            </p>
+        {parentContact ? (
+          <div className={styles.infoGrid}>
+            <div className={styles.infoItem}>
+              <label>Parent Name</label>
+              <p>
+                {parentContact.firstName} {parentContact.lastName}
+              </p>
+            </div>
+            <div className={styles.infoItem}>
+              <label>Parent Email</label>
+              <p>{parentContact.email}</p>
+            </div>
+            <div className={styles.infoItem}>
+              <label>Parent Phone</label>
+              <p>{parentContact.phoneNumber}</p>
+            </div>
           </div>
-          <div className={styles.infoItem}>
-            <label>Parent Email</label>
-            <p>{parentContact.email}</p>
-          </div>
-          <div className={styles.infoItem}>
-            <label>Parent Phone</label>
-            <p>{parentContact.phoneNumber}</p>
-          </div>
-        </div>
+        ) : (
+          <p>Not available</p>
+        )}
       </div>
     </div>
   );

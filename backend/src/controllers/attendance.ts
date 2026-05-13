@@ -7,6 +7,8 @@ import { SessionModel } from "../models/session";
 
 import type { RequestHandler } from "express";
 
+const createHttpError = createHTTPError;
+
 type CreateAttendanceBody = {
   session: string;
   student: string;
@@ -16,6 +18,9 @@ type CreateAttendanceBody = {
 
 export const createAttendance: RequestHandler = async (req, res, next) => {
   try {
+    if (!req.userContext?.admin)
+      throw new createHttpError.Forbidden("Admin privileges required to create attendance record");
+
     const { session, student, status, notes } = req.body as CreateAttendanceBody;
 
     const attendance = await AttendanceModel.create({
@@ -36,6 +41,20 @@ type UpdateAttendanceBody = Partial<CreateAttendanceBody>;
 export const updateAttendanceById: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
+
+    const attendance = await AttendanceModel.findById(id);
+    if (!attendance) throw new createHttpError.NotFound("Attendance record not found");
+
+    if (!req.userContext?.admin) {
+      const session = await SessionModel.findById(attendance.session);
+      const isTeacher = (req.userContext?.assignedSections ?? []).some(
+        (sectionId) => sectionId.toString() === session?.section.toString(),
+      );
+      if (!isTeacher) {
+        throw new createHttpError.Forbidden("You are not the teacher of this section");
+      }
+    }
+
     const updateData: UpdateAttendanceBody = req.body as UpdateAttendanceBody;
     const updatedAttendance = await AttendanceModel.findByIdAndUpdate(id, updateData, {
       new: true,
@@ -90,6 +109,18 @@ export const ensureAttendanceForSession = async (sessionId: string) => {
 export const getAttendanceBySessionId: RequestHandler = async (req, res, next) => {
   try {
     const { sessionId } = req.params;
+
+    if (!req.userContext?.admin) {
+      const session = await SessionModel.findById(sessionId);
+      const isTeacher = (req.userContext?.assignedSections ?? []).some(
+        (id) => id.toString() === session?.section.toString(),
+      );
+
+      if (!isTeacher) {
+        throw new createHttpError.Forbidden();
+      }
+    }
+
     const attendance = await AttendanceModel.find({ session: sessionId });
     // Throw an error if no attendance records are found for the session
     if (attendance.length === 0) {
@@ -114,6 +145,21 @@ export const updateBulkAttendance: RequestHandler = async (req, res, next) => {
     // 1. Safety Check: Is it an array?
     if (!Array.isArray(updates)) {
       throw createHTTPError(400, "Request body must be an array of attendance updates");
+    }
+
+    if (!req.userContext?.admin) {
+      const attendanceIds = (updates as AttendanceUpdate[]).map((u) => u.attendanceId);
+      const records = await AttendanceModel.find({ _id: { $in: attendanceIds } });
+      const sessionIds = [...new Set(records.map((r) => r.session.toString()))];
+      const sessions = await SessionModel.find({ _id: { $in: sessionIds } });
+      const sectionIds = sessions.map((s) => s.section.toString());
+
+      const teacherSectionIds = new Set(
+        (req.userContext?.assignedSections ?? []).map((id) => id.toString()),
+      );
+
+      const isAuthorized = sectionIds.every((id) => teacherSectionIds.has(id));
+      if (!isAuthorized) throw new createHttpError.Forbidden();
     }
 
     // filter out any items missing an 'attendanceId' to prevent crashes

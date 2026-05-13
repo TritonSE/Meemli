@@ -12,26 +12,20 @@ export type ParentContact = {
 export type Student = {
   _id: string;
 
-  // Core info
+  // Core info — always present
   displayName: string;
-  meemliEmail: string;
   grade: number;
-  schoolName: string;
-  city: string;
-  state: string;
-
-  // Parent info
-  parentContact: ParentContact;
-
-  // Assessments
   preassessmentScore: number;
   postassessmentScore: number;
-
-  // Relationships
-  enrolledSections: string[]; // ObjectId[] → string[] on the frontend
-
-  // Misc
   comments: string;
+
+  // Admin-only fields
+  meemliEmail?: string;
+  schoolName?: string;
+  city?: string;
+  state?: string;
+  parentContact?: ParentContact;
+  enrolledSections?: string[]; // ObjectId[] → string[] on the frontend
   archived: boolean;
 };
 
@@ -39,24 +33,24 @@ export type StudentJSON = {
   _id: string;
 
   displayName: string;
-  meemliEmail: string;
   grade: number;
-  schoolName: string;
-  city: string;
-  state: string;
+  preassessmentScore: number;
+  postassessmentScore: number;
+  comments: string;
 
-  parentContact: {
+  // Admin-only fields
+  meemliEmail?: string;
+  schoolName?: string;
+  city?: string;
+  state?: string;
+  parentContact?: {
     firstName: string;
     lastName: string;
     phoneNumber: string;
     email: string;
   };
 
-  preassessmentScore: number;
-  postassessmentScore: number;
-
   enrolledSections: string[]; // ObjectId → string (populated section IDs)
-  comments: string;
   archived?: boolean;
 };
 
@@ -66,34 +60,33 @@ const studentByIdRoute = (id: string) => `${STUDENTS_ROUTE}/${id}`;
 function parseStudent(student: StudentJSON): Student {
   return {
     _id: student._id,
-
     displayName: student.displayName,
-    meemliEmail: student.meemliEmail,
     grade: student.grade,
-    schoolName: student.schoolName,
-    city: student.city,
-    state: student.state,
-
-    parentContact: {
-      firstName: student.parentContact.firstName,
-      lastName: student.parentContact.lastName,
-      phoneNumber: student.parentContact.phoneNumber,
-      email: student.parentContact.email,
-    },
-
     preassessmentScore: student.preassessmentScore,
     postassessmentScore: student.postassessmentScore,
-
-    enrolledSections: student.enrolledSections,
     comments: student.comments,
+    ...(student.meemliEmail !== undefined && { meemliEmail: student.meemliEmail }),
+    ...(student.schoolName !== undefined && { schoolName: student.schoolName }),
+    ...(student.city !== undefined && { city: student.city }),
+    ...(student.state !== undefined && { state: student.state }),
+    ...(student.enrolledSections !== undefined && { enrolledSections: student.enrolledSections }),
+    ...(student.parentContact !== undefined && {
+      parentContact: {
+        firstName: student.parentContact.firstName,
+        lastName: student.parentContact.lastName,
+        phoneNumber: student.parentContact.phoneNumber,
+        email: student.parentContact.email,
+      },
+    }),
     archived: student.archived ?? false,
   };
 }
 
-type StudentPayload = Omit<Student, "_id">;
+// Write requests always supply all fields (admin-only operations)
+type RequiredStudentFields = Required<Omit<Student, "_id">>;
 
-export type CreateStudentRequest = StudentPayload;
-export type UpdateStudentRequest = Student;
+export type CreateStudentRequest = RequiredStudentFields;
+export type UpdateStudentRequest = { _id: string } & Partial<RequiredStudentFields>;
 
 export async function createStudent(student: CreateStudentRequest): Promise<APIResult<Student>> {
   try {
@@ -136,26 +129,34 @@ export async function updateStudent(student: UpdateStudentRequest): Promise<APIR
   }
 }
 
-export async function archiveStudents(
-  ids: string[],
-  archived: boolean,
-): Promise<APIResult<Student[]>> {
+export async function deleteStudent(id: string): Promise<APIResult<{ message: string }>> {
   try {
-    const response = await put(`${STUDENTS_ROUTE}/archive`, { ids, flag: archived });
-    const json = (await response.json()) as StudentJSON[];
-    const students = json.map(parseStudent);
-    return { success: true, data: students };
+    const response = await del(studentByIdRoute(id));
+    const json = (await response.json()) as { message: string };
+    return { success: true, data: json };
   } catch (error) {
     return handleAPIError(error);
   }
 }
 
-export async function deleteStudents(ids: string[]): Promise<APIResult<Student[]>> {
+export async function deleteStudents(ids: string[]): Promise<APIResult<{ message: string }>> {
   try {
     const response = await del(`${STUDENTS_ROUTE}/delete`, {}, { ids });
-    const json = (await response.json()) as StudentJSON[];
-    const students = json.map(parseStudent);
-    return { success: true, data: students };
+    const json = (await response.json()) as { message: string };
+    return { success: true, data: json };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+export async function archiveStudents(
+  ids: string[],
+  archived: boolean,
+): Promise<APIResult<{ message: string }>> {
+  try {
+    const response = await put(`${STUDENTS_ROUTE}/archive`, { ids, flag: archived });
+    const json = (await response.json()) as { message: string };
+    return { success: true, data: json };
   } catch (error) {
     return handleAPIError(error);
   }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { updateStudent } from "../../api/students";
+import { useAuth } from "../../context/AuthContext";
 import { Button } from "../Button";
 import { ErrorMessage } from "../ErrorMessage";
 import { TextField } from "../TextField";
@@ -15,6 +16,7 @@ type StudentEditFormProps = {
   onSubmit?: () => void;
 };
 export function StudentEditForm({ student, onCancel, onSubmit }: StudentEditFormProps) {
+  const { isAdmin } = useAuth();
   const [postassessmentScore, setPostassessmentScore] = useState(
     String(student.postassessmentScore),
   );
@@ -44,26 +46,35 @@ export function StudentEditForm({ student, onCancel, onSubmit }: StudentEditForm
       return;
     }
 
-    updateStudent({
-      _id: student._id,
-      displayName: student.displayName,
-      meemliEmail: student.meemliEmail,
-      grade: student.grade,
-      schoolName: student.schoolName,
-      city: student.city,
-      state: student.state,
-      parentContact: {
-        firstName: student.parentContact.firstName,
-        lastName: student.parentContact.lastName,
-        phoneNumber: student.parentContact.phoneNumber,
-        email: student.parentContact.email,
-      },
-      preassessmentScore: Number(preassessmentScore),
-      postassessmentScore: Number(postassessmentScore),
-      comments,
-      archived: student.archived,
-      enrolledSections: student.enrolledSections,
-    })
+    const payload = isAdmin
+      ? {
+          _id: student._id,
+          displayName: student.displayName,
+          meemliEmail: student.meemliEmail ?? "",
+          grade: student.grade,
+          schoolName: student.schoolName ?? "",
+          city: student.city ?? "",
+          state: student.state ?? "",
+          parentContact: {
+            firstName: student.parentContact?.firstName ?? "",
+            lastName: student.parentContact?.lastName ?? "",
+            phoneNumber: student.parentContact?.phoneNumber ?? "",
+            email: student.parentContact?.email ?? "",
+          },
+          preassessmentScore: Number(preassessmentScore),
+          postassessmentScore: Number(postassessmentScore),
+          comments,
+          archived: student.archived,
+          enrolledSections: student.enrolledSections ?? [],
+        }
+      : {
+          _id: student._id,
+          preassessmentScore: Number(preassessmentScore),
+          postassessmentScore: Number(postassessmentScore),
+          comments,
+        };
+
+    updateStudent(payload)
       .then((result) => {
         if (result.success) {
           if (onSubmit) {

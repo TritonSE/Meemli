@@ -4,6 +4,7 @@ import { AttendanceModel } from "../models/attendance";
 import { Section } from "../models/sections";
 import { SessionModel } from "../models/session";
 import StudentModel from "../models/student";
+import User from "../models/user";
 import { handleEnrollment, handleUnenrollment } from "../util/attendanceLogic";
 
 import type { SectionDoc } from "../models/sections";
@@ -39,6 +40,9 @@ const populateSessions = async (section: SectionDoc) => {
 // ---------------------- CREATE ----------------------
 export const createSection: RequestHandler = async (req, res) => {
   try {
+    if (!req.userContext?.admin) {
+      return handleError(res, "Forbidden", 403);
+    }
     const section = new Section(req.body);
     await section.save();
 
@@ -51,6 +55,13 @@ export const createSection: RequestHandler = async (req, res) => {
         });
       }),
     );
+
+    if (section.teachers.length > 0) {
+      await User.updateMany(
+        { _id: { $in: section.teachers } },
+        { $addToSet: { assignedSections: section._id } },
+      );
+    }
 
     if (section.enrolledStudents && section.enrolledStudents.length > 0) {
       await Promise.all(
@@ -81,7 +92,7 @@ export type UpdateSectionBody = Pick<
   | "days"
 >;
 
-// ---------------------- UPDATE ----------------------
+// ---------------------- UPDATE — admin only ----------------------
 export const updateSection: RequestHandler<{ id: string }, unknown, UpdateSectionBody> = async (
   req,
   res,
@@ -102,6 +113,24 @@ export const updateSection: RequestHandler<{ id: string }, unknown, UpdateSectio
       return handleError(res, `Section ${req.params.id} not found`, 404);
     }
 
+    const oldTeacherSet = new Set(existingSection.teachers.map((t) => t.toString()));
+    const newTeacherSet = new Set(section.teachers.map((t) => t.toString()));
+    const addedTeachers = [...newTeacherSet].filter((t) => !oldTeacherSet.has(t));
+    const removedTeachers = [...oldTeacherSet].filter((t) => !newTeacherSet.has(t));
+
+    await Promise.all([
+      addedTeachers.length > 0 &&
+        User.updateMany(
+          { _id: { $in: addedTeachers } },
+          { $addToSet: { assignedSections: section._id } },
+        ),
+      removedTeachers.length > 0 &&
+        User.updateMany(
+          { _id: { $in: removedTeachers } },
+          { $pull: { assignedSections: section._id } },
+        ),
+    ]);
+
     await SessionModel.deleteMany({ section: section._id, sessionDate: { $gt: new Date() } });
 
     const sessionDates = await populateSessions(section);
@@ -121,17 +150,17 @@ export const updateSection: RequestHandler<{ id: string }, unknown, UpdateSectio
       const oldStudentIds = existingSection.enrolledStudents.map((s) => s.toString());
       const newStudentIds = req.body.enrolledStudents.map((s) => s.toString());
 
-      const added = newStudentIds.filter((s) => !oldStudentIds.includes(s));
-      const removed = oldStudentIds.filter((s) => !newStudentIds.includes(s));
+      const addedStudents = newStudentIds.filter((s) => !oldStudentIds.includes(s));
+      const removedStudents = oldStudentIds.filter((s) => !newStudentIds.includes(s));
 
-      if (added.length > 0) {
+      if (addedStudents.length > 0) {
         await Promise.all(
-          added.map(async (studentId) => handleEnrollment(studentId, req.params.id)),
+          addedStudents.map(async (studentId) => handleEnrollment(studentId, req.params.id)),
         );
       }
-      if (removed.length > 0) {
+      if (removedStudents.length > 0) {
         await Promise.all(
-          removed.map(async (studentId) => handleUnenrollment(studentId, req.params.id)),
+          removedStudents.map(async (studentId) => handleUnenrollment(studentId, req.params.id)),
         );
       }
     }
@@ -160,8 +189,13 @@ export const handleSectionDeletion = async (
   await SessionModel.deleteMany({ section: sId });
 };
 
+// ---------------------- DELETE — admin only ----------------------
 export const deleteSection: RequestHandler<{ id: string }> = async (req, res) => {
   try {
+    if (!req.userContext?.admin) {
+      return handleError(res, "Forbidden", 403);
+    }
+
     await handleSectionDeletion(req.params.id);
 
     const section = await Section.findByIdAndDelete(req.params.id);
@@ -169,18 +203,30 @@ export const deleteSection: RequestHandler<{ id: string }> = async (req, res) =>
       return handleError(res, `Section ${req.params.id} not found`, 404);
     }
 
+    await User.updateMany(
+      { assignedSections: section._id },
+      { $pull: { assignedSections: section._id } },
+    );
+
     res.status(204).send();
   } catch (error: unknown) {
     handleError(res, error instanceof Error ? error.message : "Unknown error");
   }
 };
 
-// ---------------------- GET ----------------------
-export const getSection: RequestHandler<{ id: string }, SectionDoc> = async (req, res) => {
+// ---------------------- GET ONE ----------------------
+// Admins: any section
+// Teachers: only sections where their UID is in the teachers array
+export const getSection: RequestHandler<{ id: string }> = async (req, res) => {
   try {
     const section = await Section.findById(req.params.id);
-    if (!section) {
-      return handleError(res, `Section ${req.params.id} not found`, 404);
+    if (!section) return handleError(res, `Section ${req.params.id} not found`, 404);
+
+    if (
+      !req.userContext?.admin &&
+      !(req.userContext?.assignedSections ?? []).some((id) => id.toString() === req.params.id)
+    ) {
+      return handleError(res, "Forbidden", 403);
     }
 
     res.json(section);
@@ -189,13 +235,15 @@ export const getSection: RequestHandler<{ id: string }, SectionDoc> = async (req
   }
 };
 
-// ------------------ GET ALL ---------------------
+// ---------------------- GET ALL ----------------------
+// Admins: all sections
+// Teachers: only sections assigned to them in their user profile
 export const getAllSections: RequestHandler = async (req, res) => {
   try {
-    const sections = await Section.find();
-    if (!sections) {
-      return handleError(res, "Sections not found", 404);
-    }
+    const filter = req.userContext?.admin
+      ? {}
+      : { _id: { $in: req.userContext?.assignedSections ?? [] } };
+    const sections = await Section.find(filter);
     res.json(sections);
   } catch (error: unknown) {
     handleError(res, error instanceof Error ? error.message : "Unknown error");
