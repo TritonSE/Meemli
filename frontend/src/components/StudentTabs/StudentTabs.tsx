@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import { AttendancePanel } from "./AttendancePanel";
 import styles from "./StudentTabs.module.css";
 
 import type { Student } from "@/src/api/students"; // Adjust path as needed
@@ -108,6 +109,7 @@ export function StudentTabs({ student }: StudentTabsProps) {
         return <NotesPanel comments={student.comments} />;
       case "programs":
       case "attendance":
+        return <AttendancePanel student={student} />;
       case "assessments":
       default:
         // Finds the label for the current ID to display nicely

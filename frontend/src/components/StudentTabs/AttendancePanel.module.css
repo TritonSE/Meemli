@@ -1,0 +1,30 @@
+.infoBoxWrapper {
+  width: 60px;
+  height: 80px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+
+  font-family: "Montserrat";
+  color: var(--grey-700);
+  font-weight: 500;
+}
+
+.box {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 8px;
+}
+.data {
+  font-size: 20px;
+  color: white;
+  font-weight: 600;
+}
