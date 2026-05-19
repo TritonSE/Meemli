@@ -8,6 +8,7 @@ import type { User as APIUser } from "../api/user";
 
 type AuthContextType = {
   user: APIUser | null;
+  isAdmin: boolean;
   loading: boolean;
   /**
    * Signs the current user out of Firebase and clears the cached profile.
@@ -18,6 +19,7 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
+  isAdmin: false,
   loading: true,
   logout: async () => {},
 });
@@ -67,7 +69,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  return <AuthContext.Provider value={{ user, loading, logout }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, isAdmin: user?.admin ?? false, loading, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

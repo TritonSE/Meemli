@@ -18,6 +18,7 @@ import styles from "@/src/components/StudentStaffTable/Page.module.css";
 import { ProgramSelect } from "@/src/components/StudentStaffTable/ProgramSelect";
 import { Table } from "@/src/components/StudentStaffTable/Table";
 import { Toast } from "@/src/components/Toast/Toast";
+import { useAuth } from "@/src/context/AuthContext";
 
 type ToastState = {
   type: "success" | "error" | "neutral";
@@ -29,11 +30,13 @@ type ToastState = {
 
 type StudentStaffPageProps = {
   type: "student" | "staff";
-  state: "admin" | "teacher";
-  disabled?: boolean;
 };
 
-export default function StudentStaffPage({ type, state, disabled }: StudentStaffPageProps) {
+export default function StudentStaffPage({ type }: StudentStaffPageProps) {
+  const { isAdmin, user } = useAuth();
+
+  const disabled = user?.archived ?? false;
+
   if (disabled) {
     return (
       <div className={styles.disabledContainer}>
@@ -45,9 +48,9 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
   const [root, setRoot] = useState<Student[] | User[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
 
-  const [, setLoading] = useState(false);
+  const [_isLoading, setLoading] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [, setErrorMessage] = useState<string | null>(null);
+  const [_errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isEdit, setEdit] = useState<boolean>(false);
 
   // state for viewing
@@ -122,7 +125,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
       // filter by sections if any are selected.
       if (sortBy.length > 0) {
         base = base.filter((s) =>
-          s.enrolledSections.some((sectionId) => sortBy.includes(sectionId)),
+          (s.enrolledSections ?? []).some((sectionId) => sortBy.includes(sectionId)),
         );
       }
 
@@ -155,7 +158,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
 
       if (sortBy.length > 0) {
         base = base.filter((s) =>
-          s.assignedSections.some((sectionId) => sortBy.includes(sectionId)),
+          (s.assignedSections ?? []).some((sectionId) => sortBy.includes(sectionId)),
         );
       }
 
@@ -210,25 +213,16 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
       deleteStudents(ids)
         .then((result) => {
           if (result.success) {
-            setRoot((prev) => {
-              const updated = new Map(result.data.map((s) => [s._id, s]));
-              if ("parentContact" in result.data[0]) {
-                return prev.map((s) => updated.get(s._id) ?? s) as Student[];
-              } else {
-                return prev.map((s) => updated.get(s._id) ?? s) as User[];
-              }
-            });
+            setRoot((prev) => (prev as Student[]).filter((s) => !ids.includes(s._id)));
             // create toast message on successful request
             const multi = ids.length > 1;
-            const message = `${ids.length} student
-            ${multi ? "s were" : " was"} successfuly deleted.`;
+            const message = `${ids.length} student${multi ? "s were" : " was"} successfully deleted.`;
             setToast({
               type: "success",
               message,
               timestamp: getNextToastTrigger(),
             });
             setSelected(new Set());
-            setRoot(result.data);
           } else {
             setErrorMessage(result.error);
             const message = `Error: Unable to delete student(s). ${result.error}`;
@@ -245,21 +239,12 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
       deleteUsers(ids)
         .then((result) => {
           if (result.success) {
-            setRoot((prev) => {
-              const updated = new Map(result.data.map((s) => [s._id, s]));
-              // this check is necessary to silence TypeScript warnings
-              if ("parentContact" in result.data[0]) {
-                return prev.map((s) => updated.get(s._id) ?? s) as Student[];
-              } else {
-                return prev.map((s) => updated.get(s._id) ?? s) as User[];
-              }
-            });
+            setRoot((prev) => (prev as User[]).filter((s) => !ids.includes(s._id)));
             // create toast message on successful request
             const multi = ids.length > 1;
-            const message = `${ids.length} staff member${multi ? "s were" : " was"} successfuly deleted.`;
+            const message = `${ids.length} staff member${multi ? "s were" : " was"} successfully deleted.`;
             setToast({ type: "success", message, timestamp: getNextToastTrigger() });
             setSelected(new Set());
-            setRoot(result.data);
           } else {
             setErrorMessage(result.error);
             const message = `Error: Unable to delete staff member(s). ${result.error}`;
@@ -274,7 +259,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
   const getName = (ids: string[]) => {
     const entry = root.find((s) => s._id === ids[0]);
     if (!entry) return "";
-    if ("parentContact" in entry) {
+    if ("displayName" in entry) {
       return entry.displayName;
     } else {
       return `${entry.firstName} ${entry.lastName}`;
@@ -313,7 +298,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
             const message = `
             Student${multi ? "s" : ""} 
             ${name} 
-            ${multi ? ` + ${result.data.length - 1} more were` : "was"} archived.`;
+            ${multi ? ` + ${ids.length - 1} more were` : "was"} archived.`;
             // set toast with undo option
             setToast({
               type: "neutral",
@@ -339,7 +324,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
             const message = `
             Staff member${multi ? "s" : ""} 
             ${name} 
-            ${multi ? ` + ${result.data.length - 1} more were` : "was"} archived.`;
+            ${multi ? ` + ${ids.length - 1} more were` : "was"} archived.`;
             setToast({
               type: "neutral",
               message,
@@ -607,7 +592,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
                 <EditIcon className={styles.editIcon} />
                 <p>{type === "student" ? "Edit Students" : "Edit Staff"}</p>
               </button>
-              {state === "admin" && (
+              {isAdmin && (
                 <button
                   className={`${styles.primary} ${styles.headerButton}`}
                   onClick={() => setAddOpen(!addOpen)}
@@ -629,7 +614,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
               >
                 Cancel
               </button>
-              {state === "admin" && (
+              {isAdmin && (
                 <>
                   <button
                     className={`${styles.archive} ${styles.headerButton}`}
@@ -668,7 +653,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
     return (
       <div className={`${styles.headerBar}`}>
         <div className={styles.headerContainer}>
-          {state === "admin" && (
+          {isAdmin && (
             <>
               <button
                 className={`${activeView ? styles.primary : styles.secondary} ${styles.headerButton}`}
@@ -739,7 +724,7 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
     const arr = Array.from(data.filter((s) => selected.has(s._id)));
     let name;
     if (arr.length > 0) {
-      if ("parentContact" in arr[0]) {
+      if ("displayName" in arr[0]) {
         name = arr[0].displayName;
       } else {
         name = `${arr[0].firstName} ${arr[0].lastName}`;
@@ -797,7 +782,6 @@ export default function StudentStaffPage({ type, state, disabled }: StudentStaff
         setData={setRoot}
         sections={sections}
         type={type}
-        state={state}
         isEdit={isEdit}
         selected={selected}
         setSelected={setSelected}

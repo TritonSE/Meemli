@@ -5,6 +5,7 @@ import { onRequest } from "firebase-functions/v2/https";
 import mongoose from "mongoose";
 
 import { AUTH_BYPASS, FRONTEND_ORIGIN, MONGO_URI, PORT } from "./config";
+import { attachUserContext } from "./middleware/attachUserContext";
 import errorHandler from "./middleware/errorHandler";
 import log from "./middleware/logger";
 import attendanceRoutes from "./routes/attendance";
@@ -31,11 +32,11 @@ app.use(express.json());
 
 app.use(log);
 
-app.use("/api/sections", verifyAuthToken, sectionsRouter);
-app.use("/api/students", verifyAuthToken, studentsRoutes);
-app.use("/api/sessions", verifyAuthToken, sessionRoutes);
-app.use("/api/attendance", verifyAuthToken, attendanceRoutes);
-app.use("/api/user", verifyAuthToken, userRoutes);
+app.use("/api/sections", verifyAuthToken, attachUserContext, sectionsRouter);
+app.use("/api/students", verifyAuthToken, attachUserContext, studentsRoutes);
+app.use("/api/sessions", verifyAuthToken, attachUserContext, sessionRoutes);
+app.use("/api/attendance", verifyAuthToken, attachUserContext, attendanceRoutes);
+app.use("/api/user", verifyAuthToken, attachUserContext, userRoutes);
 
 app.use(errorHandler);
 

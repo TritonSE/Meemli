@@ -14,6 +14,10 @@ type CreateSessionBody = {
 
 export const createSession: RequestHandler = async (req, res, next) => {
   try {
+    if (!req.userContext?.admin) {
+      throw createHTTPError(403, "Admin privileges required to create session");
+    }
+
     const { section, sessionDate } = req.body as CreateSessionBody;
 
     const session = await SessionModel.create({
@@ -34,6 +38,10 @@ type UpdateSessionBody = Partial<{
 
 export const editSessionById: RequestHandler = async (req, res, next) => {
   try {
+    if (!req.userContext?.admin) {
+      throw createHTTPError(403, "Admin privileges required to edit session");
+    }
+
     const { id } = req.params;
     const updateData: UpdateSessionBody = req.body as UpdateSessionBody;
     const updatedSession = await SessionModel.findByIdAndUpdate(id, updateData, { new: true });
@@ -53,23 +61,25 @@ export const getSession: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    //Get the Session Info (Date, Section)
     const session = await SessionModel.findById(id);
-
     if (!session) {
       throw createHTTPError(404, "Session not found");
     }
 
-    // This creates records if missing, checks the date, returns them
+    // Non-admins can only view sessions for sections they teach
+    if (!req.userContext?.admin) {
+      const isTeacher = (req.userContext?.assignedSections ?? []).some(
+        (sectionId) => sectionId.toString() === session.section.toString(),
+      );
+      if (!isTeacher) {
+        throw createHTTPError(403, "You do not have permission to view this session");
+      }
+    }
+
     const attendanceRecords = await ensureAttendanceForSession(id);
     const populated = await AttendanceModel.populate(attendanceRecords, { path: "student" });
 
-    const response = {
-      ...session.toObject(),
-      attendees: populated,
-    };
-
-    res.status(200).json(response);
+    res.status(200).json({ ...session.toObject(), attendees: populated });
   } catch (error) {
     next(error);
   }
@@ -80,11 +90,36 @@ export const getSessionsBySectionId: RequestHandler = async (req, res, next) => 
   const { sectionId } = req.params;
 
   try {
+    if (!req.userContext?.admin) {
+      const isTeacher = (req.userContext?.assignedSections ?? []).some(
+        (id) => id.toString() === sectionId,
+      );
+      if (!isTeacher) {
+        throw createHTTPError(403, "You do not have permission to view sessions for this section");
+      }
+    }
+
     const sessions = await SessionModel.find({ section: sectionId });
-
-    // No population of attendance records needed
-
     res.status(200).json(sessions);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteSession: RequestHandler = async (req, res, next) => {
+  try {
+    if (!req.userContext?.admin) {
+      throw createHTTPError(403, "Admin privileges required to delete session");
+    }
+
+    const { id } = req.params;
+    const session = await SessionModel.findByIdAndDelete(id);
+
+    if (!session) {
+      throw createHTTPError(404, "Session not found");
+    }
+
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
@@ -92,8 +127,18 @@ export const getSessionsBySectionId: RequestHandler = async (req, res, next) => 
 
 export const getAllSessions: RequestHandler = async (req, res, next) => {
   try {
-    const sessions = await SessionModel.find().populate("section");
+    // Admins: return all sessions
+    if (req.userContext?.admin) {
+      const sessions = await SessionModel.find().populate("section");
+      return res.status(200).json(sessions);
+    }
 
+    // Non-admins: find only sections they teach, then return sessions for those
+    const teacherSectionIds = req.userContext?.assignedSections ?? [];
+
+    const sessions = await SessionModel.find({ section: { $in: teacherSectionIds } }).populate(
+      "section",
+    );
     res.status(200).json(sessions);
   } catch (error) {
     next(error);

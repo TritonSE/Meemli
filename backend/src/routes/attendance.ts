@@ -1,6 +1,7 @@
 import express from "express";
 
 import * as AttendanceController from "../controllers/attendance";
+import { requireAdmin } from "../middleware/requireAdmin";
 import { validateRequest } from "../middleware/validateRequest";
 import * as AttendanceValidator from "../validators/attendance";
 
@@ -13,6 +14,7 @@ router.get("/session/:sessionId", AttendanceController.getAttendanceBySessionId)
 // POST, PUT Routes
 router.post(
   "/",
+  requireAdmin,
   AttendanceValidator.createAttendance,
   validateRequest,
   AttendanceController.createAttendance,

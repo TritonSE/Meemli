@@ -1,6 +1,7 @@
 import express from "express";
 
 import * as StudentsController from "../controllers/students";
+import { requireAdmin } from "../middleware/requireAdmin";
 import { validateRequest } from "../middleware/validateRequest";
 import * as StudentsValidator from "../validators/students";
 
@@ -14,10 +15,15 @@ router.get("/:id", StudentsController.getStudentById);
 // POST, PUT Routes
 router.post(
   "/",
+  requireAdmin,
   StudentsValidator.validateCreateStudent,
   validateRequest,
   StudentsController.createStudent,
 );
+
+// Update archived status for multiple students (must be before /:id)
+router.put("/archive", requireAdmin, StudentsController.archiveStudentsByIds);
+
 router.put(
   "/:id",
   StudentsValidator.validateEditStudent,
@@ -25,16 +31,10 @@ router.put(
   StudentsController.editStudentById,
 );
 
-// Update archived status for multiple students
-router.put("/archive", StudentsController.archiveStudentsByIds);
-
-// Edit Student by ID
-router.put("/:id", StudentsValidator.validateEditStudent, StudentsController.editStudentById);
-
 // Batch delete Students by IDs
-router.delete("/delete", StudentsController.deleteStudentsByIds);
+router.delete("/delete", requireAdmin, StudentsController.deleteStudentsByIds);
 
 // Delete Student by ID
-router.delete("/:id", StudentsController.deleteStudentById);
+router.delete("/:id", requireAdmin, StudentsController.deleteStudentById);
 
 export default router;

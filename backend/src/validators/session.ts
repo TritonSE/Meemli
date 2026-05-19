@@ -33,4 +33,4 @@ const makeSessionDateValidator = (): ValidationChain =>
 
 export const createSession = [makeSectionValidator(), makeSessionDateValidator()];
 
-export const editSessionById = [makeSectionValidator()];
+export const editSessionById = [makeSessionDateValidator()];

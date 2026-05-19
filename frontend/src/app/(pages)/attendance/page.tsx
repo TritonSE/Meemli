@@ -72,8 +72,10 @@ export default function Attendance() {
   });
 
   const handleSectionChange = (sectionId: string) => {
-    setActiveSectionId(sectionId);
-    setActiveDate(""); // reset date when section changes
+    if (sectionId !== activeSectionId) {
+      setActiveSectionId(sectionId);
+      setActiveDate(""); // reset date when section changes to force user to select a date, preventing mismatch between section and date
+    }
   };
 
   // Once we have sessions for the section, auto-select today if available, else first date
@@ -139,7 +141,7 @@ export default function Attendance() {
           <AttendanceList
             initialAttendees={selectedSession?.attendees || []}
             isSectionSelected={Boolean(activeSectionId)}
-            isFilterSelected={Boolean(activeSectionId && activeDate)}
+            isFilterSelected={Boolean(activeSectionId && activeDate && selectedSession)}
             searchQuery={searchQuery}
             sortOption={sortOption}
           />

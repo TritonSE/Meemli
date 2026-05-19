@@ -26,7 +26,10 @@ const navItems: NavItem[] = [
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, isAdmin } = useAuth();
+
+  // Only show staff nav item if user is admin
+  const visibleNavItems = navItems.filter(({ href }) => href !== "/staff" || isAdmin);
 
   const handleLogout = () => {
     logout()
@@ -53,7 +56,7 @@ export function Navbar() {
 
         <div className="horizontalLine" />
 
-        {navItems.map(({ href, icon, label }) => {
+        {visibleNavItems.map(({ href, icon, label }) => {
           const isActive = pathname === href || pathname?.startsWith(`${href}/`);
 
           return (

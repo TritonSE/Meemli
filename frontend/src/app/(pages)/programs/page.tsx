@@ -21,6 +21,7 @@ import { Modal } from "@/src/components/Modal";
 import { SectionCard } from "@/src/components/SectionCard";
 import { CreateSectionFlow } from "@/src/components/SectionForm/SectionForm";
 import { Toast } from "@/src/components/Toast";
+import { useAuth } from "@/src/context/AuthContext";
 import { useToast } from "@/src/hooks/useToast";
 
 // next steps : fetch data, render actual data, filter by active archived, search bar
@@ -42,6 +43,7 @@ export default function Programs() {
   const [sortOpen, setSortOpen] = useState(false);
   const sortMenuRef = useRef<HTMLDivElement>(null);
   const { toast, showToast, dismissToast } = useToast();
+  const { isAdmin } = useAuth();
 
   const fetchData = async () => {
     const result = await getAllSections();
@@ -50,11 +52,13 @@ export default function Programs() {
     } else {
       throw new Error("Data could not be fetched");
     }
-    const teacherData = await getAllUsers();
-    if (teacherData.success) {
-      setUsers(teacherData.data);
-    } else {
-      throw new Error("User data could not be fetched");
+    if (isAdmin) {
+      const teacherData = await getAllUsers();
+      if (teacherData.success) {
+        setUsers(teacherData.data);
+      } else {
+        throw new Error("User data could not be fetched");
+      }
     }
   };
 
@@ -105,10 +109,13 @@ export default function Programs() {
             <h1>Classes</h1>
             <p>Take attendance, add notes, and see trends</p>
           </div>
-          <button className={styles.createButton} onClick={() => setShowCreateModal(true)}>
-            <Plus size={16} />
-            Create New Class
-          </button>
+          {/* Create new class - admin only */}
+          {isAdmin && (
+            <button className={styles.createButton} onClick={() => setShowCreateModal(true)}>
+              <Plus size={16} />
+              Create New Class
+            </button>
+          )}
         </div>
 
         <div className={styles.controls}>
@@ -196,8 +203,8 @@ export default function Programs() {
         showToast={showToast}
       />
 
-      {/* pop up for deleting section */}
-      {deletingSection && (
+      {/* pop up for deleting section - admin only*/}
+      {isAdmin && deletingSection && (
         <Modal
           wrapperStyle={{ maxWidth: "640px", padding: "48px" }}
           child={
@@ -234,16 +241,18 @@ export default function Programs() {
         />
       )}
 
-      {/* Edit section modal! */}
-      <CreateSectionFlow
-        active={!!editingSection}
-        sectionId={editingSection?._id}
-        onClose={() => {
-          setEditingSection(null);
-          void fetchData();
-        }}
-        showToast={showToast}
-      />
+      {/* Edit section modal! - admin only*/}
+      {isAdmin && (
+        <CreateSectionFlow
+          active={showCreateModal || !!editingSection}
+          sectionId={editingSection?._id}
+          onClose={() => {
+            setEditingSection(null);
+            setShowCreateModal(false);
+            void fetchData();
+          }}
+        />
+      )}
 
       <div className={styles.grid}>
         {visibleSections.map((section) => (
