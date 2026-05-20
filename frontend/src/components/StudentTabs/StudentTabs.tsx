@@ -172,7 +172,9 @@ const ProgramsPanel = ({ student }: { student: Student }) => {
       }
     };
 
-    fetchSectionsAndTeachers();
+    // Explicitly marking the promise as ignored with the void operator
+    // satisfies the ts/no-floating-promises lint rule.
+    void fetchSectionsAndTeachers();
   }, [student.enrolledSections]);
 
   if (isLoading) {
