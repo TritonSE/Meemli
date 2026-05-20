@@ -90,9 +90,8 @@
   border: 1px dashed var(--grey-300);
 }
 
-/* Shared Header Styling for all panels */
-.sectionBlock h3,
-.panelContainer h3 {
+.sectionBlock > h3,
+.panelContainer > h3 {
   font-size: 1rem;
   font-weight: 450;
   margin: 0 0 1rem 0;
@@ -143,4 +142,38 @@
   font-style: italic;
   text-align: center;
   padding: 2rem 0;
+}
+
+.termWrapper {
+  margin-bottom: 24px;
+}
+
+.termHeading {
+  margin-bottom: 16px;
+}
+
+.termButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--grey-900);
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+
+.chevron {
+  font-size: 1rem;
+  color: var(--grey-700);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
 }
