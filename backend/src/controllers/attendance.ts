@@ -216,7 +216,6 @@ export const updateBulkAttendance: RequestHandler = async (req, res, next) => {
         },
       }));
 
-    // 3. Execute the updates
     if (operations.length > 0) {
       await AttendanceModel.bulkWrite(operations);
     }

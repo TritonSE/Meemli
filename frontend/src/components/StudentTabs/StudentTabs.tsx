@@ -107,9 +107,9 @@ export function StudentTabs({ student }: StudentTabsProps) {
         return <InfoPanel student={student} />;
       case "notes":
         return <NotesPanel comments={student.comments} />;
-      case "programs":
       case "attendance":
         return <AttendancePanel student={student} />;
+      case "programs":
       case "assessments":
       default:
         // Finds the label for the current ID to display nicely
@@ -117,7 +117,6 @@ export function StudentTabs({ student }: StudentTabsProps) {
         return <ComingSoonPanel title={label} />;
     }
   };
-
   return (
     <div className={styles.tabsContainer}>
       <nav className={styles.tabNav} role="tablist" aria-label="Student Sections">
@@ -138,7 +137,7 @@ export function StudentTabs({ student }: StudentTabsProps) {
           </button>
         ))}
       </nav>
-
+      <div className={styles.divider}></div>
       <section id={`panel-${activeTabId}`} role="tabpanel" className={styles.tabContent}>
         {renderTabContent()}
       </section>

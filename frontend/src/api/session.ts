@@ -1,10 +1,11 @@
 import { del, get, handleAPIError, post, put } from "./requests";
 
 import type { APIResult } from "./requests";
+import type { Section } from "./sections";
 
 export type Session = {
   _id: string;
-  section: string;
+  section: Section;
   sessionDate: string;
 };
 
