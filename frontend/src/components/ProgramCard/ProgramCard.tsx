@@ -43,7 +43,7 @@ export default function ProgramCard({ section }: ProgramCardProps) {
       <div className={styles.cardBody}>
         <h4 className={styles.cardTitle}>{section.name}</h4>
 
-        <div className={styles.metaDivider} aria-hidden="true" />
+        <hr></hr>
 
         <div className={styles.detailsList}>
           <div className={styles.detailItem}>

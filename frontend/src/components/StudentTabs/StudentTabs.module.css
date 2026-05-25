@@ -51,12 +51,15 @@
 }
 
 .tabTile[data-active="true"] .tabIcon {
-  filter: brightness(0) invert(1); /* Turns icon white */
+  filter: brightness(0) invert(1);
 }
 
 /* Right Column: Content Area */
 .tabContent {
+  display: flex;
+  flex-direction: column;
   flex: 1;
+  min-width: 0;
   width: 100%;
   animation: fadeIn 0.2s ease-in;
 }
@@ -149,31 +152,38 @@
 }
 
 .termHeading {
-  margin-bottom: 16px;
+  margin: 0 0 16px 0;
 }
 
 .termButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
   background: transparent;
   border: none;
-  font-family: inherit;
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: var(--grey-900);
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--grey-800);
+  display: flex;
+  align-items: center;
+  gap: 8px;
   cursor: pointer;
-  padding: 0;
-  margin: 0;
+  padding: 4px 0;
 }
 
 .chevron {
-  font-size: 1rem;
+  font-size: 0.8rem;
   color: var(--grey-700);
   transition: transform 0.2s ease;
-  flex-shrink: 0;
 }
 
 .chevronOpen {
   transform: rotate(180deg);
+}
+
+.cardsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 16rem;
+  overflow-y: scroll;
+  scrollbar-width: none;
 }
