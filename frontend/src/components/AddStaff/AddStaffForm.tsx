@@ -5,7 +5,8 @@ import { createUser } from "../../api/user";
 import { auth, sendMeemliActivationEmail } from "../../util/firebase";
 import { Button } from "../Button";
 import { ErrorMessage } from "../ErrorMessage";
-import { MultiSelect, type Option } from "../MultiSelect/MultiSelect";
+import { MultiSelect } from "../MultiSelect/MultiSelect";
+import { roleOptions } from "../roleOptions";
 import { MultiSelectDropdown } from "../studentform/MultiSelectDropdown";
 import { TextField } from "../TextField";
 
@@ -40,28 +41,6 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
     ? currentUser.displayName || currentUser.email || "An Admin"
     : "An Admin";
 
-  // Role options mapped with colors replacing the old custom react-select components
-  const roleOptions: Option[] = [
-    {
-      id: "admin",
-      label: "Admin",
-      colorBg: "var(--secondary-100)",
-      colorText: "var(--secondary-800)",
-    },
-    {
-      id: "teacher",
-      label: "Teacher",
-      colorBg: "var(--tertiary-100)",
-      colorText: "var(--tertiary-800)",
-    },
-    {
-      id: "student",
-      label: "Student",
-      colorBg: "var(--primary-100)",
-      colorText: "var(--primary-800)",
-    },
-  ];
-
   // Form state
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -86,9 +65,8 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
     // Updated validation to check the string state directly
     if (!role) {
       errors.role = "Role is required";
-    } else if (!["teacher", "admin", "student"].includes(role)) {
-      // Must match the exact 'id' strings in your roleOptions array
-      errors.role = "Role must be one of: teacher, admin, or student";
+    } else if (!roleOptions.some((option) => option.id === role)) {
+      errors.role = "Role must be either admin or teacher.";
     }
 
     if (!personalEmail.trim()) {
@@ -286,7 +264,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
       {/* Assigned Programs Select (Multiple Mode) */}
       <div className={styles.selectField}>
         <MultiSelectDropdown
-          label="Assigned Progra(s)"
+          label="Assigned Program(s)"
           value={programs}
           onChange={setPrograms}
           placeholder="Select"
