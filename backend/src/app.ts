@@ -15,7 +15,7 @@ import studentsRoutes from "./routes/students";
 import userRoutes from "./routes/user";
 import { verifyAuthToken } from "./validators/auth";
 
-const app = express();
+export const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
