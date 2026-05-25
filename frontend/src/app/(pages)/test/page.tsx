@@ -3,7 +3,6 @@
 import { useState } from "react";
 
 import type { Student } from "@/src/api/students";
-import type { CSSProperties } from "react";
 
 import BookIcon from "@/public/icons/nav/programs.svg";
 import { getAllSections } from "@/src/api/sections";

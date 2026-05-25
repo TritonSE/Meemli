@@ -123,8 +123,6 @@ export function MultiStepForm<T extends FieldValues>({
   };
 
   const onFinalSubmit = (data: T) => {
-    localStorage.removeItem(storageKey);
-    clearUrlStep(); // NEW: Clear the step param on submit
     onSubmit(data);
   };
 
