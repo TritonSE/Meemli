@@ -11,6 +11,7 @@ import {
   Plus,
   Search,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import styles from "./page.module.css";
@@ -44,6 +45,7 @@ export default function Programs() {
   const sortMenuRef = useRef<HTMLDivElement>(null);
   const { toast, showToast, dismissToast } = useToast();
   const { isAdmin } = useAuth();
+  const router = useRouter();
 
   const fetchData = async () => {
     const result = await getAllSections();
@@ -279,6 +281,7 @@ export default function Programs() {
               }
             }}
             onDelete={() => setDeletingSection(section)}
+            onClick={() => router.push(`/programs/${section._id}`)}
           />
         ))}
       </div>
