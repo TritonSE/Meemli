@@ -147,6 +147,10 @@ column widths and properties
 .roleCol {
   width: var(--role-width);
 }
+
+.roleItem {
+  vertical-align: middle;
+}
 .phoneNumberCol {
   width: var(--phone-width);
 }
