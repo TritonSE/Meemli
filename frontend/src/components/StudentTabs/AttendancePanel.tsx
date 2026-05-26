@@ -1,3 +1,4 @@
+import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import styles from "./AttendancePanel.module.css";
@@ -10,15 +11,10 @@ import type { Student } from "@/src/api/students";
 import { getAttendanceByStudentId } from "@/src/api/attendance";
 import { getAllSections } from "@/src/api/sections";
 import { getAllSessions } from "@/src/api/session";
+import { InfoBox } from "@/src/components/StudentTabs/InfoBox";
 
 type AttendancePanelProps = {
   student: Student;
-};
-
-type InfoBoxProps = {
-  label: string;
-  data: string;
-  color: string | undefined;
 };
 
 type SectionAttendanceProps = {
@@ -26,17 +22,6 @@ type SectionAttendanceProps = {
   label: string;
   color: string | undefined;
 };
-
-function InfoBox({ label, data, color }: InfoBoxProps) {
-  return (
-    <div className={styles.infoBoxWrapper}>
-      <p>{label}</p>
-      <div className={styles.box} style={{ backgroundColor: color }}>
-        <p className={styles.data}>{data}</p>
-      </div>
-    </div>
-  );
-}
 
 function SectionAttendance({ attendance, label, color }: SectionAttendanceProps) {
   const present = attendance.filter((record) => record.status === "PRESENT").length;
@@ -64,6 +49,8 @@ export function AttendancePanel({ student }: AttendancePanelProps) {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [showCurrentTerm, setShowCurrentTerm] = useState(true);
+  const [showPrevTerm, setShowPrevTerm] = useState(false);
 
   useEffect(() => {
     if (!student._id) return;
@@ -99,47 +86,114 @@ export function AttendancePanel({ student }: AttendancePanelProps) {
   const overlappingSections = sections.filter((section) =>
     student.enrolledSections?.includes(section._id),
   );
-  // map each session to a section and each section code to a display color
-  const sessionsToCodes = new Map(
-    sessions.map((session) => [session._id, session.section?.code ?? null]),
+  const activeSections = overlappingSections.filter((section) => !section.archived);
+  const inactiveSections = overlappingSections.filter((section) => section.archived);
+
+  // map each session to a section
+  const sessionsToSection = new Map(
+    sessions.map((session) => [session._id, session.section?._id ?? null]),
   );
 
-  // map each section code to its color
-  const codeToColor = new Map(sections.map((section) => [section.code, section.color]));
-
-  // map each section code to a list of attendances
-  const codeToAttendances = new Map<string, AttendanceRecord[]>();
+  // map each section to a list of attendances
+  const sectionToAttendances = new Map<string, AttendanceRecord[]>();
   for (const attendance of attendances) {
-    const code = sessionsToCodes.get(attendance.session);
-    if (code == null) {
+    const id = sessionsToSection.get(attendance.session);
+    if (id == null) {
       continue;
     }
 
-    if (!codeToAttendances.has(code)) {
-      codeToAttendances.set(code, []);
+    if (!sectionToAttendances.has(id)) {
+      sectionToAttendances.set(id, []);
     }
-    codeToAttendances.get(code)!.push(attendance);
+    sectionToAttendances.get(id)!.push(attendance);
   }
 
   // add any sections that had no attendance objects with empty arrays
   for (const section of overlappingSections) {
-    if (!codeToAttendances.has(section.code)) {
-      codeToAttendances.set(section.code, []);
+    if (!sectionToAttendances.has(section._id)) {
+      sectionToAttendances.set(section._id, []);
     }
   }
+
+  // calculate overall stats
+  const presentPercent = Math.trunc(
+    (100 * attendances.filter((record) => record.status === "PRESENT").length) / attendances.length,
+  );
+  const latePercent = Math.trunc(
+    (100 * attendances.filter((record) => record.status === "LATE").length) / attendances.length,
+  );
+  const absentPercent = Math.trunc(
+    (100 * attendances.filter((record) => record.status === "ABSENT").length) / attendances.length,
+  );
+
   if (loading) {
-    return <p>Loading...</p>;
+    return <p className={styles.wrapper}>Loading...</p>;
   }
   return (
     <div className={styles.wrapper}>
-      {Array.from(codeToAttendances.entries()).map(([code, list]) => (
-        <SectionAttendance
-          key={code}
-          color={codeToColor.get(code)}
-          label={code}
-          attendance={list}
-        />
-      ))}
+      <div className={`${styles.termSection} ${styles.overall}`}>
+        <p className={`${styles.sectionTitle} ${styles.overallTitle}`}>Overall</p>
+        <div className={styles.container}>
+          <InfoBox label="Present" data={`${presentPercent.toString()}%`} color="#12B76A" />
+          <InfoBox label="Late" data={`${latePercent.toString()}%`} color="#F79009" />
+          <InfoBox label="Absent" data={`${absentPercent.toString()}%`} color="#F04438" />
+        </div>
+      </div>
+      <div className={styles.termSection}>
+        <button
+          className={styles.sectionHeader}
+          onClick={() => setShowCurrentTerm((prev) => !prev)}
+        >
+          <p className={styles.sectionTitle}>Current Term</p>
+
+          <ChevronDown
+            size={30}
+            className={`${styles.chevron} ${showCurrentTerm ? styles.rotated : ""}`}
+          />
+        </button>
+
+        <div className={`${styles.content} ${showCurrentTerm ? styles.open : styles.closed}`}>
+          {showCurrentTerm &&
+            activeSections.length > 0 &&
+            activeSections.map((section) => (
+              <SectionAttendance
+                key={section._id}
+                color={section.color}
+                label={section.code}
+                attendance={sectionToAttendances.get(section._id) ?? []}
+              />
+            ))}
+          {showCurrentTerm && activeSections.length === 0 && (
+            <p>No current enrollment information available.</p>
+          )}
+        </div>
+      </div>
+      <div className={styles.termSection}>
+        <button className={styles.sectionHeader} onClick={() => setShowPrevTerm((prev) => !prev)}>
+          <p className={styles.sectionTitle}>Previous Terms</p>
+
+          <ChevronDown
+            size={30}
+            className={`${styles.chevron} ${showPrevTerm ? styles.rotated : ""}`}
+          />
+        </button>
+
+        <div className={`${styles.content} ${showPrevTerm ? styles.open : styles.closed}`}>
+          {showPrevTerm &&
+            inactiveSections.length > 0 &&
+            inactiveSections.map((section) => (
+              <SectionAttendance
+                key={section._id}
+                color={section.color}
+                label={section.code}
+                attendance={sectionToAttendances.get(section._id) ?? []}
+              />
+            ))}
+          {showPrevTerm && inactiveSections.length === 0 && (
+            <p>No previous enrollment information available.</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

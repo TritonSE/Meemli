@@ -1,44 +1,12 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 25px;
   width: 100%;
-  max-height: 300px;
+  height: 400px;
+  max-height: 400px;
   overflow-y: auto;
   scrollbar-width: none;
 }
-.infoBoxWrapper {
-  width: 60px;
-  height: 80px;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-
-  font-family: "Montserrat";
-  color: var(--grey-700);
-  font-weight: 500;
-  font-size: 14px;
-}
-
-.box {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  border-radius: 8px;
-}
-.data {
-  font-size: 20px;
-  color: white;
-  font-weight: 600;
-}
-
 .sectionAttendance {
   display: flex;
   flex-direction: column;
@@ -50,7 +18,7 @@
   align-items: center;
   gap: 10px;
 
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--grey-700);
 }
@@ -66,4 +34,69 @@
   width: 25px;
   aspect-ratio: 1 / 1;
   border-radius: 100px;
+}
+
+.overall {
+  background-color: var(--grey-50);
+  border-radius: 8px;
+  padding: 15px 0px 15px 5px;
+  margin-bottom: 20px;
+}
+.overallTitle {
+  padding: 0px 0px 10px 10px;
+}
+.termSection {
+  width: 100%;
+}
+
+.sectionHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 10px;
+
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--grey-700);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+  transform-origin: top;
+}
+
+.open {
+  margin: 10px 0 20px 0;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.closed {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
+.chevron {
+  color: var(--grey-700);
+  transition: transform 0.3s ease;
+}
+
+.rotated {
+  transform: rotate(180deg);
 }
