@@ -5,6 +5,12 @@ import type { Section } from "./sections";
 
 export type Session = {
   _id: string;
+  section: string;
+  sessionDate: string;
+};
+
+export type ReturnedSession = {
+  _id: string;
   section: Section;
   sessionDate: string;
 };
@@ -12,10 +18,10 @@ export type Session = {
 export type CreateSessionRequest = Omit<Session, "_id">;
 export type UpdateSessionRequest = { _id: string; sessionDate: string };
 
-export async function getAllSessions(): Promise<APIResult<Session[]>> {
+export async function getAllSessions(): Promise<APIResult<ReturnedSession[]>> {
   try {
     const response = await get("/sessions");
-    const json = (await response.json()) as Session[];
+    const json = (await response.json()) as ReturnedSession[];
     return { success: true, data: json };
   } catch (error) {
     return handleAPIError(error);

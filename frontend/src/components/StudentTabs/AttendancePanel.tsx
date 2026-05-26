@@ -5,7 +5,7 @@ import styles from "./AttendancePanel.module.css";
 
 import type { AttendanceRecord } from "@/src/api/attendance";
 import type { Section } from "@/src/api/sections";
-import type { Session } from "@/src/api/session";
+import type { ReturnedSession } from "@/src/api/session";
 import type { Student } from "@/src/api/students";
 
 import { getAttendanceByStudentId } from "@/src/api/attendance";
@@ -46,7 +46,7 @@ function SectionAttendance({ attendance, label, color }: SectionAttendanceProps)
 
 export function AttendancePanel({ student }: AttendancePanelProps) {
   const [attendances, setAttendance] = useState<AttendanceRecord[]>([]);
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const [sessions, setSessions] = useState<ReturnedSession[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [showCurrentTerm, setShowCurrentTerm] = useState(true);
