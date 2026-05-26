@@ -5,14 +5,14 @@ import { createUser } from "../../api/user";
 import { auth, sendMeemliActivationEmail } from "../../util/firebase";
 import { Button } from "../Button";
 import { ErrorMessage } from "../ErrorMessage";
-import { MultiSelect } from "../MultiSelect/MultiSelect";
-import { roleOptions } from "../roleOptions";
+import { MultiSelect, type Option } from "../MultiSelect/MultiSelect";
 import { MultiSelectDropdown } from "../studentform/MultiSelectDropdown";
 import { TextField } from "../TextField";
 
 import styles from "./AddStaffForm.module.css";
 
 type AddStaffFormProps = {
+  roleOptions: Option[];
   onExit: () => void;
   onSuccess?: () => void;
 };
@@ -28,7 +28,11 @@ type FormErrors = {
   passwordReset?: string;
 };
 
-export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaffFormProps) {
+export const AddStaffForm = function AddStaffForm({
+  roleOptions,
+  onExit,
+  onSuccess,
+}: AddStaffFormProps) {
   const [isLoading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState<FormErrors>({});
 

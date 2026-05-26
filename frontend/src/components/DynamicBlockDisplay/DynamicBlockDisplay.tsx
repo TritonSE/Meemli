@@ -11,7 +11,15 @@ import { getChipColors } from "@/src/components/ChipColor";
  * @param colors array of hex colors to display. Must have the same length as labels
  * @returns the rendered block display element
  */
-export function DynamicBlockDisplay({ labels, colors }: { labels: string[]; colors: string[] }) {
+export function DynamicBlockDisplay({
+  labels,
+  colors,
+  textColors,
+}: {
+  labels: string[];
+  colors: string[];
+  textColors?: string[];
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const [visibleCount, setVisibleCount] = useState<number>(labels.length);
@@ -73,7 +81,11 @@ export function DynamicBlockDisplay({ labels, colors }: { labels: string[]; colo
       <div ref={containerRef} className={styles.blockItems}>
         {visible.map((label, index) => {
           const baseColor = colors[index] ?? "#21dada";
-          const { backgroundColor, textColor } = getChipColors(baseColor);
+          const isCssVar = baseColor.startsWith("var(");
+          const backgroundColor = isCssVar ? baseColor : getChipColors(baseColor).backgroundColor;
+          const textColor = isCssVar
+            ? (textColors?.[index] ?? "inherit")
+            : getChipColors(baseColor).textColor;
 
           return (
             <div

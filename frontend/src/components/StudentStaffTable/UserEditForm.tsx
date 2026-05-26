@@ -3,8 +3,7 @@ import { useState } from "react";
 import { updateUser } from "../../api/user";
 import { Button } from "../Button";
 import { ErrorMessage } from "../ErrorMessage";
-import { MultiSelect } from "../MultiSelect/MultiSelect";
-import { roleOptions } from "../roleOptions";
+import { MultiSelect, type Option } from "../MultiSelect/MultiSelect";
 import { MultiSelectDropdown } from "../studentform/MultiSelectDropdown";
 import { TextField } from "../TextField";
 
@@ -16,6 +15,7 @@ import type { User } from "../../api/user";
 type UserEditFormProps = {
   user: User;
   sections: Section[];
+  roleOptions: Option[];
   onCancel: () => void;
   onSubmit?: () => void;
 };
@@ -28,7 +28,13 @@ type UserEditFormProps = {
  * @param onSubmit callback when the user successfully submits the form.
  * @returns form component
  */
-export function UserEditForm({ user, sections: _sections, onCancel, onSubmit }: UserEditFormProps) {
+export function UserEditForm({
+  user,
+  sections: _sections,
+  roleOptions,
+  onCancel,
+  onSubmit,
+}: UserEditFormProps) {
   const [firstName, setFirstName] = useState(user.firstName);
   const [lastName, setLastName] = useState(user.lastName);
   const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
@@ -182,12 +188,11 @@ export function UserEditForm({ user, sections: _sections, onCancel, onSubmit }: 
       </div>
       <div className={styles.fieldGroup}>
         <MultiSelectDropdown
-          label="Sections"
+          label="Assigned Programs"
           value={assignedSections}
           onChange={(next) => setAssignedSections(next)}
-          placeholder="Select sections"
+          placeholder="Select"
           required={false}
-          disabled={role === "admin"}
         />
       </div>
 
