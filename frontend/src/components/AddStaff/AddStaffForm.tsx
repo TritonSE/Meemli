@@ -286,7 +286,7 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
       {/* Assigned Programs Select (Multiple Mode) */}
       <div className={styles.selectField}>
         <MultiSelectDropdown
-          label="Assigned Progra(s)"
+          label="Assigned Program(s)"
           value={programs}
           onChange={setPrograms}
           placeholder="Select"
