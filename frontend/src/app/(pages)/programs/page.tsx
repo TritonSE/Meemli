@@ -1,5 +1,4 @@
 "use client";
-// To do : pop up for the delete + archive, toast in bottom right corner when an action (create, edit delete archive is done,), styling
 import {
   AlertTriangle,
   Archive,
@@ -11,7 +10,7 @@ import {
   Plus,
   Search,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import styles from "./page.module.css";
@@ -19,13 +18,12 @@ import styles from "./page.module.css";
 import { deleteSection, getAllSections, type Section, updateSection } from "@/src/api/sections";
 import { getAllUsers, type User } from "@/src/api/user";
 import { Modal } from "@/src/components/Modal";
+import { ProgramDetail } from "@/src/components/ProgramDetail/ProgramDetail";
 import { SectionCard } from "@/src/components/SectionCard";
 import { CreateSectionFlow } from "@/src/components/SectionForm/SectionForm";
 import { Toast } from "@/src/components/Toast";
 import { useAuth } from "@/src/context/AuthContext";
 import { useToast } from "@/src/hooks/useToast";
-
-// next steps : fetch data, render actual data, filter by active archived, search bar
 
 type Tab = "active" | "archived";
 
@@ -46,6 +44,8 @@ export default function Programs() {
   const { toast, showToast, dismissToast } = useToast();
   const { isAdmin } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const selectedId = searchParams?.get("id");
 
   const fetchData = async () => {
     const result = await getAllSections();
@@ -103,6 +103,10 @@ export default function Programs() {
       return sortDir === "asc" ? result : -result;
     });
 
+  if (selectedId) {
+    return <ProgramDetail id={selectedId} onBack={() => router.push("/programs")} />;
+  }
+
   return (
     <div className={styles.pageWrapper}>
       <div className={styles.headerSection}>
@@ -111,7 +115,6 @@ export default function Programs() {
             <h1>Classes</h1>
             <p>Take attendance, add notes, and see trends</p>
           </div>
-          {/* Create new class - admin only */}
           {isAdmin && (
             <button className={styles.createButton} onClick={() => setShowCreateModal(true)}>
               <Plus size={16} />
@@ -161,9 +164,7 @@ export default function Programs() {
                       {sortBy === opt.value && <Check size={14} />}
                     </button>
                   ))}
-
                   <hr className={styles.sortDivider} />
-
                   {[
                     { label: "Ascending", value: "asc", icon: <ArrowUp size={14} /> },
                     { label: "Descending", value: "desc", icon: <ArrowDown size={14} /> },
@@ -196,7 +197,6 @@ export default function Programs() {
         </div>
       </div>
 
-      {/* pop up for deleting section - admin only*/}
       {isAdmin && deletingSection && (
         <Modal
           wrapperStyle={{ maxWidth: "640px", padding: "48px" }}
@@ -234,7 +234,6 @@ export default function Programs() {
         />
       )}
 
-      {/* Edit section modal! - admin only*/}
       {isAdmin && (
         <CreateSectionFlow
           active={showCreateModal || !!editingSection}
@@ -281,7 +280,7 @@ export default function Programs() {
               }
             }}
             onDelete={() => setDeletingSection(section)}
-            onClick={() => router.push(`/programs/${section._id}`)}
+            onClick={() => router.push(`/programs?id=${section._id}`)}
           />
         ))}
       </div>

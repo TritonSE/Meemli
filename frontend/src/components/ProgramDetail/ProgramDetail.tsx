@@ -1,7 +1,6 @@
 "use client";
 
 import { format } from "date-fns";
-import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import type { Student } from "@/src/api/students";
@@ -18,8 +17,6 @@ import { DateSelect } from "@/src/components/dateSelect";
 import { Table } from "@/src/components/StudentStaffTable/Table";
 import { useAuth } from "@/src/context/AuthContext";
 
-export const dynamic = "force-dynamic";
-
 type Tab = "attendance" | "students" | "teachers";
 
 type Session = {
@@ -28,11 +25,7 @@ type Session = {
   section: string | { _id: string; code: string };
 };
 
-export default function ProgramDetailPage() {
-  const params = useParams();
-  if (!params) return null;
-  const { id } = params as { id: string };
-  const router = useRouter();
+export function ProgramDetail({ id, onBack }: { id: string; onBack: () => void }) {
   const { isAdmin } = useAuth();
 
   const [section, setSection] = useState<Section | null>(null);
@@ -69,6 +62,7 @@ export default function ProgramDetailPage() {
   useEffect(() => {
     const fetchSection = async () => {
       const result = await getSectionById(id);
+      console.log("section result:", result);
       if (result.success) setSection(result.data);
     };
     void fetchSection();
@@ -190,7 +184,7 @@ export default function ProgramDetailPage() {
     >
       {/* Back */}
       <button
-        onClick={() => router.back()}
+        onClick={onBack}
         style={{
           borderRadius: "8px",
           border: "1px solid #CDCFD0",
