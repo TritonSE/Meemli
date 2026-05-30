@@ -1,7 +1,7 @@
 "use client";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { getUser } from "../../../api/user";
 import { AuthCard } from "../../../components/AuthCard";
@@ -12,7 +12,9 @@ import { auth } from "../../../util/firebase";
 
 import styles from "./page.module.css";
 
-type Errors = {
+import type { AuthError } from "firebase/auth";
+
+type LoginFormErrors = {
   email?: string;
   password?: string;
   invalidEmailOrPassword?: string;
@@ -23,11 +25,11 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [formErrors, setFormErrors] = useState<Errors>({});
+  const [formErrors, setFormErrors] = useState<LoginFormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
 
   const validateForm = (): boolean => {
-    const errors: Errors = {};
+    const errors: LoginFormErrors = {};
 
     if (!email.trim()) {
       errors.email = "This field is required";
@@ -64,6 +66,7 @@ export default function LoginPage() {
   }
 
   const handleSignIn = () => {
+    setFormErrors({});
     if (!validateForm()) {
       return;
     }
@@ -83,21 +86,32 @@ export default function LoginPage() {
                 const _userData = result.data;
                 // redirect after successful sign-in and user fetch
                 router.push("/");
+              } else {
+                // successfully found user in userbase, but user data does not exist
+                setFormErrors({ api: "Unable to fetch user data" });
+                setLoading(false);
               }
             })
             .catch((error) => {
-              console.error("Error fetching user data:", error);
+              // promise rejected/timeout
+              setFormErrors({ api: `Unable to fetch user data: ${error}` });
+              setLoading(false);
             });
-        } else {
-          // no user returned
-          console.warn("Sign-in succeeded but no user object returned");
         }
       })
       .catch((error) => {
-        setFormErrors({ invalidEmailOrPassword: "Invalid email or password" });
-        console.error("Error signing in:", error);
-      })
-      .finally(() => {
+        // sign-in failed
+        if (error) {
+          const authError = error as AuthError;
+          switch (authError.code) {
+            case "auth/invalid-email":
+            case "auth/wrong-password":
+              setFormErrors({ invalidEmailOrPassword: "Invalid email or password" });
+              break;
+            default:
+              setFormErrors({ api: "Sign-in Failed" });
+          }
+        }
         setLoading(false);
       });
   };
@@ -183,6 +197,7 @@ export default function LoginPage() {
 
           <ErrorMessage message={formErrors.password} />
           <ErrorMessage message={formErrors.invalidEmailOrPassword} />
+          <ErrorMessage message={formErrors.api} />
         </div>
 
         <div className={styles.actions}>
