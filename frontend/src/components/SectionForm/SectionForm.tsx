@@ -18,17 +18,35 @@ import { createSection, getSectionById, updateSection } from "@/src/api/sections
 
 const COLOR_REGEX = /^#(?:[0-9a-f]{3}){1,2}$/i;
 
-export const sectionDraftSchema = z.object({
-  code: z.string().min(1, "Class name is required").max(100, "Class name is too long"),
-  color: z.string().regex(COLOR_REGEX, "Please select a valid color"),
-  startDate: z.string().min(1, "Start date is required"),
-  endDate: z.string().min(1, "End date is required"),
-  days: z.array(z.string()).min(1, "Please select at least one meeting day"),
-  startTime: z.string().min(1, "Start time is required"),
-  endTime: z.string().min(1, "End time is required"),
-  teachers: z.array(z.string()).min(1, "Please assign at least one teacher"),
-  enrolledStudents: z.array(z.string()).min(1, "Please assign at least one student"),
-});
+export const sectionDraftSchema = z
+  .object({
+    code: z.string().min(1, "Class name is required").max(100, "Class name is too long"),
+    color: z.string().regex(COLOR_REGEX, "Please select a valid color"),
+    startDate: z.string().min(1, "Start date is required"),
+    endDate: z.string().min(1, "End date is required"),
+    days: z.array(z.string()).min(1, "Please select at least one meeting day"),
+    startTime: z.string().min(1, "Start time is required"),
+    endTime: z.string().min(1, "End time is required"),
+    teachers: z.array(z.string()),
+    enrolledStudents: z.array(z.string()),
+  })
+  .superRefine((data, ctx) => {
+    if (data.startDate > data.endDate) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["endDate"],
+        message: "End date cannot be before start date",
+      });
+    }
+
+    if (data.startTime > data.endTime) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["endTime"],
+        message: "End time cannot be before start time",
+      });
+    }
+  });
 
 export type SectionDraft = z.infer<typeof sectionDraftSchema>;
 
@@ -83,9 +101,10 @@ type SectionFlowProps = {
   active: boolean;
   onClose: () => void;
   sectionId?: string;
+  showToast?: (message: string, type?: "success" | "error" | "info", onUndo?: () => void) => void;
 };
 
-export function CreateSectionFlow({ active, onClose, sectionId }: SectionFlowProps) {
+export function CreateSectionFlow({ active, onClose, sectionId, showToast }: SectionFlowProps) {
   const router = useRouter();
 
   // 2. Added state to handle fetching and default values
@@ -168,9 +187,16 @@ export function CreateSectionFlow({ active, onClose, sectionId }: SectionFlowPro
         onClose();
         spawnSuccessDialog(successMessage);
         router.refresh(); // Optional: trigger a Next.js server component refresh to show new data
+      } else {
+        showToast?.(
+          `Failed to ${sectionId ? "update" : "create"} class: ${response.error}`,
+          "error",
+        );
       }
     } catch (error) {
       console.error("Submission failed:", error);
+      const message = error instanceof Error ? error.message : "Unknown error";
+      showToast?.(`Failed to ${sectionId ? "update" : "create"} class: ${message}`, "error");
     }
   };
 
