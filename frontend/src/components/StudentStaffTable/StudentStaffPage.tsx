@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 
 import type { Section } from "@/src/api/sections";
 import type { Student } from "@/src/api/students";
+import type { Option } from "@/src/components/MultiSelect/MultiSelect";
 import type { DropdownItem } from "@/src/components/StudentStaffTable/Dropdown";
 
 import EditIcon from "@/public/icons/edit.svg";
@@ -19,6 +20,27 @@ import { ProgramSelect } from "@/src/components/StudentStaffTable/ProgramSelect"
 import { Table } from "@/src/components/StudentStaffTable/Table";
 import { Toast } from "@/src/components/Toast/Toast";
 import { useAuth } from "@/src/context/AuthContext";
+
+const roleOptions: Option[] = [
+  {
+    id: "admin",
+    label: "Administrator",
+    colorBg: "var(--secondary-100)",
+    colorText: "var(--secondary-800)",
+  },
+  {
+    id: "teacher",
+    label: "Staff",
+    colorBg: "var(--primary-100)",
+    colorText: "var(--primary-900)",
+  },
+  // {
+  //   id: "owner",
+  //   label: "Owner",
+  //   colorBg: "var(--tertiary-100)",
+  //   colorText: "var(--tertiary-800)",
+  // },
+];
 
 type ToastState = {
   type: "success" | "error" | "neutral";
@@ -781,6 +803,7 @@ export default function StudentStaffPage({ type }: StudentStaffPageProps) {
         data={data}
         setData={setRoot}
         sections={sections}
+        roleOptions={roleOptions}
         type={type}
         isEdit={isEdit}
         selected={selected}
@@ -822,6 +845,7 @@ export default function StudentStaffPage({ type }: StudentStaffPageProps) {
               />
             ) : (
               <AddStaffForm
+                roleOptions={roleOptions}
                 onSuccess={() => {
                   setToast({
                     type: "success",

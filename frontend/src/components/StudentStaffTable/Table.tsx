@@ -6,6 +6,7 @@ import styles from "./Table.module.css";
 import type { Section } from "@/src/api/sections";
 import type { Student } from "@/src/api/students";
 import type { User } from "@/src/api/user";
+import type { Option } from "@/src/components/MultiSelect/MultiSelect";
 import type { Dispatch, SetStateAction } from "react";
 
 import EditIcon from "@/public/icons/edit.svg";
@@ -27,6 +28,7 @@ export type TableProps = {
   data: Student[] | User[];
   setData: Dispatch<SetStateAction<any>>;
   sections: Section[];
+  roleOptions: Option[];
   type: "staff" | "student";
   isEdit: boolean;
   onEdit?: () => void;
@@ -40,6 +42,7 @@ export function Table({
   setData,
   type,
   sections,
+  roleOptions,
   isEdit,
   onEdit,
   selected,
@@ -215,6 +218,7 @@ export function Table({
 
       const sortedLabels = sortedSections.map((s) => s.label);
       const sectionColors = sortedSections.map((s) => s.color);
+      const roleOption = roleOptions.find((o) => o.id === (input.admin ? "admin" : "teacher"));
 
       return (
         <>
@@ -224,10 +228,13 @@ export function Table({
             {renderHoverBtn(input)}
           </td>
           <td className={styles.roleItem}>
-            <DynamicBlockDisplay
-              labels={input.admin ? ["Administrator"] : ["Staff"]}
-              colors={input.admin ? ["#FF5000"] : ["#00FF00"]}
-            />
+            {roleOption && (
+              <DynamicBlockDisplay
+                labels={[roleOption.label]}
+                colors={[roleOption.colorBg ?? ""]}
+                textColors={[roleOption.colorText ?? ""]}
+              />
+            )}
           </td>
           <td className={styles.textItem}>{input.phoneNumber}</td>
           <td className={styles.programsItem}>
@@ -395,6 +402,7 @@ export function Table({
               <UserEditForm
                 user={editData}
                 sections={sections}
+                roleOptions={roleOptions}
                 onCancel={() => setEditOpen(false)}
                 onSubmit={() => {
                   setEditOpen(false);

@@ -12,6 +12,7 @@ import { TextField } from "../TextField";
 import styles from "./AddStaffForm.module.css";
 
 type AddStaffFormProps = {
+  roleOptions: Option[];
   onExit: () => void;
   onSuccess?: () => void;
 };
@@ -27,7 +28,11 @@ type FormErrors = {
   passwordReset?: string;
 };
 
-export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaffFormProps) {
+export const AddStaffForm = function AddStaffForm({
+  roleOptions,
+  onExit,
+  onSuccess,
+}: AddStaffFormProps) {
   const [isLoading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState<FormErrors>({});
 
@@ -39,28 +44,6 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
   const inviterName = currentUser
     ? currentUser.displayName || currentUser.email || "An Admin"
     : "An Admin";
-
-  // Role options mapped with colors replacing the old custom react-select components
-  const roleOptions: Option[] = [
-    {
-      id: "admin",
-      label: "Admin",
-      colorBg: "var(--secondary-100)",
-      colorText: "var(--secondary-800)",
-    },
-    {
-      id: "teacher",
-      label: "Teacher",
-      colorBg: "var(--tertiary-100)",
-      colorText: "var(--tertiary-800)",
-    },
-    {
-      id: "student",
-      label: "Student",
-      colorBg: "var(--primary-100)",
-      colorText: "var(--primary-800)",
-    },
-  ];
 
   // Form state
   const [firstName, setFirstName] = useState("");
@@ -86,9 +69,8 @@ export const AddStaffForm = function AddStaffForm({ onExit, onSuccess }: AddStaf
     // Updated validation to check the string state directly
     if (!role) {
       errors.role = "Role is required";
-    } else if (!["teacher", "admin", "student"].includes(role)) {
-      // Must match the exact 'id' strings in your roleOptions array
-      errors.role = "Role must be one of: teacher, admin, or student";
+    } else if (!roleOptions.some((option) => option.id === role)) {
+      errors.role = "Role must be either admin or teacher.";
     }
 
     if (!personalEmail.trim()) {
