@@ -80,3 +80,15 @@ export const updateAttendanceBulk = async (
     return handleAPIError(error);
   }
 };
+
+export const getAttendanceByStudentId = async (
+  studentId: string,
+): Promise<APIResult<AttendanceRecord[]>> => {
+  try {
+    const response = await get(`/attendance/student/${studentId}`);
+    const json = (await response.json()) as AttendanceRecord[];
+    return { success: true, data: json };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+};

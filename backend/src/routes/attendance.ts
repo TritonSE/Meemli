@@ -9,8 +9,8 @@ const router = express.Router();
 
 // ---------------------- ROUTES ----------------------
 // GET Routes
+router.get("/student/:id", AttendanceController.getAttendanceByStudentId);
 router.get("/session/:sessionId", AttendanceController.getAttendanceBySessionId);
-
 // POST, PUT Routes
 router.post(
   "/",

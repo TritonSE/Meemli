@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 
 import ProgramCard from "../ProgramCard/ProgramCard";
 
+import { AttendancePanel } from "./AttendancePanel";
 import styles from "./StudentTabs.module.css";
 
 import type { Section } from "@/src/api/sections";
@@ -256,13 +257,13 @@ export function StudentTabs({ student }: StudentTabsProps) {
       case "programs":
         return <ProgramsPanel student={student} />;
       case "attendance":
+        return <AttendancePanel student={student} />;
       case "assessments":
       default:
         const label = TAB_CONFIG.find((t) => t.id === activeTabId)?.label || "Unknown";
         return <ComingSoonPanel title={label} />;
     }
   };
-
   return (
     <div className={styles.tabsContainer}>
       <nav className={styles.tabNav} role="tablist" aria-label="Student Sections">
@@ -283,7 +284,7 @@ export function StudentTabs({ student }: StudentTabsProps) {
           </button>
         ))}
       </nav>
-
+      <div className={styles.divider}></div>
       <section id={`panel-${activeTabId}`} role="tabpanel" className={styles.tabContent}>
         {renderTabContent()}
       </section>

@@ -4,6 +4,7 @@ import { Types } from "mongoose";
 import { AttendanceModel } from "../models/attendance";
 import { Section } from "../models/sections";
 import { SessionModel } from "../models/session";
+import StudentModel from "../models/student";
 
 import type { RequestHandler } from "express";
 
@@ -132,6 +133,46 @@ export const getAttendanceBySessionId: RequestHandler = async (req, res, next) =
   }
 };
 
+export const getAttendanceByStudentId: RequestHandler = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    if (!Types.ObjectId.isValid(id)) {
+      throw createHTTPError(400, "Invalid student ID");
+    }
+    const student = await StudentModel.findById(id);
+    if (!req.userContext?.admin) {
+      // extract the teacher's assigned sections that have the student enrolled
+      const sectionsWithStudent = (req.userContext?.assignedSections ?? []).filter((sectionId) =>
+        student?.enrolledSections.some((enrolledId) => enrolledId.equals(sectionId)),
+      );
+      // teacher does not teach this student
+      if (sectionsWithStudent.length === 0) {
+        throw createHTTPError.Forbidden();
+      }
+      const sessionIds = await SessionModel.find({
+        section: { $in: sectionsWithStudent },
+      }).distinct("_id");
+
+      const attendance = await AttendanceModel.find({
+        session: { $in: sessionIds },
+        student: id,
+      });
+      if (attendance.length === 0) {
+        throw createHTTPError(404, "Attendance records not found");
+      }
+      return res.status(200).json(attendance);
+    } else {
+      const attendance = await AttendanceModel.find({ student: id });
+      if (attendance.length === 0) {
+        throw createHTTPError(404, "Attendance records not found");
+      }
+      return res.status(200).json(attendance);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 type AttendanceUpdate = {
   attendanceId: string;
   status: "PRESENT" | "LATE" | "ABSENT";
@@ -175,7 +216,6 @@ export const updateBulkAttendance: RequestHandler = async (req, res, next) => {
         },
       }));
 
-    // 3. Execute the updates
     if (operations.length > 0) {
       await AttendanceModel.bulkWrite(operations);
     }
