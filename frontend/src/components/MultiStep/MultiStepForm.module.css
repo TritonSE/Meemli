@@ -5,11 +5,15 @@
   gap: 1rem;
   width: 100%;
   height: 30rem;
+  font-family: "Montserrat", sans-serif;
+
+  h1 {
+    font-weight: 600;
+  }
 
   label {
-    font-weight: 400;
+    font-weight: 500;
     font-size: 1rem;
-    color: var(--grey-700);
   }
 
   .editTabs {
