@@ -113,7 +113,7 @@ export function StepThreeEnrolled() {
               value={field.value} // Array of teacher ObjectIDs
               onChange={field.onChange}
               withChips={true}
-              required={true}
+              required={false}
             />
           )}
         />
@@ -132,7 +132,7 @@ export function StepThreeEnrolled() {
               value={field.value} // Array of student ObjectIDs
               onChange={field.onChange}
               withChips={true}
-              required={true}
+              required={false}
             />
           )}
         />

@@ -1,0 +1,94 @@
+.container {
+  font-family: "Montserrat", sans-serif;
+  width: 100%;
+  max-width: 650px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.card {
+  display: flex;
+  background-color: white;
+  border: 1px solid var(--grey-200);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s ease;
+  min-height: 7rem;
+  height: 7rem;
+}
+
+.colorBar {
+  width: clamp(1rem, 15%, 6rem);
+  background-color: var(--accent-color, var(--primary-400));
+  flex-shrink: 0;
+}
+
+.cardBody {
+  flex: 1;
+  padding: 24px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Explicit selector path ensures parent context rules cannot override formatting */
+.card h4.cardTitle {
+  font-size: 1.05rem;
+  font-weight: 600 !important;
+  color: var(--grey-900);
+  margin: 0;
+  padding-bottom: 0;
+  letter-spacing: normal;
+}
+
+.card hr {
+  margin: 0.6rem 0;
+  color: var(--grey-300);
+}
+
+.detailsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (max-width: 650px) {
+  .detailsList {
+    display: none;
+  }
+
+  .cardBody hr {
+    display: none;
+  }
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.iconWrapper {
+  align-items: center;
+  width: 18px;
+  min-width: 18px;
+  color: var(--grey-600);
+
+  & img {
+    filter: brightness(0.55) contrast(1.1);
+  }
+}
+
+.detailText {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--grey-600);
+}
+
+.emptyMessage {
+  font-size: 0.9rem;
+  color: var(--grey-500);
+  font-style: italic;
+  padding-left: 4px;
+}

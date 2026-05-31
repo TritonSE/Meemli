@@ -193,6 +193,15 @@ export default function Programs() {
           </div>
         </div>
       </div>
+      {/* Create new section! */}
+      <CreateSectionFlow
+        active={showCreateModal}
+        onClose={() => {
+          setShowCreateModal(false);
+          void fetchData();
+        }}
+        showToast={showToast}
+      />
 
       {/* pop up for deleting section - admin only*/}
       {isAdmin && deletingSection && (
@@ -287,6 +296,7 @@ export default function Programs() {
         <Toast
           id="main"
           message={toast.message}
+          type={toast.type}
           onUndo={toast.onUndo}
           onDismiss={() => dismissToast()}
         />
