@@ -7,10 +7,10 @@ import styles from "./StepThreeEnrolled.module.css";
 
 import type { SectionDraft } from "../SectionForm";
 import type { Student } from "@/src/api/students";
-import type { User } from "@/src/api/users";
+import type { User } from "@/src/api/user";
 
 import { getAllStudents } from "@/src/api/students";
-import { getAllTeachers } from "@/src/api/users";
+import { getAllUsers } from "@/src/api/user";
 
 // Moved outside so it isn't redefined on every render
 export type DropdownOption = {
@@ -38,7 +38,7 @@ export function StepThreeEnrolled() {
         // Fetch both at the exact same time
         const [studentsResponse, teachersResponse] = await Promise.all([
           getAllStudents(),
-          getAllTeachers(),
+          getAllUsers(),
         ]);
 
         // Process Students

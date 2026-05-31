@@ -2,13 +2,22 @@
 
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+
+import { Button } from "../Button";
+import { Modal } from "../Modal";
 
 import { AttendancePanel } from "./AttendancePanel";
+import { EmailTemplate } from "./EmailTemplate";
 import styles from "./StudentTabs.module.css";
 
-import type { Student } from "@/src/api/students"; // Adjust path as needed
+import type { Section } from "@/src/api/sections";
+import type { Student } from "@/src/api/students";
+import type { User } from "@/src/api/user";
 
-// 1. Define Props to accept the data
+import { getAllSections } from "@/src/api/sections";
+import { getAllUsers } from "@/src/api/user";
+
 type StudentTabsProps = {
   student: Student;
 };
@@ -30,7 +39,13 @@ const TAB_CONFIG: readonly TabItem[] = [
 
 // --- Sub-Components for specific Views ---
 
-const InfoPanel = ({ student }: { student: Student }) => {
+const InfoPanel = ({
+  student,
+  onTemplateClick,
+}: {
+  student: Student;
+  onTemplateClick: () => void;
+}) => {
   const { parentContact } = student;
 
   return (
@@ -52,6 +67,9 @@ const InfoPanel = ({ student }: { student: Student }) => {
             <div className={styles.infoItem}>
               <label>Parent Phone</label>
               <p>{parentContact.phoneNumber}</p>
+            </div>
+            <div className={styles.infoItem}>
+              <Button label="Template Email" kind="primary" onClick={onTemplateClick} />
             </div>
           </div>
         ) : (
@@ -90,8 +108,10 @@ export function StudentTabs({ student }: StudentTabsProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+  const [templateOpen, setTemplateOpen] = useState(false);
+  const [sections, setSections] = useState<Section[]>([]);
+  const [teachers, setTeachers] = useState<User[]>([]);
 
-  // Type assertion ensures we default safely if URL has garbage data
   const activeTabId = (searchParams?.get("tab") as TabId) || TAB_CONFIG[0].id;
 
   const handleTabChange = (tabId: string) => {
@@ -100,11 +120,17 @@ export function StudentTabs({ student }: StudentTabsProps) {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
-  // The "Render Map" Logic
+  useEffect(() => {
+    void Promise.all([getAllSections(), getAllUsers()]).then(([sectionsResult, usersResult]) => {
+      if (sectionsResult.success) setSections(sectionsResult.data);
+      if (usersResult.success) setTeachers(usersResult.data);
+    });
+  }, []);
+
   const renderTabContent = () => {
     switch (activeTabId) {
       case "info":
-        return <InfoPanel student={student} />;
+        return <InfoPanel student={student} onTemplateClick={() => setTemplateOpen(true)} />;
       case "notes":
         return <NotesPanel comments={student.comments} />;
       case "attendance":
@@ -112,13 +138,19 @@ export function StudentTabs({ student }: StudentTabsProps) {
       case "programs":
       case "assessments":
       default:
-        // Finds the label for the current ID to display nicely
         const label = TAB_CONFIG.find((t) => t.id === activeTabId)?.label || "Unknown";
         return <ComingSoonPanel title={label} />;
     }
   };
+
   return (
     <div className={styles.tabsContainer}>
+      {templateOpen && (
+        <Modal
+          child={<EmailTemplate student={student} sections={sections} teachers={teachers} />}
+          onExit={() => setTemplateOpen(false)}
+        />
+      )}
       <nav className={styles.tabNav} role="tablist" aria-label="Student Sections">
         {TAB_CONFIG.map((tab) => (
           <button
