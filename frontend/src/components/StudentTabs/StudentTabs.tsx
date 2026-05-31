@@ -298,7 +298,6 @@ export function StudentTabs({ student }: StudentTabsProps) {
         return <ComingSoonPanel title={label} />;
     }
   };
-
   return (
     <div className={styles.tabsContainer}>
       {templateOpen && (
