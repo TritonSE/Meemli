@@ -19,6 +19,7 @@ export function EmailTemplate({
 }) {
   const { isAdmin, user } = useAuth();
   if (!isAdmin) return <></>;
+  const DEFAULT = "TBD";
 
   const to12Hour = (time24: string): string => {
     const [hh, mm] = time24.split(":").map(Number);
@@ -35,15 +36,17 @@ export function EmailTemplate({
 
     return `
       * ${section.code}
-        Instructor: ${section.teachers
-          .map((teacherId) => {
-            const teacher = teachers.find((t) => t._id === teacherId);
-            return teacher ? `${teacher.firstName} ${teacher.lastName}` : null;
-          })
-          .filter(Boolean)
-          .join(", ")}
-        Days: ${section.days.join(", ")}
-        Time: ${to12Hour(section.startTime)} - ${to12Hour(section.endTime)}
+        Instructor: ${
+          section.teachers
+            .map((teacherId) => {
+              const teacher = teachers.find((t) => t._id === teacherId);
+              return teacher ? `${teacher.firstName} ${teacher.lastName}` : null;
+            })
+            .filter(Boolean)
+            .join(", ") || DEFAULT
+        }
+        Days: ${section.days.join(", ") || DEFAULT}
+        Time: ${to12Hour(section.startTime) || DEFAULT} - ${to12Hour(section.endTime) || DEFAULT}
         `;
   }
 
@@ -58,12 +61,16 @@ Name: ${student.displayName}
 Student Email: ${student.meemliEmail}
 
 Enrolled Courses and Schedule
-${student.enrolledSections?.map((id) => generateString(id)).join("")}
+${
+  student.enrolledSections?.length
+    ? student.enrolledSections.map((sectionId) => generateString(sectionId)).join("")
+    : "No enrollments yet."
+}
 
 Contact Information
 If you have any questions or need further assistance, please feel free to reach out:
-Email: ${user?.meemliEmail}
-Phone: ${user?.phoneNumber}
+Email: ${user?.meemliEmail || "-"}
+Phone: ${user?.phoneNumber || "-"}
 
 We appreciate your support and involvement in ${student.displayName}'s learning journey. Please don't hesitate to contact us if there's anything we can help with.
 
@@ -89,10 +96,10 @@ Meemli Team`;
     return (
       <li key={sectionId}>
         <strong>{section.code}</strong>
-        <div>Instructor: {instructors}</div>
-        <div>Days: {section.days.join(", ")}</div>
+        <div>Instructor: {instructors || DEFAULT}</div>
+        <div>Days: {section.days.join(", ") || DEFAULT}</div>
         <div>
-          Time: {section.startTime} - {section.endTime}
+          Time: {to12Hour(section.startTime) || DEFAULT} - {to12Hour(section.endTime) || DEFAULT}
         </div>
       </li>
     );
@@ -100,37 +107,43 @@ Meemli Team`;
 
   return (
     <div className={styles.templateWrapper}>
-      <p>
-        Dear {student.parentContact?.firstName} {student.parentContact?.lastName},
-      </p>
-      <p></p>
-      <p>We hope this message finds you well.</p>
-      <p></p>
-      <p>
-        We are writing to provide you with an overview of {student.displayName}'s current schedule
-        at Meemli. Below you will find details regarding their enrolled courses, meeting times, and
-        our contact information.
-      </p>
-      <h2>Student Information</h2>
-      <p>Name: {student.displayName}</p>
-      <p>Student Email: {student.meemliEmail}</p>
-      <p></p>
-      <h2>Enrolled Courses and Schedule</h2>
-      <p></p>
-      <ul>{student.enrolledSections?.map((sectionId) => generateHTML(sectionId))}</ul>
-      <p></p>
-      <h2>Contact Information</h2>
-      <p>If you have any questions or need further assistance, please feel free to reach out:</p>
-      <p>Email: {user?.meemliEmail}</p>
-      <p>Phone: {user?.phoneNumber}</p>
-      <p></p>
-      <p>
-        We appreciate your support and involvement in {student.displayName}'s learning journey.
-        Please don't hesitate to contact us if there's anything we can help with.
-      </p>
-      <p></p>
-      <p>Sincerely,</p>
-      <p>Meemli Team</p>
+      <div className={styles.template}>
+        <p>
+          Dear {student.parentContact?.firstName} {student.parentContact?.lastName},
+        </p>
+        <p></p>
+        <p>We hope this message finds you well.</p>
+        <p></p>
+        <p>
+          We are writing to provide you with an overview of {student.displayName}'s current schedule
+          at Meemli. Below you will find details regarding their enrolled courses, meeting times,
+          and our contact information.
+        </p>
+        <h2>Student Information</h2>
+        <p>Name: {student.displayName}</p>
+        <p>Student Email: {student.meemliEmail}</p>
+        <p></p>
+        <h2>Enrolled Courses and Schedule</h2>
+        <p></p>
+        <ul>
+          {student.enrolledSections?.length
+            ? student.enrolledSections.map((sectionId) => generateHTML(sectionId))
+            : "No enrollments yet."}
+        </ul>
+        <p></p>
+        <h2>Contact Information</h2>
+        <p>If you have any questions or need further assistance, please feel free to reach out:</p>
+        <p>Email: {user?.meemliEmail || "-"}</p>
+        <p>Phone: {user?.phoneNumber || "-"}</p>
+        <p></p>
+        <p>
+          We appreciate your support and involvement in {student.displayName}'s learning journey.
+          Please don't hesitate to contact us if there's anything we can help with.
+        </p>
+        <p></p>
+        <p>Sincerely,</p>
+        <p>Meemli Team</p>
+      </div>
       <div className={styles.buttonBar}>
         <Button
           className={styles.button}

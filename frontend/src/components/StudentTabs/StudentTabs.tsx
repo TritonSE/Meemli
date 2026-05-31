@@ -17,6 +17,7 @@ import type { Student } from "@/src/api/students";
 
 import { getAllSections, getSectionById, type Section } from "@/src/api/sections";
 import { getAllUsers, getUser, type User } from "@/src/api/user";
+import { useAuth } from "@/src/context/AuthContext";
 
 type StudentTabsProps = {
   student: Student;
@@ -93,9 +94,11 @@ const TermGroup = ({
 
 const InfoPanel = ({
   student,
+  isAdmin,
   onTemplateClick,
 }: {
   student: Student;
+  isAdmin: boolean;
   onTemplateClick: () => void;
 }) => {
   const { parentContact } = student;
@@ -120,9 +123,11 @@ const InfoPanel = ({
               <label>Parent Phone</label>
               <p>{parentContact.phoneNumber}</p>
             </div>
-            <div className={styles.infoItem}>
-              <Button label="Template Email" kind="primary" onClick={onTemplateClick} />
-            </div>
+            {isAdmin && (
+              <div className={styles.infoItem}>
+                <Button label="Template Email" kind="primary" onClick={onTemplateClick} />
+              </div>
+            )}
           </div>
         ) : (
           <p>Not available</p>
@@ -250,6 +255,7 @@ export function StudentTabs({ student }: StudentTabsProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+  const { isAdmin } = useAuth();
   const [templateOpen, setTemplateOpen] = useState(false);
   const [sections, setSections] = useState<Section[]>([]);
   const [teachers, setTeachers] = useState<User[]>([]);
@@ -263,16 +269,23 @@ export function StudentTabs({ student }: StudentTabsProps) {
   };
 
   useEffect(() => {
+    if (!isAdmin) return;
     void Promise.all([getAllSections(), getAllUsers()]).then(([sectionsResult, usersResult]) => {
       if (sectionsResult.success) setSections(sectionsResult.data);
       if (usersResult.success) setTeachers(usersResult.data);
     });
-  }, []);
+  }, [isAdmin]);
 
   const renderTabContent = () => {
     switch (activeTabId) {
       case "info":
-        return <InfoPanel student={student} onTemplateClick={() => setTemplateOpen(true)} />;
+        return (
+          <InfoPanel
+            student={student}
+            isAdmin={isAdmin}
+            onTemplateClick={() => setTemplateOpen(true)}
+          />
+        );
       case "notes":
         return <NotesPanel comments={student.comments} />;
       case "programs":
