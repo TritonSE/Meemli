@@ -12,14 +12,10 @@ import styles from "./UserEditForm.module.css";
 import type { Section } from "../../api/sections";
 import type { User } from "../../api/user";
 
-const ROLE_OPTIONS = [
-  { id: "Admin", label: "Admin" },
-  { id: "Staff", label: "Staff" },
-];
-
 type UserEditFormProps = {
   user: User;
   sections: Section[];
+  roleOptions: Option[];
   onCancel: () => void;
   onSubmit?: () => void;
 };
@@ -32,38 +28,23 @@ type UserEditFormProps = {
  * @param onSubmit callback when the user successfully submits the form.
  * @returns form component
  */
-export function UserEditForm({ user, sections: _sections, onCancel, onSubmit }: UserEditFormProps) {
+export function UserEditForm({
+  user,
+  sections: _sections,
+  roleOptions,
+  onCancel,
+  onSubmit,
+}: UserEditFormProps) {
   const [firstName, setFirstName] = useState(user.firstName);
   const [lastName, setLastName] = useState(user.lastName);
   const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
-  const [role, setRole] = useState(user.admin ? "Admin" : "Staff");
+  const [role, setRole] = useState(user.admin ? "admin" : "teacher");
   const [assignedSections, setAssignedSections] = useState(user.assignedSections);
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
   const [phoneNumberError, setPhoneNumberError] = useState("");
   const [roleError, setRoleError] = useState("");
   const [submitError, setSubmitError] = useState("");
-
-  const roleOptions: Option[] = [
-    {
-      id: "admin",
-      label: "Admin",
-      colorBg: "var(--secondary-100)",
-      colorText: "var(--secondary-800)",
-    },
-    {
-      id: "teacher",
-      label: "Teacher",
-      colorBg: "var(--tertiary-100)",
-      colorText: "var(--tertiary-800)",
-    },
-    {
-      id: "student",
-      label: "Student",
-      colorBg: "var(--primary-100)",
-      colorText: "var(--primary-800)",
-    },
-  ];
 
   const handleSubmit: NonNullable<React.ComponentProps<"form">["onSubmit"]> = (event) => {
     event.preventDefault();
@@ -79,8 +60,8 @@ export function UserEditForm({ user, sections: _sections, onCancel, onSubmit }: 
     let nextRoleError = "";
     if (!role) {
       nextRoleError = "Role is required.";
-    } else if (!ROLE_OPTIONS.some((option) => option.id === role)) {
-      nextRoleError = "Role must be either Admin or Staff.";
+    } else if (!roleOptions.some((option) => option.id === role)) {
+      nextRoleError = "Role must be either admin or teacher.";
     }
 
     setFirstNameError(nextFirstNameError);
@@ -104,7 +85,7 @@ export function UserEditForm({ user, sections: _sections, onCancel, onSubmit }: 
       firstName: validFirstName,
       lastName: validLastName,
       phoneNumber: validPhoneNumber,
-      admin: role === "Admin",
+      admin: role === "admin",
       personalEmail: user.personalEmail,
       meemliEmail: user.meemliEmail,
       archived: user.archived,
@@ -207,12 +188,11 @@ export function UserEditForm({ user, sections: _sections, onCancel, onSubmit }: 
       </div>
       <div className={styles.fieldGroup}>
         <MultiSelectDropdown
-          label="Sections"
+          label="Assigned Programs"
           value={assignedSections}
           onChange={(next) => setAssignedSections(next)}
-          placeholder="Select sections"
+          placeholder="Select"
           required={false}
-          disabled={role === "Admin"}
         />
       </div>
 
