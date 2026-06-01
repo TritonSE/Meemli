@@ -71,14 +71,21 @@ export const SectionCard = function SectionCard({
     <div className={styles.cardWrapper} onClick={onClick} style={{ cursor: "pointer" }}>
       <div className={styles.topBar} style={{ backgroundColor: color }} ref={menuRef}>
         {isAdmin && (
-          <button className={styles.menuButton} onClick={toggleMenu}>
+          <button
+            className={styles.menuButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleMenu();
+            }}
+          >
             <MoreHorizontal />
           </button>
         )}
         {menuOpen && (
           <div className={styles.dropdown}>
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 onEdit();
                 setMenuOpen(false);
               }}
@@ -86,7 +93,8 @@ export const SectionCard = function SectionCard({
               Edit
             </button>
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 void onArchive();
                 setMenuOpen(false);
               }}
@@ -94,7 +102,8 @@ export const SectionCard = function SectionCard({
               {!archived ? "Archive" : "Unarchive"}
             </button>
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 void onDelete();
                 setMenuOpen(false);
               }}

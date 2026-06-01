@@ -17,6 +17,8 @@ import { DateSelect } from "@/src/components/dateSelect";
 import { Table } from "@/src/components/StudentStaffTable/Table";
 import { useAuth } from "@/src/context/AuthContext";
 
+import styles from "./ProgramDetail.module.css";
+
 type Tab = "attendance" | "students" | "teachers";
 
 type Session = {
@@ -62,7 +64,6 @@ export function ProgramDetail({ id, onBack }: { id: string; onBack: () => void }
   useEffect(() => {
     const fetchSection = async () => {
       const result = await getSectionById(id);
-      console.log("section result:", result);
       if (result.success) setSection(result.data);
     };
     void fetchSection();
@@ -174,36 +175,8 @@ export function ProgramDetail({ id, onBack }: { id: string; onBack: () => void }
   }, [teachers, teacherSearchQuery, teacherSortOption]);
 
   return (
-    <div
-      style={{
-        marginLeft: "clamp(60px, 7vw, 80px)",
-        padding: "64px 128px",
-        minHeight: "100vh",
-        boxSizing: "border-box",
-      }}
-    >
-      {/* Back */}
-      <button
-        onClick={onBack}
-        style={{
-          borderRadius: "8px",
-          border: "1px solid #CDCFD0",
-          background: "#FFF",
-          display: "flex",
-          padding: "8px 12px",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "8px",
-          color: "#494445",
-          fontFamily: "Montserrat",
-          fontSize: "14px",
-          fontWeight: 600,
-          lineHeight: "20px",
-          letterSpacing: "-0.28px",
-          cursor: "pointer",
-          marginBottom: "16px",
-        }}
-      >
+    <div className={styles.pageWrapper}>
+      <button className={styles.backButton} onClick={onBack}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"
@@ -222,70 +195,20 @@ export function ProgramDetail({ id, onBack }: { id: string; onBack: () => void }
         Back
       </button>
 
-      {/* Header */}
-      <h1
-        style={{
-          color: "#231F20",
-          fontFamily: "Montserrat",
-          fontSize: "30px",
-          fontWeight: 600,
-          lineHeight: "38px",
-          letterSpacing: "-0.6px",
-          marginBottom: "4px",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {section?.code ?? ""}
-      </h1>
+      <div>
+        <h1 className={styles.title}>{section?.code ?? ""}</h1>
+        <p className={styles.caption}>Manage section attendance, students and teachers</p>
+      </div>
 
-      {/* Caption */}
-      <p
-        style={{
-          color: "#6C6A6B",
-          fontFamily: "Montserrat",
-          fontSize: "16px",
-          fontWeight: 400,
-          lineHeight: "24px",
-          letterSpacing: "-0.32px",
-          marginBottom: "32px",
-        }}
-      >
-        Manage section attendance, students and teachers
-      </p>
-
-      {/* Tabs + Controls */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "32px",
-        }}
-      >
-        <div style={{ display: "flex", gap: "8px" }}>
+      <div className={styles.tabRow}>
+        <div className={styles.tabs}>
           {tabs.map((tab) => {
             const isActive = activeTab === tab;
             return (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                style={{
-                  display: "flex",
-                  padding: "10px 14px",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: "8px",
-                  borderRadius: "8px",
-                  border: isActive ? "none" : "1px solid #CDCFD0",
-                  background: isActive ? "#3F8D7C" : "#FFF",
-                  color: isActive ? "#FFF" : "#494445",
-                  fontFamily: "Montserrat",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  lineHeight: "20px",
-                  letterSpacing: "-0.28px",
-                  cursor: "pointer",
-                }}
+                className={`${styles.tabButton} ${isActive ? styles.tabButtonActive : ""}`}
               >
                 {tab === "attendance" && (
                   <svg
@@ -351,38 +274,37 @@ export function ProgramDetail({ id, onBack }: { id: string; onBack: () => void }
           })}
         </div>
 
-        {activeTab === "attendance" && (
-          <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-            <DateSelect
-              value={selectedDate}
-              onChange={handleDateChange}
-              availableDates={availableDates}
-            />
-            <AttendanceSortBy value={sortOption} onChange={setSortOption} />
-            <AttendanceSearch value={searchQuery} onChange={setSearchQuery} />
-          </div>
-        )}
-
-        {activeTab === "students" && (
-          <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-            <AttendanceSortBy value={studentSortOption} onChange={setStudentSortOption} />
-            <AttendanceSearch value={studentSearchQuery} onChange={setStudentSearchQuery} />
-          </div>
-        )}
-
-        {activeTab === "teachers" && isAdmin && (
-          <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-            <AttendanceSortBy value={teacherSortOption} onChange={setTeacherSortOption} />
-            <AttendanceSearch
-              value={teacherSearchQuery}
-              onChange={setTeacherSearchQuery}
-              placeholder="Search Teachers"
-            />
-          </div>
-        )}
+        <div className={styles.controls}>
+          {activeTab === "attendance" && (
+            <>
+              <DateSelect
+                value={selectedDate}
+                onChange={handleDateChange}
+                availableDates={availableDates}
+              />
+              <AttendanceSortBy value={sortOption} onChange={setSortOption} />
+              <AttendanceSearch value={searchQuery} onChange={setSearchQuery} />
+            </>
+          )}
+          {activeTab === "students" && (
+            <>
+              <AttendanceSortBy value={studentSortOption} onChange={setStudentSortOption} />
+              <AttendanceSearch value={studentSearchQuery} onChange={setStudentSearchQuery} />
+            </>
+          )}
+          {activeTab === "teachers" && isAdmin && (
+            <>
+              <AttendanceSortBy value={teacherSortOption} onChange={setTeacherSortOption} />
+              <AttendanceSearch
+                value={teacherSearchQuery}
+                onChange={setTeacherSearchQuery}
+                placeholder="Search Teachers"
+              />
+            </>
+          )}
+        </div>
       </div>
 
-      {/* Attendance Tab */}
       {activeTab === "attendance" &&
         (loading ? (
           <p>Loading attendance...</p>
@@ -396,10 +318,8 @@ export function ProgramDetail({ id, onBack }: { id: string; onBack: () => void }
           />
         ))}
 
-      {/* Students Tab */}
       {activeTab === "students" && (
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <style>{`.tableWrapper { height: auto !important; }`}</style>
+        <div className={styles.tableOverride}>
           <Table
             data={filteredAndSortedStudents}
             setData={setStudents}
@@ -408,14 +328,13 @@ export function ProgramDetail({ id, onBack }: { id: string; onBack: () => void }
             isEdit={false}
             selected={new Set()}
             setSelected={() => {}}
+            roleOptions={[]}
           />
         </div>
       )}
 
-      {/* Teachers Tab - admin only */}
       {activeTab === "teachers" && isAdmin && (
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <style>{`.tableWrapper { height: auto !important; }`}</style>
+        <div className={styles.tableOverride}>
           <Table
             data={filteredAndSortedTeachers}
             setData={setTeachers}
@@ -424,6 +343,7 @@ export function ProgramDetail({ id, onBack }: { id: string; onBack: () => void }
             isEdit={false}
             selected={new Set()}
             setSelected={() => {}}
+            roleOptions={[]}
           />
         </div>
       )}
