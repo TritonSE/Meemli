@@ -4,6 +4,8 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  background: white;
+  z-index: 1;
 
   width: clamp(60px, 7vw, 80px);
   height: 100vh;
