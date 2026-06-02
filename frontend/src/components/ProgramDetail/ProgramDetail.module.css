@@ -1,0 +1,103 @@
+.pageWrapper {
+  padding: 64px 128px 60px;
+  background: #fcfbfb;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-left: clamp(60px, 7vw, 80px);
+  box-sizing: border-box;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #cdcfd0;
+  background: #fff;
+  color: #494445;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.backButton:hover {
+  background: var(--grey-25);
+}
+
+.title {
+  color: #231f20;
+  font-family: Montserrat;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 38px;
+  letter-spacing: -0.6px;
+  margin: 0 0 4px;
+  white-space: nowrap;
+}
+
+.caption {
+  color: #6c6a6b;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: -0.32px;
+  margin: 0;
+}
+
+.tabRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tabButton {
+  display: flex;
+  padding: 10px 14px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  border: 1px solid #cdcfd0;
+  background: #fff;
+  color: #494445;
+  font-family: Montserrat;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+  cursor: pointer;
+}
+
+.tabButtonActive {
+  border: none;
+  background: #3f8d7c;
+  color: #fff;
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.tableOverride {
+  display: flex;
+  flex-direction: column;
+}
+
+.tableOverride :global(.tableWrapper) {
+  height: auto !important;
+}
