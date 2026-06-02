@@ -34,12 +34,14 @@
 
   .navLink {
     border-radius: 6px;
+    padding: 10px;
+    display: flex;
   }
 
   .navIcon {
-    width: clamp(8px, 100%, 60px);
-    padding: 10px;
-    border-radius: 6px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
   }
 
   .navLink:not(.activeNavLink):hover {
@@ -75,15 +77,18 @@
   .logoutBtn {
     background: none;
     border: none;
-    padding: 14px;
+    padding: 10px;
     cursor: pointer;
     border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .logoutIcon {
     width: 20px;
     height: 20px;
-    display: block;
+    flex-shrink: 0;
   }
 
   .logoutBtn:hover {
