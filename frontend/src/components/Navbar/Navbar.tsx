@@ -44,7 +44,7 @@ export function Navbar() {
   return (
     <nav className={style.sideNav}>
       <div className={style.navLinks}>
-        <Link href="/programs">
+        <Link href="/programs" className={style.logoLink}>
           <Image
             src="/icons/logo.png"
             className={style.logo}
@@ -80,7 +80,13 @@ export function Navbar() {
       </div>
 
       <button onClick={handleLogout} className={style.logoutBtn} aria-label="Log out">
-        <Image src="/icons/nav/logout.svg" alt="Logout icon" width={20} height={20} />
+        <Image
+          src="/icons/nav/logout.svg"
+          alt="Logout icon"
+          width={20}
+          height={20}
+          className={style.logoutIcon}
+        />
       </button>
     </nav>
   );

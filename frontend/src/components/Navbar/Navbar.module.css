@@ -14,39 +14,45 @@
 
   border-right: 1px solid var(--grey-200);
 
-  .logo {
-    width: 2rem;
-    transition: transform 0.2s ease-in-out;
-    filter: none;
-    background: none;
+  .logoLink {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    padding: 6px;
     margin-top: 0.5rem;
   }
 
-  .logo:hover {
-    transform: scale(1.3);
+  .logoLink:hover {
+    background-color: var(--grey-50);
+  }
+
+  .logo {
+    width: 2rem;
+    filter: none;
   }
 
   .navLink {
-    border-radius: 4px;
+    border-radius: 6px;
   }
 
   .navIcon {
     width: clamp(8px, 100%, 60px);
     padding: 10px;
-    border-radius: 4px;
+    border-radius: 6px;
   }
 
-  .navLink:hover {
+  .navLink:not(.activeNavLink):hover {
     background-color: var(--grey-50);
   }
 
-  .navLink:hover .navIcon {
+  .navLink:not(.activeNavLink):hover .navIcon {
     filter: brightness(0) invert(0.5);
   }
 
   .activeNavLink {
     background-color: var(--primary-500);
-    border-radius: 4px;
+    border-radius: 6px;
   }
 
   .activeNavLink .navIcon {
@@ -69,12 +75,18 @@
   .logoutBtn {
     background: none;
     border: none;
-    padding: 0;
+    padding: 14px;
     cursor: pointer;
-    transition: transform 0.15s ease-in-out;
+    border-radius: 6px;
+  }
+
+  .logoutIcon {
+    width: 20px;
+    height: 20px;
+    display: block;
   }
 
   .logoutBtn:hover {
-    transform: scale(1.2);
+    background-color: var(--grey-50);
   }
 }
