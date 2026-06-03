@@ -4,7 +4,7 @@
   flex-direction: column;
 
   font-family: "Montserrat", sans-serif;
-  color: black;
+  color: var(--grey-700);
 
   padding: 10px;
   width: 100%;
@@ -26,6 +26,7 @@
   font-size: 30px;
   font-weight: 600;
   margin-bottom: 0;
+  color: var(--grey-900);
 }
 .description {
   font-size: 12px;

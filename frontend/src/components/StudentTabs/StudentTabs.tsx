@@ -1,13 +1,21 @@
+// components/StudentTabs.tsx
 "use client";
 
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
+import ProgramCard from "../ProgramCard/ProgramCard";
+
+import { AttendancePanel } from "./AttendancePanel";
 import styles from "./StudentTabs.module.css";
 
-import type { Student } from "@/src/api/students"; // Adjust path as needed
+import type { Section } from "@/src/api/sections";
+import type { Student } from "@/src/api/students";
 
-// 1. Define Props to accept the data
+import { getSectionById } from "@/src/api/sections";
+import { getUser } from "@/src/api/user";
+
 type StudentTabsProps = {
   student: Student;
 };
@@ -22,12 +30,64 @@ type TabItem = {
 
 const TAB_CONFIG: readonly TabItem[] = [
   { id: "info", label: "Info", icon: "/icons/nav/staff.svg" },
+  { id: "programs", label: "Programs", icon: "/icons/nav/programs.svg" },
   { id: "attendance", label: "Attendance", icon: "/icons/nav/attendance.svg" },
   { id: "assessments", label: "Assessments", icon: "/icons/nav/students.svg" },
   { id: "notes", label: "Notes", icon: "/icons/table.svg" },
 ];
 
-// --- Sub-Components for specific Views ---
+// --- Shared UI Components ---
+
+/**
+ * Collapsible accordion wrapper for grouping related term data.
+ * Utilizes standard CSS transitions for the chevron state.
+ */
+const TermGroup = ({
+  title,
+  defaultOpen = true,
+  children,
+}: {
+  title: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className={styles.termWrapper}>
+      <div className={styles.termHeading}>
+        <button
+          className={styles.termButton}
+          onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
+        >
+          {title}
+          <svg
+            className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ""}`}
+            width="14"
+            height="8"
+            viewBox="0 0 14 8"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M1 1L7 7L13 1"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+
+      {isOpen && <div className={styles.cardsGrid}>{children}</div>}
+    </div>
+  );
+};
+
+// --- Sub-Components for Specific Views ---
 
 const InfoPanel = ({ student }: { student: Student }) => {
   const { parentContact } = student;
@@ -61,6 +121,96 @@ const InfoPanel = ({ student }: { student: Student }) => {
   );
 };
 
+const ProgramsPanel = ({ student }: { student: Student }) => {
+  const [sections, setSections] = useState<Section[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSectionsAndTeachers = async () => {
+      if (!student.enrolledSections || student.enrolledSections.length === 0) {
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const sectionPromises = student.enrolledSections.map(async (id) =>
+          getSectionById(id.toString()),
+        );
+        const sectionResults = await Promise.all(sectionPromises);
+
+        const validSections = sectionResults.flatMap((res) => (res.success ? [res.data] : []));
+
+        const fullyResolvedSections = await Promise.all(
+          validSections.map(async (section) => {
+            const teacherNamePromises = section.teachers.map(async (uid) => {
+              try {
+                const userRes = await getUser(uid);
+
+                if (userRes.success) {
+                  return `${userRes.data.firstName} ${userRes.data.lastName}`;
+                }
+                return "Unknown Teacher";
+              } catch {
+                return "Unknown Teacher";
+              }
+            });
+
+            const resolvedTeacherNames = await Promise.all(teacherNamePromises);
+
+            return {
+              ...section,
+              teachers: resolvedTeacherNames,
+            };
+          }),
+        );
+
+        setSections(fullyResolvedSections);
+      } catch (error) {
+        console.error("Failed to compile program card records:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Explicitly marking the promise as ignored with the void operator
+    // satisfies the ts/no-floating-promises lint rule.
+    void fetchSectionsAndTeachers();
+  }, [student.enrolledSections]);
+
+  if (isLoading) {
+    return (
+      <div className={styles.panelContainer}>
+        <p className={styles.emptyState}>Loading programs...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.panelContainer}>
+      {sections.length > 0 ? (
+        <TermGroup title="Current Term">
+          {sections.map((section) => (
+            <ProgramCard
+              key={section._id}
+              section={{
+                _id: section._id,
+                name: section.code,
+                teachers: section.teachers,
+                startDate: section.startDate,
+                endDate: section.endDate,
+                color: section.color,
+              }}
+            />
+          ))}
+        </TermGroup>
+      ) : (
+        <p className={styles.emptyState}>No programs registered for this student.</p>
+      )}
+    </div>
+  );
+};
+
 const NotesPanel = ({ comments }: { comments: string }) => {
   return (
     <div className={styles.panelContainer}>
@@ -83,14 +233,13 @@ const ComingSoonPanel = ({ title }: { title: string }) => (
   </div>
 );
 
-// --- Main Component ---
+// --- Main Tab Navigation Component ---
 
 export function StudentTabs({ student }: StudentTabsProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
 
-  // Type assertion ensures we default safely if URL has garbage data
   const activeTabId = (searchParams?.get("tab") as TabId) || TAB_CONFIG[0].id;
 
   const handleTabChange = (tabId: string) => {
@@ -99,7 +248,6 @@ export function StudentTabs({ student }: StudentTabsProps) {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
-  // The "Render Map" Logic
   const renderTabContent = () => {
     switch (activeTabId) {
       case "info":
@@ -107,15 +255,15 @@ export function StudentTabs({ student }: StudentTabsProps) {
       case "notes":
         return <NotesPanel comments={student.comments} />;
       case "programs":
+        return <ProgramsPanel student={student} />;
       case "attendance":
+        return <AttendancePanel student={student} />;
       case "assessments":
       default:
-        // Finds the label for the current ID to display nicely
         const label = TAB_CONFIG.find((t) => t.id === activeTabId)?.label || "Unknown";
         return <ComingSoonPanel title={label} />;
     }
   };
-
   return (
     <div className={styles.tabsContainer}>
       <nav className={styles.tabNav} role="tablist" aria-label="Student Sections">
@@ -136,7 +284,7 @@ export function StudentTabs({ student }: StudentTabsProps) {
           </button>
         ))}
       </nav>
-
+      <div className={styles.divider}></div>
       <section id={`panel-${activeTabId}`} role="tabpanel" className={styles.tabContent}>
         {renderTabContent()}
       </section>

@@ -3,11 +3,11 @@
   flex-direction: column;
   position: relative;
   gap: 8px;
-  font-family: "Inter", sans-serif;
+  font-family: "Montserrat", sans-serif;
   color: var(--grey-500);
 
   .label {
-    font-size: 1rem;
+    font-size: 14px;
     color: var(--grey-700);
     font-weight: 500;
 
@@ -177,7 +177,7 @@
 
       .noResults {
         padding: 16px;
-        font-size: 13px;
+        font-size: 14px;
         color: var(--grey-400);
         text-align: center;
       }
@@ -192,7 +192,7 @@
   background-color: var(--primary-100, #d1e7e2);
   padding: 4px 10px;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--primary-700);
   height: auto;
@@ -208,7 +208,7 @@
 .boldenIcon {
   color: var(--grey-900) !important;
   filter: brightness(0.45);
-  font-weight: 300;
+  font-weight: 500;
 }
 
 .boldenText {
