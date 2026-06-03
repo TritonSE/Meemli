@@ -5,6 +5,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { getLocalDateString } from "../util/date";
+
 import styles from "./attendanceList.module.css";
 
 import type { SortOption } from "./attendanceSortBy";
@@ -18,6 +20,7 @@ type AttendanceListProps = {
   searchQuery?: string;
   sortOption?: SortOption;
   onUpdate?: (updatedData: any) => void;
+  activeDate: string;
 };
 
 type Student = {
@@ -41,10 +44,16 @@ export default function AttendanceList({
   isFilterSelected,
   searchQuery = "",
   sortOption = { field: "name", order: "asc", label: "Ascending" },
+  activeDate,
 }: AttendanceListProps) {
   const [attendees, setAttendees] = useState<Attendee[]>(initialAttendees);
   const [saveStatus, setSaveStatus] = useState<"saving" | "saved" | "error">("saved");
   const isFirstRender = useRef(true);
+  function isFutureSession() {
+    const currentDate = new Date(getLocalDateString());
+    const activeDateObj = new Date(activeDate);
+    return activeDateObj > currentDate;
+  }
 
   // Helper function to get full name
   const getFullName = (student: Student) => {
@@ -201,6 +210,12 @@ export default function AttendanceList({
                 <div className="space-y-2 text-center">
                   <p className={styles.sessionNotFound}>
                     Please select a section to view attendance.
+                  </p>
+                </div>
+              ) : isFutureSession() ? (
+                <div className="space-y-2 text-center">
+                  <p className={styles.sessionNotFound}>
+                    Cannot edit attendance data for future sessions.
                   </p>
                 </div>
               ) : !isFilterSelected ? (
