@@ -4,6 +4,8 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  background: white;
+  z-index: 1;
 
   width: clamp(60px, 7vw, 80px);
   height: 100vh;
@@ -12,39 +14,47 @@
 
   border-right: 1px solid var(--grey-200);
 
-  .logo {
-    width: 2rem;
-    transition: transform 0.2s ease-in-out;
-    filter: none;
-    background: none;
+  .logoLink {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    padding: 6px;
     margin-top: 0.5rem;
   }
 
-  .logo:hover {
-    transform: scale(1.3);
-  }
-
-  .navLink {
-    border-radius: 4px;
-  }
-
-  .navIcon {
-    width: clamp(8px, 100%, 60px);
-    padding: 10px;
-    border-radius: 4px;
-  }
-
-  .navLink:hover {
+  .logoLink:hover {
     background-color: var(--grey-50);
   }
 
-  .navLink:hover .navIcon {
+  .logo {
+    width: 2rem;
+    filter: none;
+  }
+
+  .navLink {
+    border-radius: 6px;
+    padding: 10px;
+    display: flex;
+  }
+
+  .navIcon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .navLink:not(.activeNavLink):hover {
+    background-color: var(--grey-50);
+  }
+
+  .navLink:not(.activeNavLink):hover .navIcon {
     filter: brightness(0) invert(0.5);
   }
 
   .activeNavLink {
     background-color: var(--primary-500);
-    border-radius: 4px;
+    border-radius: 6px;
   }
 
   .activeNavLink .navIcon {
@@ -67,12 +77,21 @@
   .logoutBtn {
     background: none;
     border: none;
-    padding: 0;
+    padding: 10px;
     cursor: pointer;
-    transition: transform 0.15s ease-in-out;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logoutIcon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
   }
 
   .logoutBtn:hover {
-    transform: scale(1.2);
+    background-color: var(--grey-50);
   }
 }
