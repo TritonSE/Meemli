@@ -21,6 +21,7 @@ export const SectionCard = function SectionCard({
   onEdit,
   onArchive,
   onDelete,
+  onClick,
 }: {
   code: string;
   teachers: string[];
@@ -34,6 +35,7 @@ export const SectionCard = function SectionCard({
   onEdit: () => void;
   onArchive: () => void | Promise<void>;
   onDelete: () => void | Promise<void>;
+  onClick?: () => void;
 }) {
   const { isAdmin } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -66,17 +68,24 @@ export const SectionCard = function SectionCard({
   const formattedEndDate = new Date(endDate).toLocaleDateString("en-US");
 
   return (
-    <div className={styles.cardWrapper}>
+    <div className={styles.cardWrapper} onClick={onClick} style={{ cursor: "pointer" }}>
       <div className={styles.topBar} style={{ backgroundColor: color }} ref={menuRef}>
         {isAdmin && (
-          <button className={styles.menuButton} onClick={toggleMenu}>
+          <button
+            className={styles.menuButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleMenu();
+            }}
+          >
             <MoreHorizontal />
           </button>
         )}
         {menuOpen && (
           <div className={styles.dropdown}>
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 onEdit();
                 setMenuOpen(false);
               }}
@@ -84,7 +93,8 @@ export const SectionCard = function SectionCard({
               Edit
             </button>
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 void onArchive();
                 setMenuOpen(false);
               }}
@@ -92,7 +102,8 @@ export const SectionCard = function SectionCard({
               {!archived ? "Archive" : "Unarchive"}
             </button>
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 void onDelete();
                 setMenuOpen(false);
               }}
@@ -103,7 +114,11 @@ export const SectionCard = function SectionCard({
         )}
       </div>
 
-      <div className={styles.cardBody}>
+      <div
+        className={styles.cardBody}
+        onClick={onClick}
+        style={{ cursor: onClick ? "pointer" : "default" }}
+      >
         <h3 className={`${styles.classTitle} ${styles.scrollable}`} tabIndex={0} title={code}>
           {code}
         </h3>

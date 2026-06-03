@@ -78,16 +78,17 @@ export function Navbar() {
           );
         })}
       </div>
-
-      <button onClick={handleLogout} className={style.logoutBtn} aria-label="Log out">
-        <Image
-          src="/icons/nav/logout.svg"
-          alt="Logout icon"
-          width={20}
-          height={20}
-          className={style.logoutIcon}
-        />
-      </button>
+      <Tooltip content="Log Out">
+        <button onClick={handleLogout} className={style.logoutBtn} aria-label="Log out">
+          <Image
+            src="/icons/nav/logout.svg"
+            alt="Logout icon"
+            width={20}
+            height={20}
+            className={style.logoutIcon}
+          />
+        </button>
+      </Tooltip>
     </nav>
   );
 }

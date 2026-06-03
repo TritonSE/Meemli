@@ -64,9 +64,9 @@
 .tableHeader .colStatus,
 .tableHeader .colNotes {
   background: #f7f6f6;
-  color: #9b9d9f;
+  color: var(--grey-600);
   text-transform: none;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
 }
 
