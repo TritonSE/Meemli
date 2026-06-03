@@ -208,7 +208,7 @@
 .boldenIcon {
   color: var(--grey-900) !important;
   filter: brightness(0.45);
-  font-weight: 300;
+  font-weight: 500;
 }
 
 .boldenText {
