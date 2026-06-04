@@ -53,7 +53,7 @@ export const handleUnenrollment = async (
   const now = new Date();
   const sId = new Types.ObjectId(sectionId.toString());
   const studId = new Types.ObjectId(studentId.toString());
-  
+
   // Remove section from student's enrolledSections
   await StudentModel.findByIdAndUpdate(studId, { $pull: { enrolledSections: sId } });
 
