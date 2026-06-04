@@ -3,18 +3,21 @@
 
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
+import { Button } from "../Button";
+import { Modal } from "../Modal";
 import ProgramCard from "../ProgramCard/ProgramCard";
 
 import { AttendancePanel } from "./AttendancePanel";
+import { EmailTemplate } from "./EmailTemplate";
 import styles from "./StudentTabs.module.css";
 
-import type { Section } from "@/src/api/sections";
 import type { Student } from "@/src/api/students";
 
-import { getSectionById } from "@/src/api/sections";
-import { getUser } from "@/src/api/user";
+import { getAllSections, getSectionById, type Section } from "@/src/api/sections";
+import { getAllUsers, getUser, type User } from "@/src/api/user";
+import { useAuth } from "@/src/context/AuthContext";
 
 type StudentTabsProps = {
   student: Student;
@@ -89,7 +92,15 @@ const TermGroup = ({
 
 // --- Sub-Components for Specific Views ---
 
-const InfoPanel = ({ student }: { student: Student }) => {
+const InfoPanel = ({
+  student,
+  isAdmin,
+  onTemplateClick,
+}: {
+  student: Student;
+  isAdmin: boolean;
+  onTemplateClick: () => void;
+}) => {
   const { parentContact } = student;
 
   return (
@@ -112,6 +123,11 @@ const InfoPanel = ({ student }: { student: Student }) => {
               <label>Parent Phone</label>
               <p>{parentContact.phoneNumber}</p>
             </div>
+            {isAdmin && (
+              <div className={styles.infoItem}>
+                <Button label="Template Email" kind="primary" onClick={onTemplateClick} />
+              </div>
+            )}
           </div>
         ) : (
           <p>Not available</p>
@@ -239,6 +255,10 @@ export function StudentTabs({ student }: StudentTabsProps) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+  const { isAdmin } = useAuth();
+  const [templateOpen, setTemplateOpen] = useState(false);
+  const [sections, setSections] = useState<Section[]>([]);
+  const [teachers, setTeachers] = useState<User[]>([]);
 
   const activeTabId = (searchParams?.get("tab") as TabId) || TAB_CONFIG[0].id;
 
@@ -248,10 +268,24 @@ export function StudentTabs({ student }: StudentTabsProps) {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
+  useEffect(() => {
+    if (!isAdmin) return;
+    void Promise.all([getAllSections(), getAllUsers()]).then(([sectionsResult, usersResult]) => {
+      if (sectionsResult.success) setSections(sectionsResult.data);
+      if (usersResult.success) setTeachers(usersResult.data);
+    });
+  }, [isAdmin]);
+
   const renderTabContent = () => {
     switch (activeTabId) {
       case "info":
-        return <InfoPanel student={student} />;
+        return (
+          <InfoPanel
+            student={student}
+            isAdmin={isAdmin}
+            onTemplateClick={() => setTemplateOpen(true)}
+          />
+        );
       case "notes":
         return <NotesPanel comments={student.comments} />;
       case "programs":
@@ -266,6 +300,12 @@ export function StudentTabs({ student }: StudentTabsProps) {
   };
   return (
     <div className={styles.tabsContainer}>
+      {templateOpen && (
+        <Modal
+          child={<EmailTemplate student={student} sections={sections} teachers={teachers} />}
+          onExit={() => setTemplateOpen(false)}
+        />
+      )}
       <nav className={styles.tabNav} role="tablist" aria-label="Student Sections">
         {TAB_CONFIG.map((tab) => (
           <button

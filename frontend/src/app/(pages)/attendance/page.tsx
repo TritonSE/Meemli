@@ -14,16 +14,9 @@ import AttendanceSearch from "@/src/components/attendanceSearch";
 import AttendanceSortBy, { type SortOption } from "@/src/components/attendanceSortBy";
 import { DateSelect } from "@/src/components/dateSelect";
 import { SectionSelect } from "@/src/components/sectionSelect";
+import { getLocalDateString } from "@/src/util/date";
 
 export default function Attendance() {
-  const getLocalDateString = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
   const [sectionList, setSectionList] = useState<Section[]>([]);
   const [sessionList, setSessionList] = useState<AttendanceSession[]>([]);
   const [selectedSession, setSelectedSession] = useState<AttendanceSession | null>(null);
@@ -144,6 +137,7 @@ export default function Attendance() {
             isFilterSelected={Boolean(activeSectionId && activeDate && selectedSession)}
             searchQuery={searchQuery}
             sortOption={sortOption}
+            activeDate={activeDate}
           />
         </div>
       </div>

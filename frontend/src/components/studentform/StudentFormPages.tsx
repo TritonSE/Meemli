@@ -89,11 +89,7 @@ function validator(field: string, draft: Partial<Draft>, errors: StudentFormErro
       }
       break;
     case "meemliEmail":
-      if (!draft.meemliEmail) {
-        errors.meemliEmail = true;
-        return "Email is required.";
-      }
-      if (!emailRegex.test(draft.meemliEmail)) {
+      if (draft.meemliEmail && !emailRegex.test(draft.meemliEmail)) {
         errors.meemliEmail = true;
         return "Email must be valid.";
       }
@@ -176,10 +172,6 @@ function validator(field: string, draft: Partial<Draft>, errors: StudentFormErro
       }
       break;
     case "preassessmentScore":
-      if (!draft.preassessmentScore) {
-        errors.preassessmentScore = true;
-        return "Pre-assessment score is required.";
-      }
       num = Number(draft.preassessmentScore);
       if (!Number.isInteger(num) || num < 0 || num > 100) {
         errors.preassessmentScore = true;
@@ -187,10 +179,6 @@ function validator(field: string, draft: Partial<Draft>, errors: StudentFormErro
       }
       break;
     case "postassessmentScore":
-      if (!draft.postassessmentScore) {
-        errors.postassessmentScore = true;
-        return "Post-assessment score is required.";
-      }
       num = Number(draft.postassessmentScore);
       if (!Number.isInteger(num) || num < 0 || num > 100) {
         errors.postassessmentScore = true;
@@ -393,7 +381,6 @@ export function StudentFormPages({
           value={draft.meemliEmail ?? ""}
           placeholder="ex. jsmith@meemli.com"
           onChange={(e) => handleDraftChange(e.target.value, "meemliEmail")}
-          required={true}
           error={Boolean(errors.meemliEmail)}
         />
       </div>
