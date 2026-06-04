@@ -3,6 +3,8 @@
 import { format } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 
+import styles from "./ProgramDetail.module.css";
+
 import type { Student } from "@/src/api/students";
 import type { User } from "@/src/api/user";
 
@@ -16,8 +18,6 @@ import AttendanceSortBy, { type SortOption } from "@/src/components/attendanceSo
 import { DateSelect } from "@/src/components/dateSelect";
 import { Table } from "@/src/components/StudentStaffTable/Table";
 import { useAuth } from "@/src/context/AuthContext";
-
-import styles from "./ProgramDetail.module.css";
 
 type Tab = "attendance" | "students" | "teachers";
 
@@ -315,6 +315,7 @@ export function ProgramDetail({ id, onBack }: { id: string; onBack: () => void }
             isFilterSelected={!!selectedSessionId}
             searchQuery={searchQuery}
             sortOption={sortOption}
+            activeDate={selectedDate}
           />
         ))}
 

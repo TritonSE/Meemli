@@ -36,8 +36,7 @@ const makeDisplayNameValidator = (): ValidationChain => {
 
 const makeMeemliEmailValidator = (): ValidationChain => {
   return body("meemliEmail")
-    .exists()
-    .withMessage("meemliEmail is required")
+    .optional({values: "falsy"})
     .bail()
     .isEmail()
     .withMessage("meemliEmail must be a valid email");

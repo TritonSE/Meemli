@@ -130,8 +130,7 @@ export const updateSection: RequestHandler<{ id: string }, unknown, UpdateSectio
           { $pull: { assignedSections: section._id } },
         ),
     ]);
-
-    await SessionModel.deleteMany({ section: section._id, sessionDate: { $gt: new Date() } });
+    await SessionModel.deleteMany({ section: section._id, sessionDate: { $gte: new Date() } });
 
     const sessionDates = await populateSessions(section);
     await Promise.all(

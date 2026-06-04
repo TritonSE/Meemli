@@ -3,6 +3,7 @@ import { Types } from "mongoose";
 import { AttendanceModel } from "../models/attendance";
 import { Section } from "../models/sections";
 import { SessionModel } from "../models/session";
+import StudentModel from "../models/student";
 
 import type mongoose from "mongoose";
 
@@ -12,6 +13,9 @@ export const handleEnrollment = async (
 ): Promise<void> => {
   const sId = new Types.ObjectId(sectionId.toString());
   const studId = new Types.ObjectId(studentId.toString());
+
+  // Add section to student's enrolledSections (no-op if already present)
+  await StudentModel.findByIdAndUpdate(studId, { $addToSet: { enrolledSections: sId } });
 
   // Add student to Section's enrolledStudents (no-op if already present)
   await Section.findByIdAndUpdate(sId, { $addToSet: { enrolledStudents: studId } });
@@ -49,6 +53,9 @@ export const handleUnenrollment = async (
   const now = new Date();
   const sId = new Types.ObjectId(sectionId.toString());
   const studId = new Types.ObjectId(studentId.toString());
+  
+  // Remove section from student's enrolledSections
+  await StudentModel.findByIdAndUpdate(studId, { $pull: { enrolledSections: sId } });
 
   // Remove student from Section's enrolledStudents
   await Section.findByIdAndUpdate(sId, { $pull: { enrolledStudents: studId } });
