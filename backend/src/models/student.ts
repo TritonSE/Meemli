@@ -10,7 +10,7 @@ const studentSchema = new Schema({
     email: { type: String, required: true },
   },
   displayName: { type: String, required: true },
-  meemliEmail: { type: String, required: true },
+  meemliEmail: { type: String, required: false, default: "" },
   grade: { type: Number, required: true },
   schoolName: { type: String, required: true },
   city: { type: String, required: true },
