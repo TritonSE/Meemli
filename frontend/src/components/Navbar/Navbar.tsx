@@ -20,7 +20,6 @@ const navItems: NavItem[] = [
   { href: "/students", icon: "/icons/nav/students.svg", label: "Students" },
   { href: "/attendance", icon: "/icons/nav/attendance.svg", label: "Attendance" },
   { href: "/staff", icon: "/icons/nav/staff.svg", label: "Staff" },
-  { href: "/test", icon: "/icons/nav/test.svg", label: "Test" },
 ];
 
 export function Navbar() {
