@@ -29,8 +29,9 @@
 
   /* if the form content gets tall */
   max-height: 95vh;
-  scrollbar-width: none;
+  scrollbar-width: auto;
   justify-content: center;
+  overflow: auto;
 }
 
 .fitContent {
